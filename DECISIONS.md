@@ -66,6 +66,14 @@ Prisma migrations и другие CLI-операции используют Supa
 - Перед применением первой миграции этот SQL нужно добавить в миграцию, чтобы база гарантировала единственную обложку на уровне PostgreSQL.
 - Первая Prisma migration должна вручную включать custom SQL partial unique index из этого файла до применения миграции к Supabase.
 
+## Первая migration
+
+- Initial migration SQL генерируется через `prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script`, а не через `prisma migrate dev`.
+- Причина: перед изменением реального Supabase нужен безопасный проверяемый SQL-файл.
+- Migration включает ручной PostgreSQL partial unique index для единственной обложки товара.
+- Migration включает Row Level Security для таблиц в `public` без публичных policies.
+- На этапе подготовки migration не применяется к базе, seed не запускается.
+
 ## Изображения товаров
 
 - На текущем frontend-MVP изображения товаров являются локальными mock-ассетами.
