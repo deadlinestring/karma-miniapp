@@ -17,7 +17,8 @@ export const priceOptions: PriceOption[] = [
     label: "Стандарт",
     sizes: [
       { size: "20 см", price: 2490 },
-      { size: "25 см", price: 3390 }
+      { size: "25 см", price: 3390 },
+      { size: "30 см", price: 4290 }
     ]
   },
   {
@@ -26,7 +27,7 @@ export const priceOptions: PriceOption[] = [
     sizes: [
       { size: "25 см", price: 4490 },
       { size: "30 см", price: 5490 },
-      { size: "40 см", price: 6490 }
+      { size: "40 см", price: 6990 }
     ]
   },
   {

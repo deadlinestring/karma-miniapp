@@ -1,0 +1,240 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProductType {
+  REGULAR
+  CUSTOM
+}
+
+enum ItemType {
+  STANDARD
+  PREMIUM
+  WALL_PANEL
+}
+
+enum PaymentProvider {
+  DEMO
+  YOOKASSA
+  TBANK
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  CANCELLED
+  FAILED
+}
+
+enum FulfillmentStatus {
+  NEW
+  AWAITING_PAYMENT
+  PAID
+  IN_WORK
+  MANUFACTURED
+  SHIPPED
+  COMPLETED
+  CANCELLED
+}
+
+model StoreSettings {
+  id           String   @id @default("main")
+  storeName    String
+  subtitle     String?
+  heroTitle    String
+  heroSubtitle String
+  logoUrl      String?
+  heroImageUrl String?
+  contactText  String?
+  deliveryText String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Category {
+  id            String        @id @default(cuid())
+  name          String
+  slug          String        @unique
+  coverImageUrl String?
+  sortOrder     Int           @default(0)
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  subcategories Subcategory[]
+
+  @@index([isActive, sortOrder])
+}
+
+model Subcategory {
+  id            String    @id @default(cuid())
+  categoryId    String
+  name          String
+  slug          String
+  coverImageUrl String?
+  sortOrder     Int       @default(0)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  category      Category  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  products      Product[]
+
+  @@unique([categoryId, slug])
+  @@index([categoryId, isActive, sortOrder])
+}
+
+model Product {
+  id            String           @id @default(cuid())
+  subcategoryId String
+  name          String
+  slug          String           @unique
+  description   String
+  productType   ProductType      @default(REGULAR)
+  isFeatured    Boolean          @default(false)
+  isActive      Boolean          @default(true)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  subcategory   Subcategory      @relation(fields: [subcategoryId], references: [id], onDelete: Restrict)
+  images        ProductImage[]
+  variants      ProductVariant[]
+  orderItems    OrderItem[]
+
+  @@index([subcategoryId, isActive])
+  @@index([isFeatured, isActive])
+}
+
+model ProductImage {
+  id          String   @id @default(cuid())
+  productId   String
+  url         String
+  storagePath String?
+  altText     String?
+  isCover     Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, sortOrder])
+}
+
+model ProductVariant {
+  id            String   @id @default(cuid())
+  productId     String
+  itemType      ItemType
+  sizeCm        Int
+  priceKopecks  Int
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, itemType, sizeCm])
+  @@index([productId, isActive])
+}
+
+model TelegramUser {
+  id         String   @id @default(cuid())
+  telegramId BigInt   @unique
+  username   String?
+  firstName  String?
+  lastName   String?
+  phone      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  orders     Order[]
+}
+
+model DeliveryAddress {
+  id         String   @id @default(cuid())
+  orderId    String   @unique
+  city       String
+  street     String
+  house      String
+  apartment  String?
+  postalCode String?
+  comment    String?
+  createdAt  DateTime @default(now())
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id                       String            @id @default(cuid())
+  publicNumber             String            @unique
+  userId                   String?
+  customerName             String
+  customerPhone            String
+  customerTelegramUsername String?
+  customerTelegramId       BigInt?
+  comment                  String?
+  totalKopecks             Int
+  paymentProvider          PaymentProvider   @default(DEMO)
+  paymentStatus            PaymentStatus     @default(PENDING)
+  fulfillmentStatus        FulfillmentStatus @default(NEW)
+  consentPersonalData      Boolean           @default(false)
+  createdAt                DateTime          @default(now())
+  updatedAt                DateTime          @updatedAt
+  user                     TelegramUser?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  deliveryAddress          DeliveryAddress?
+  items                    OrderItem[]
+  payments                 Payment[]
+  notificationLogs         NotificationLog[]
+
+  @@index([userId, createdAt])
+  @@index([paymentStatus, fulfillmentStatus])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id                   String   @id @default(cuid())
+  orderId              String
+  productId            String?
+  productNameSnapshot  String
+  productImageSnapshot String?
+  itemTypeSnapshot     ItemType
+  sizeCmSnapshot       Int
+  unitPriceKopecks     Int
+  quantity             Int
+  subtotalKopecks      Int
+  createdAt            DateTime @default(now())
+  order                Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product              Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  orderId           String
+  provider          PaymentProvider
+  providerPaymentId String?
+  amountKopecks     Int
+  status            PaymentStatus @default(PENDING)
+  idempotencyKey    String        @unique
+  confirmationUrl   String?
+  rawWebhookPayload Json?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  order             Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerPaymentId])
+  @@index([orderId])
+  @@index([status])
+}
+
+model NotificationLog {
+  id                  String   @id @default(cuid())
+  orderId             String
+  type                String
+  recipientTelegramId BigInt
+  deduplicationKey    String   @unique
+  sentAt              DateTime?
+  createdAt           DateTime @default(now())
+  order               Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([recipientTelegramId])
+}
