@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
@@ -13,11 +13,18 @@ type FilterValue = "Все" | CategoryName;
 export function CatalogPage() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category") as CategoryName | null;
+  const productId = searchParams.get("product");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<FilterValue>(
     initialCategory && categories.some((item) => item.name === initialCategory) ? initialCategory : "Все"
   );
   const [openedProduct, setOpenedProduct] = useState<Product | null>(null);
+
+  useEffect(() => {
+    if (productId) {
+      setOpenedProduct(products.find((product) => product.id === productId) ?? null);
+    }
+  }, [productId]);
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -67,12 +74,12 @@ export function CatalogPage() {
         </div>
       </section>
 
-      <section className="mt-5 grid gap-4">
+      <section className="mt-5 grid grid-cols-2 gap-3">
         {filteredProducts.map((product) => (
-          <ProductCard key={product.id} product={product} onOpen={setOpenedProduct} />
+          <ProductCard key={product.id} product={product} onOpen={setOpenedProduct} variant="compact" />
         ))}
         {filteredProducts.length === 0 ? (
-          <div className="rounded-3xl border border-white/10 bg-white/7 p-8 text-center">
+          <div className="col-span-2 rounded-3xl border border-white/10 bg-white/7 p-8 text-center">
             <p className="text-lg font-black text-white">Ничего не найдено</p>
             <p className="mt-2 text-sm text-white/55">Попробуй другой запрос или категорию.</p>
           </div>

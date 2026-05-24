@@ -17,7 +17,7 @@ export function TopBar() {
           </span>
           <span>
             <span className="block text-lg font-black tracking-[0.16em] text-white">KARMA</span>
-            <span className="block text-[11px] text-white/50">custom neon lights</span>
+            <span className="block text-[11px] text-white/50">кастомные светильники</span>
           </span>
         </Link>
         <motion.div whileTap={{ scale: 0.92 }}>

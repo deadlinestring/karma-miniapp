@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Check, ImagePlus, X } from "lucide-react";
+import { Check, ImagePlus, Sparkles, Wand2, X } from "lucide-react";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Product } from "@/lib/products";
 import {
@@ -27,6 +28,7 @@ export function ProductModal({
   const defaultSelection = getDefaultSelection();
   const [selectedType, setSelectedType] = useState<ProductType>(defaultSelection.type);
   const [selectedSize, setSelectedSize] = useState<ProductSize>(defaultSelection.size);
+  const [activeImage, setActiveImage] = useState<string | null>(null);
   const [added, setAdded] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
 
@@ -34,6 +36,7 @@ export function ProductModal({
     if (product) {
       setSelectedType(defaultSelection.type);
       setSelectedSize(defaultSelection.size);
+      setActiveImage(product.coverImage);
       setAdded(false);
     }
   }, [product, defaultSelection.size, defaultSelection.type]);
@@ -66,6 +69,7 @@ export function ProductModal({
       size: selectedSize,
       price,
       accent: product.accent,
+      coverImage: product.coverImage,
       isCustom: product.isCustom
     });
     setAdded(true);
@@ -100,7 +104,30 @@ export function ProductModal({
           </div>
 
           <div className="overflow-y-auto p-4">
-            <ProductVisual product={product} />
+            <ProductVisual product={{ ...product, coverImage: activeImage ?? product.coverImage }} priority />
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {product.galleryImages.map((image) => (
+                <button
+                  key={image}
+                  className={`relative aspect-[4/3] overflow-hidden rounded-2xl border transition ${
+                    (activeImage ?? product.coverImage) === image
+                      ? "border-neon-cyan/70 shadow-glow"
+                      : "border-white/10 opacity-72"
+                  }`}
+                  onClick={() => setActiveImage(image)}
+                  aria-label={`Показать изображение ${product.title}`}
+                >
+                  <Image
+                    src={image}
+                    alt={`Дополнительное изображение ${product.title}`}
+                    fill
+                    sizes="120px"
+                    className="object-cover"
+                  />
+                  <span className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
+                </button>
+              ))}
+            </div>
             <div className="mt-4 flex flex-wrap gap-2 text-xs text-white/58">
               <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1">
                 {product.category}
@@ -110,6 +137,23 @@ export function ProductModal({
               </span>
             </div>
             <p className="mt-4 text-sm leading-6 text-white/72">{product.description}</p>
+
+            <div className="mt-4 grid gap-2">
+              {[
+                { icon: Sparkles, text: "Мягкое тёплое свечение" },
+                { icon: Wand2, text: "Изготовим под заказ" },
+                { icon: ImagePlus, text: "Можно изменить дизайн под себя" }
+              ].map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <div key={item.text} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/7 px-3 py-2">
+                    <Icon size={16} className="text-neon-cyan" />
+                    <span className="text-sm font-semibold text-white/76">{item.text}</span>
+                  </div>
+                );
+              })}
+            </div>
 
             {product.isCustom ? (
               <div className="mt-4 rounded-3xl border border-dashed border-neon-cyan/35 bg-neon-cyan/5 p-4 text-center">

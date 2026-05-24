@@ -19,15 +19,15 @@ export function CartPage() {
     <AppShell>
       <section>
         <p className="text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">корзина</p>
-        <h1 className="mt-2 text-3xl font-black text-white">Твои будущие огни</h1>
+        <h1 className="mt-2 text-3xl font-black text-white">Корзина</h1>
       </section>
 
       {items.length === 0 ? (
         <div className="mt-6 rounded-[28px] border border-white/10 bg-white/7 p-8 text-center shadow-violet">
           <div className="mx-auto h-24 w-24 rounded-full bg-neon-violet/15 blur-sm" />
-          <h2 className="mt-4 text-xl font-black text-white">Корзина пока пустая</h2>
+          <h2 className="mt-4 text-xl font-black text-white">Здесь пока пусто</h2>
           <p className="mt-2 text-sm leading-6 text-white/60">
-            Добавь ночник из каталога или собери изделие по своему дизайну.
+            Выберите ночник из каталога или соберите свой дизайн.
           </p>
           <Link
             href="/catalog"
@@ -47,7 +47,8 @@ export function CartPage() {
                     product={{
                       title: item.title,
                       accent: item.accent,
-                      motif: item.isCustom ? "идея" : item.subcategory
+                      motif: item.isCustom ? "идея" : item.subcategory,
+                      coverImage: item.coverImage
                     }}
                   />
                   <div className="min-w-0">

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Brush, Sparkles, Wand2 } from "lucide-react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { useState } from "react";
 import { categories, popularProducts, products, type Product } from "@/lib/products";
 import { AppShell } from "@/components/app-shell";
@@ -15,11 +16,21 @@ export function HomePage() {
 
   return (
     <AppShell>
-      <section className="relative overflow-hidden rounded-[30px] border border-white/10 bg-white/8 p-6 shadow-violet">
-        <div className="absolute -right-10 -top-12 h-48 w-48 rounded-full bg-neon-violet/24 blur-3xl" />
-        <div className="absolute -bottom-12 left-4 h-40 w-40 rounded-full bg-neon-cyan/20 blur-3xl" />
-        <div className="relative">
-          <p className="text-xs font-bold uppercase tracking-[0.28em] text-neon-cyan">custom light studio</p>
+      <section className="relative min-h-[540px] overflow-hidden rounded-[30px] border border-white/10 bg-white/8 p-6 shadow-violet">
+        <Image
+          src="/images/mock/hero-night-light.svg"
+          alt="Светящийся акриловый ночник KARMA"
+          fill
+          priority
+          sizes="(max-width: 640px) 100vw, 560px"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/18 via-black/42 to-black/88" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(49,246,255,0.2),transparent_20rem)]" />
+        <div className="relative flex min-h-[492px] flex-col justify-end">
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">
+            НОЧНИКИ ПО ТВОЕЙ ИДЕЕ
+          </p>
           <h1 className="mt-5 text-4xl font-black leading-[1.05] text-white">
             Ночник, который сделает комнату твоей
           </h1>
@@ -71,7 +82,7 @@ export function HomePage() {
         </div>
         <div className="mt-3 grid gap-4">
           {popularProducts.map((product) => (
-            <ProductCard key={product.id} product={product} onOpen={setOpenedProduct} />
+            <ProductCard key={product.id} product={product} onOpen={setOpenedProduct} variant="featured" />
           ))}
         </div>
       </section>

@@ -8,8 +8,10 @@ export type Product = {
   description: string;
   accent: "violet" | "cyan" | "blue" | "pink";
   motif: string;
+  coverImage: string;
+  galleryImages: string[];
+  isFeatured: boolean;
   isCustom?: boolean;
-  popular?: boolean;
 };
 
 export const categories: Array<{
@@ -31,7 +33,13 @@ export const products: Product[] = [
     description: "Яркий ночник с силуэтом Наруто и мягким тёплым свечением.",
     accent: "violet",
     motif: "спираль",
-    popular: true
+    coverImage: "/images/mock/product-violet.svg",
+    galleryImages: [
+      "/images/mock/product-violet.svg",
+      "/images/mock/product-cyan.svg",
+      "/images/mock/product-pink.svg"
+    ],
+    isFeatured: true
   },
   {
     id: "itachi-uchiha",
@@ -40,7 +48,14 @@ export const products: Product[] = [
     subcategory: "Наруто",
     description: "Лаконичный световой силуэт с глубоким красно-фиолетовым настроением.",
     accent: "pink",
-    motif: "луна"
+    motif: "луна",
+    coverImage: "/images/mock/product-pink.svg",
+    galleryImages: [
+      "/images/mock/product-pink.svg",
+      "/images/mock/product-violet.svg",
+      "/images/mock/product-blue.svg"
+    ],
+    isFeatured: false
   },
   {
     id: "levi-ackerman",
@@ -50,7 +65,13 @@ export const products: Product[] = [
     description: "Динамичная композиция для комнаты с характером и холодным светом.",
     accent: "blue",
     motif: "клинки",
-    popular: true
+    coverImage: "/images/mock/product-blue.svg",
+    galleryImages: [
+      "/images/mock/product-blue.svg",
+      "/images/mock/product-cyan.svg",
+      "/images/mock/product-violet.svg"
+    ],
+    isFeatured: true
   },
   {
     id: "creeper",
@@ -59,7 +80,14 @@ export const products: Product[] = [
     subcategory: "Minecraft",
     description: "Пиксельный ночник с узнаваемой игровой геометрией и мягким зелёным свечением.",
     accent: "cyan",
-    motif: "пиксели"
+    motif: "пиксели",
+    coverImage: "/images/mock/product-cyan.svg",
+    galleryImages: [
+      "/images/mock/product-cyan.svg",
+      "/images/mock/product-blue.svg",
+      "/images/mock/product-violet.svg"
+    ],
+    isFeatured: false
   },
   {
     id: "samurai",
@@ -69,7 +97,13 @@ export const products: Product[] = [
     description: "Неоновая панель в духе ночного города, музыки и технологичного бунта.",
     accent: "pink",
     motif: "неон",
-    popular: true
+    coverImage: "/images/mock/product-pink.svg",
+    galleryImages: [
+      "/images/mock/product-pink.svg",
+      "/images/mock/product-blue.svg",
+      "/images/mock/product-cyan.svg"
+    ],
+    isFeatured: true
   },
   {
     id: "hogwarts",
@@ -78,7 +112,14 @@ export const products: Product[] = [
     subcategory: "Гарри Поттер",
     description: "Атмосферный ночник с силуэтом замка и мягким сказочным свечением.",
     accent: "violet",
-    motif: "замок"
+    motif: "замок",
+    coverImage: "/images/mock/product-violet.svg",
+    galleryImages: [
+      "/images/mock/product-violet.svg",
+      "/images/mock/product-blue.svg",
+      "/images/mock/product-pink.svg"
+    ],
+    isFeatured: false
   },
   {
     id: "darth-vader",
@@ -87,7 +128,14 @@ export const products: Product[] = [
     subcategory: "Звёздные войны",
     description: "Контрастная световая панель с тёмным силуэтом и холодным космическим акцентом.",
     accent: "blue",
-    motif: "шлем"
+    motif: "шлем",
+    coverImage: "/images/mock/product-blue.svg",
+    galleryImages: [
+      "/images/mock/product-blue.svg",
+      "/images/mock/product-pink.svg",
+      "/images/mock/product-cyan.svg"
+    ],
+    isFeatured: false
   },
   {
     id: "bmw-m5",
@@ -97,7 +145,13 @@ export const products: Product[] = [
     description: "Световая линия для фанатов быстрых седанов и гаражной эстетики.",
     accent: "cyan",
     motif: "скорость",
-    popular: true
+    coverImage: "/images/mock/product-cyan.svg",
+    galleryImages: [
+      "/images/mock/product-cyan.svg",
+      "/images/mock/product-blue.svg",
+      "/images/mock/product-violet.svg"
+    ],
+    isFeatured: true
   },
   {
     id: "nissan-skyline",
@@ -106,19 +160,32 @@ export const products: Product[] = [
     subcategory: "Nissan",
     description: "Ночная панель с японским настроением и выразительным контуром легенды.",
     accent: "blue",
-    motif: "контур"
+    motif: "контур",
+    coverImage: "/images/mock/product-blue.svg",
+    galleryImages: [
+      "/images/mock/product-blue.svg",
+      "/images/mock/product-cyan.svg",
+      "/images/mock/product-pink.svg"
+    ],
+    isFeatured: false
   },
   {
     id: "custom-design",
-    title: "Свой дизайн",
+    title: "Ночник по вашей картинке",
     category: "Аниме",
     subcategory: "По вашей картинке",
     description: "Отправьте фото, арт или идею — мы подготовим дизайн специально для вас.",
     accent: "violet",
     motif: "идея",
+    coverImage: "/images/mock/product-custom.svg",
+    galleryImages: [
+      "/images/mock/product-custom.svg",
+      "/images/mock/product-violet.svg",
+      "/images/mock/product-cyan.svg"
+    ],
+    isFeatured: true,
     isCustom: true,
-    popular: true
   }
 ];
 
-export const popularProducts = products.filter((product) => product.popular);
+export const popularProducts = products.filter((product) => product.isFeatured);

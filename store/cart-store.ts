@@ -16,6 +16,7 @@ export type CartItem = {
   price: number;
   quantity: number;
   accent: "violet" | "cyan" | "blue" | "pink";
+  coverImage?: string;
   isCustom?: boolean;
 };
 
