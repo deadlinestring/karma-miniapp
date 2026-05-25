@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
+import { TelegramBridge } from "@/components/telegram-bridge";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,7 +22,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased">
+        <Script src="https://telegram.org/js/telegram-web-app.js?62" strategy="beforeInteractive" />
+        <TelegramBridge />
+        {children}
+      </body>
     </html>
   );
 }

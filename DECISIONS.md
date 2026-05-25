@@ -111,3 +111,15 @@ Prisma migrations и другие CLI-операции используют Supa
 - Silent fallback на mock-товары запрещен: при ошибке базы пользователь видит аккуратное состояние ошибки.
 - Цены UI берутся из `ProductVariant`, а не из hardcoded frontend-значений.
 - Корзина хранит snapshot выбранного database-варианта в localStorage до этапа реальных заказов.
+
+## Telegram Mini App admin foundation
+
+- Новый бот для Mini App: `@karma_nightlight_store_bot`.
+- Официальный Telegram Web App bridge подключается через `https://telegram.org/js/telegram-web-app.js?62`.
+- Доверенный доступ администратора определяется только server-side validation строки `Telegram.WebApp.initData`.
+- `initDataUnsafe` не используется для авторизации и может применяться только для косметического поведения интерфейса.
+- `TELEGRAM_BOT_TOKEN`, `ADMIN_TELEGRAM_IDS` и время жизни initData хранятся только в server-side environment.
+- Telegram user id сравнивается как строка, чтобы не зависеть от 32-bit numeric assumptions.
+- Admin API в будущем обязаны выполнять server-side проверку Telegram initData на каждой защищенной операции.
+- Небезопасный browser/dev bypass запрещен: обычный браузер не получает фальшивый доступ администратора.
+- Создание товаров, редактирование цен, загрузка изображений, удаление товаров и изменение настроек магазина нельзя публиковать без этой admin-проверки.

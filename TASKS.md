@@ -119,3 +119,17 @@
 - Checkout остается demo-экраном и реальные `Order` пока не создает.
 - Реальные заказы еще не создаются.
 - Админка, Telegram Mini App интеграция и оплата еще не подключены.
+
+## Telegram Mini App и защищенный доступ администратора
+
+- Telegram Mini App bridge подключен через официальный скрипт Telegram Web App — выполнено.
+- После загрузки интерфейса приложение вызывает `Telegram.WebApp.ready()` и `Telegram.WebApp.expand()`, если API доступен.
+- Server-side validation `Telegram.WebApp.initData` подготовлена — выполнено.
+- Проверка admin-доступа через `ADMIN_TELEGRAM_IDS` подготовлена — выполнено.
+- API `POST /api/admin/auth/check` создан как foundation для будущих защищенных admin-операций.
+- Страница `/admin` создана как защищенная заглушка без CRUD.
+- Реальное тестирование внутри Telegram требует публичный HTTPS URL и настройку Mini App в BotFather.
+- Админский CRUD еще не начат.
+- Загрузка изображений в Storage еще не подключена.
+- Telegram Bot API для уведомлений еще не подключен.
+- Оплата еще не подключена.
