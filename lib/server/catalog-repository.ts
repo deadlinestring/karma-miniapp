@@ -117,7 +117,7 @@ export async function getStorefrontProductBySlug(slug: string): Promise<Storefro
         category: { isActive: true }
       }
     },
-    include: productInclude()
+    select: productSelect()
   });
 
   return product ? mapProductRecord(product) : null;
@@ -134,12 +134,19 @@ async function getProductRecords(where: { isFeatured?: boolean } = {}) {
       }
     },
     orderBy: [{ isFeatured: "desc" }, { createdAt: "asc" }],
-    include: productInclude()
+    select: productSelect()
   });
 }
 
-function productInclude() {
+function productSelect() {
   return {
+    id: true,
+    slug: true,
+    name: true,
+    description: true,
+    productType: true,
+    isFeatured: true,
+    createdAt: true,
     subcategory: {
       include: {
         category: true

@@ -75,7 +75,9 @@ function makeServices({
   };
   const db = {
     product: {
-      findFirst: vi.fn().mockImplementation((args) => Promise.resolve(args.select ? { id: "product-1", name: "Наруто Узумаки" } : fullProduct)),
+      findFirst: vi.fn().mockImplementation((args) =>
+        Promise.resolve(args.select?.images ? fullProduct : { id: "product-1", name: "Наруто Узумаки" })
+      ),
       findMany: vi.fn()
     },
     productImage: {

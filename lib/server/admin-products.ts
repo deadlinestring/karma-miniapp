@@ -202,7 +202,7 @@ async function readAdminProducts(db: PrismaLike) {
       }
     },
     orderBy: [{ createdAt: "asc" }],
-    include: adminProductInclude()
+    select: adminProductSelect()
   });
 }
 
@@ -216,7 +216,7 @@ async function getAdminProductById(productId: string, db: PrismaLike): Promise<A
         category: { isActive: true }
       }
     },
-    include: adminProductInclude()
+    select: adminProductSelect()
   });
 
   if (!product) {
@@ -260,8 +260,12 @@ async function getNextImageSortOrder(productId: string, db: PrismaLike) {
   return (aggregate._max.sortOrder ?? 0) + 10;
 }
 
-function adminProductInclude() {
+function adminProductSelect() {
   return {
+    id: true,
+    name: true,
+    slug: true,
+    createdAt: true,
     subcategory: {
       include: {
         category: true

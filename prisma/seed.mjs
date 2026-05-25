@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
+import { shouldSeedImageBeCover } from "./seed-image-policy.mjs";
 
 const { Pool } = pg;
 
@@ -261,27 +262,47 @@ async function seedProducts(categoryBySlug, subcategoryByKey) {
         productType: product.productType,
         isFeatured: product.isFeatured,
         isActive: true
+      },
+      select: {
+        id: true
+      }
+    });
+
+    const existingCover = await prisma.productImage.findFirst({
+      where: {
+        productId: savedProduct.id,
+        isCover: true
+      },
+      select: {
+        id: true
       }
     });
 
     for (const [index, url] of product.images.entries()) {
+      const imageId = seedImageId(product.slug, index);
+      const isSeedCover = shouldSeedImageBeCover({
+        imageIndex: index,
+        existingCoverImageId: existingCover?.id ?? null,
+        seedImageId: imageId
+      });
+
       await prisma.productImage.upsert({
-        where: { id: seedImageId(product.slug, index) },
+        where: { id: imageId },
         update: {
           productId: savedProduct.id,
           url,
           storagePath: storagePathFromUrl(url),
           altText: `${product.name} — изображение ${index + 1}`,
-          isCover: index === 0,
+          isCover: isSeedCover,
           sortOrder: index
         },
         create: {
-          id: seedImageId(product.slug, index),
+          id: imageId,
           productId: savedProduct.id,
           url,
           storagePath: storagePathFromUrl(url),
           altText: `${product.name} — изображение ${index + 1}`,
-          isCover: index === 0,
+          isCover: isSeedCover,
           sortOrder: index
         }
       });

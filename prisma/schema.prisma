@@ -89,6 +89,7 @@ model Subcategory {
 model Product {
   id            String           @id @default(cuid())
   subcategoryId String
+  priceListId   String?
   name          String
   slug          String           @unique
   description   String
@@ -98,12 +99,44 @@ model Product {
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
   subcategory   Subcategory      @relation(fields: [subcategoryId], references: [id], onDelete: Restrict)
+  priceList     PriceList?       @relation(fields: [priceListId], references: [id], onDelete: SetNull)
   images        ProductImage[]
   variants      ProductVariant[]
   orderItems    OrderItem[]
 
   @@index([subcategoryId, isActive])
+  @@index([priceListId])
   @@index([isFeatured, isActive])
+}
+
+model PriceList {
+  id        String          @id @default(cuid())
+  name      String
+  slug      String          @unique
+  isActive  Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  items     PriceListItem[]
+  products  Product[]
+
+  @@index([isActive])
+}
+
+model PriceListItem {
+  id            String    @id @default(cuid())
+  priceListId   String
+  itemType      ItemType
+  sizeCm        Int
+  priceKopecks  Int
+  note          String?
+  sortOrder     Int       @default(0)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  priceList     PriceList @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+
+  @@unique([priceListId, itemType, sizeCm])
+  @@index([priceListId, isActive, sortOrder])
 }
 
 model ProductImage {
