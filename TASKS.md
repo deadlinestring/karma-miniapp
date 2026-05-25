@@ -142,3 +142,14 @@
 - `/` и `/catalog` должны оставаться dynamic routes, чтобы будущие изменения товаров и настроек отображались без redeploy.
 - Первый deployment в Vercel еще не выполнен.
 - BotFather Mini App URL еще не настроен.
+
+## Production deployment и Telegram admin verification
+
+- GitHub publication — выполнено.
+- Vercel production deployment — выполнено.
+- Production URL: `https://karma-miniapp.vercel.app`.
+- Telegram Menu Button test setup — выполнено.
+- Live Telegram admin-auth verification через `@karma_nightlight_store_bot` — выполнено.
+- Production `/admin` подтвердил статус администратора через server-side validation Telegram initData.
+- Следующий этап: защищенная админка для настроек магазина и изображений.
+- CRUD админки, загрузка изображений, реальные заказы и оплата еще не реализованы.

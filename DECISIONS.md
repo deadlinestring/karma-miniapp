@@ -132,3 +132,12 @@ Prisma migrations и другие CLI-операции используют Supa
 - `npm run build` выполняет только `prisma generate` и `next build`.
 - Prisma migrations продолжают требовать `DIRECT_DATABASE_URL`; Vercel build/runtime может работать без `DIRECT_DATABASE_URL`, используя runtime `DATABASE_URL`.
 - Обязательные production environment variables будут заданы вручную в Vercel dashboard.
+
+## Live Telegram admin verification
+
+- Production URL проекта: `https://karma-miniapp.vercel.app`.
+- Telegram auth успешно проверена на реальном запуске через `@karma_nightlight_store_bot`.
+- Текущая Telegram Menu Button временно ведет на `/admin` для разработки панели управления.
+- Перед публичным запуском магазина Menu Button нужно будет перевести на `/`, а доступ администратора встроить в интерфейс безопасным способом.
+- Storage uploads должны выполняться только через защищенные server-side admin endpoints после той же Telegram auth validation.
+- CRUD, загрузки изображений, реальные заказы и оплата на этом этапе не подключены.
