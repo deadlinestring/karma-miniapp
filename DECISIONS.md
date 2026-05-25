@@ -157,3 +157,10 @@ Prisma migrations и другие CLI-операции используют Supa
 - Старые изображения автоматически не удаляются на первом этапе, чтобы не потерять рабочий ассет.
 - Более крупные загрузки в будущем потребуют отдельной архитектуры direct upload/signed upload и серверной валидации.
 - Next.js image remote pattern разрешает только HTTPS-изображения из public path bucket `catalog-images` текущего Supabase проекта.
+
+## Live StoreSettings admin verification
+
+- Production-проверка подтвердила цепочку `Telegram admin auth -> protected API -> Prisma/Storage -> dynamic storefront`.
+- Изменения StoreSettings отображаются на storefront без redeploy.
+- Hero upload в public bucket `catalog-images` успешно проверен через production Mini App.
+- Старые загруженные изображения пока автоматически не удаляются, поэтому стратегию замены и очистки ассетов нужно продумать до массовой работы с товарными фото.
