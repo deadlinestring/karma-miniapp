@@ -1,6 +1,10 @@
 import "dotenv/config";
 import { defineConfig, env } from "prisma/config";
 
+const isMigrationCommand = process.argv.includes("migrate");
+const datasourceUrl =
+  isMigrationCommand || process.env.DIRECT_DATABASE_URL ? env("DIRECT_DATABASE_URL") : env("DATABASE_URL");
+
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
@@ -8,7 +12,7 @@ export default defineConfig({
     seed: "node prisma/seed.mjs"
   },
   datasource: {
-    // Prisma CLI commands such as migrate should use the direct/session pooler.
-    url: env("DIRECT_DATABASE_URL")
+    // Migrations use the direct/session pooler. Generate/build can run with runtime DATABASE_URL on Vercel.
+    url: datasourceUrl
   }
 });

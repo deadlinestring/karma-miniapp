@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { authorizeTelegramAdmin } from "@/lib/server/telegram-auth";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   let initData: unknown;

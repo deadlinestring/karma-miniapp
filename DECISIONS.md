@@ -123,3 +123,12 @@ Prisma migrations и другие CLI-операции используют Supa
 - Admin API в будущем обязаны выполнять server-side проверку Telegram initData на каждой защищенной операции.
 - Небезопасный browser/dev bypass запрещен: обычный браузер не получает фальшивый доступ администратора.
 - Создание товаров, редактирование цен, загрузка изображений, удаление товаров и изменение настроек магазина нельзя публиковать без этой admin-проверки.
+
+## Vercel deployment readiness
+
+- Первый production deployment планируется на Vercel через private GitHub repository.
+- Database-backed storefront должен показывать свежие изменения каталога и настроек без повторного deployment, поэтому `/` и `/catalog` остаются dynamic server-rendered routes.
+- Production deployment не должен запускать migration или seed.
+- `npm run build` выполняет только `prisma generate` и `next build`.
+- Prisma migrations продолжают требовать `DIRECT_DATABASE_URL`; Vercel build/runtime может работать без `DIRECT_DATABASE_URL`, используя runtime `DATABASE_URL`.
+- Обязательные production environment variables будут заданы вручную в Vercel dashboard.

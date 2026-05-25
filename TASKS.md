@@ -133,3 +133,12 @@
 - Загрузка изображений в Storage еще не подключена.
 - Telegram Bot API для уведомлений еще не подключен.
 - Оплата еще не подключена.
+
+## Deployment readiness
+
+- Private GitHub repository опубликован — выполнено.
+- Vercel deployment readiness audit — в работе.
+- Production build должен генерировать Prisma Client без запуска migration и seed.
+- `/` и `/catalog` должны оставаться dynamic routes, чтобы будущие изменения товаров и настроек отображались без redeploy.
+- Первый deployment в Vercel еще не выполнен.
+- BotFather Mini App URL еще не настроен.
