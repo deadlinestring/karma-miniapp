@@ -1,23 +1,36 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
+
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCartTotals } from "@/store/cart-store";
+import type { StorefrontSettings } from "@/lib/storefront-types";
 
-export function TopBar() {
+export function TopBar({
+  settings
+}: {
+  settings?: Pick<StorefrontSettings, "storeName" | "subtitle" | "logoUrl">;
+}) {
   const { count } = useCartTotals();
+  const storeName = settings?.storeName || "KARMA";
+  const subtitle = settings?.subtitle || "кастомные светильники";
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-night/82 px-4 py-3 backdrop-blur-xl">
       <div className="mx-auto flex max-w-xl items-center justify-between">
         <Link href="/" className="flex items-center gap-3" aria-label="На главную KARMA">
-          <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-neon-cyan/30 bg-white/8 text-lg font-black shadow-glow">
-            K
+          <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl border border-neon-cyan/30 bg-white/8 text-lg font-black shadow-glow">
+            {settings?.logoUrl ? (
+              <img src={settings.logoUrl} alt={storeName} className="h-full w-full object-cover" />
+            ) : (
+              "K"
+            )}
           </span>
           <span>
-            <span className="block text-lg font-black tracking-[0.16em] text-white">KARMA</span>
-            <span className="block text-[11px] text-white/50">кастомные светильники</span>
+            <span className="block text-lg font-black tracking-[0.16em] text-white">{storeName}</span>
+            <span className="block text-[11px] text-white/50">{subtitle}</span>
           </span>
         </Link>
         <motion.div whileTap={{ scale: 0.92 }}>

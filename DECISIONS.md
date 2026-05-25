@@ -84,7 +84,7 @@ Prisma migrations и другие CLI-операции используют Supa
 - Клиентские изображения для кастомных заказов позже должны храниться отдельно в приватном bucket.
 - Будущий приватный bucket для клиентских загрузок называется `custom-order-uploads`.
 - Загрузка и удаление публичных изображений из админки должны выполняться только через защищенный серверный код администратора.
-- `SUPABASE_SERVICE_ROLE_KEY` нельзя передавать во frontend.
+- `SUPABASE_SECRET_KEY` нельзя передавать во frontend.
 
 ## Текущее состояние Supabase и seed
 
@@ -141,3 +141,19 @@ Prisma migrations и другие CLI-операции используют Supa
 - Перед публичным запуском магазина Menu Button нужно будет перевести на `/`, а доступ администратора встроить в интерфейс безопасным способом.
 - Storage uploads должны выполняться только через защищенные server-side admin endpoints после той же Telegram auth validation.
 - CRUD, загрузки изображений, реальные заказы и оплата на этом этапе не подключены.
+
+## Admin StoreSettings и Storage uploads
+
+- Supabase Storage admin client использует только server-side переменные `SUPABASE_URL`, `SUPABASE_SECRET_KEY` и `SUPABASE_CATALOG_BUCKET`.
+- Secret key никогда не попадает во frontend и не используется в client components.
+- Каждое admin API действие повторно валидирует `Telegram.WebApp.initData` на сервере.
+- Uploads проходят только через защищенные server-side admin endpoints.
+- Размер одного изображения ограничен 4 MB из-за лимита request body Vercel Functions и multipart overhead.
+- Проверяется не только заявленный MIME, но и фактическая сигнатура файла.
+- Допустимые изображения для первой админки: JPG, PNG и WEBP до 4 MB.
+- SVG, HTML и подмененные файлы запрещены для публичных загрузок.
+- Новые файлы загружаются в `catalog-images` по UUID path: `store/logo/<uuid>` или `store/hero/<uuid>`.
+- При ошибке Prisma после успешного upload новый файл удаляется из Storage как rollback.
+- Старые изображения автоматически не удаляются на первом этапе, чтобы не потерять рабочий ассет.
+- Более крупные загрузки в будущем потребуют отдельной архитектуры direct upload/signed upload и серверной валидации.
+- Next.js image remote pattern разрешает только HTTPS-изображения из public path bucket `catalog-images` текущего Supabase проекта.

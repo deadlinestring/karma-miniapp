@@ -153,3 +153,15 @@
 - Production `/admin` подтвердил статус администратора через server-side validation Telegram initData.
 - Следующий этап: защищенная админка для настроек магазина и изображений.
 - CRUD админки, загрузка изображений, реальные заказы и оплата еще не реализованы.
+
+## Защищенная админка StoreSettings и публичных изображений
+
+- Защищенное управление текстовыми настройками главной страницы — в работе.
+- Загрузка логотипа и hero-изображения в public bucket `catalog-images` — в работе.
+- Protected StoreSettings/admin uploads готовы после security hardening.
+- Все admin endpoints повторно проверяют Telegram initData server-side.
+- Live тест загрузки через Telegram будет выполнен после Vercel deployment текущего этапа.
+- Commit/push и добавление env в Vercel еще не выполнены.
+- Для Vercel текущего этапа нужно добавить `SUPABASE_URL`, `SUPABASE_SECRET_KEY` и `SUPABASE_CATALOG_BUCKET`.
+- Управление товарами, категориями, ценами и товарными фотографиями еще не реализовано.
+- Реальные заказы, уведомления и оплата еще не подключены.

@@ -1,9 +1,10 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
+
 import Link from "next/link";
 import { Brush, Sparkles, Wand2 } from "lucide-react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { useState } from "react";
 import type { StorefrontHomeData, StorefrontProduct } from "@/lib/storefront-types";
 import { AppShell } from "@/components/app-shell";
@@ -30,15 +31,12 @@ export function HomePage({
   const heroImage = data.settings.heroImageUrl || "/images/mock/hero-night-light.svg";
 
   return (
-    <AppShell>
+    <AppShell settings={data.settings}>
       <section className="relative min-h-[540px] overflow-hidden rounded-[30px] border border-white/10 bg-white/8 p-6 shadow-violet">
-        <Image
+        <img
           src={heroImage}
           alt={`Светящийся акриловый ночник ${data.settings.storeName}`}
-          fill
-          priority
-          sizes="(max-width: 640px) 100vw, 560px"
-          className="object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/18 via-black/42 to-black/88" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(49,246,255,0.2),transparent_20rem)]" />

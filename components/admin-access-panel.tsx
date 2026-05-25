@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ShieldCheck, ShieldX } from "lucide-react";
+import { AdminSettingsPanel } from "@/components/admin-settings-panel";
 
 type AdminUser = {
   id: string;
@@ -14,7 +15,7 @@ type AdminUser = {
 type AdminAccessState =
   | { status: "browser" }
   | { status: "loading" }
-  | { status: "authorized"; user: AdminUser }
+  | { status: "authorized"; user: AdminUser; initData: string }
   | { status: "forbidden" }
   | { status: "invalid" };
 
@@ -51,7 +52,7 @@ export function AdminAccessPanel() {
 
         if (response.status === 200) {
           const data = (await response.json()) as { user?: AdminUser };
-          setState(data.user ? { status: "authorized", user: data.user } : { status: "invalid" });
+          setState(data.user ? { status: "authorized", user: data.user, initData } : { status: "invalid" });
           return;
         }
 
@@ -101,9 +102,6 @@ export function AdminAccessPanel() {
               <ShieldCheck className="text-neon-cyan" size={34} />
               <h2 className="mt-4 text-xl font-black text-white">Доступ администратора подтверждён</h2>
               <p className="mt-2 text-sm text-white/64">{getDisplayName(state.user)}</p>
-              <div className="mt-5 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/8 p-4 text-sm leading-6 text-white/70">
-                Управление товарами, категориями и изображениями будет подключено на следующем этапе.
-              </div>
             </div>
           ) : null}
 
@@ -128,12 +126,16 @@ export function AdminAccessPanel() {
           ) : null}
         </div>
 
-        <Link
-          href="/"
-          className="mt-6 inline-flex h-12 items-center justify-center rounded-2xl border border-white/10 bg-white/8 px-5 text-sm font-black text-white transition hover:bg-white/12"
-        >
-          Вернуться в магазин
-        </Link>
+        {state.status === "authorized" ? (
+          <AdminSettingsPanel initData={state.initData} />
+        ) : (
+          <Link
+            href="/"
+            className="mt-6 inline-flex h-12 items-center justify-center rounded-2xl border border-white/10 bg-white/8 px-5 text-sm font-black text-white transition hover:bg-white/12"
+          >
+            Вернуться в магазин
+          </Link>
+        )}
       </div>
     </section>
   );
