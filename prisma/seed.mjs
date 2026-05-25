@@ -4,8 +4,14 @@ import pg from "pg";
 
 const { Pool } = pg;
 
+const directDatabaseUrl = process.env.DIRECT_DATABASE_URL;
+
+if (!directDatabaseUrl) {
+  throw new Error("DIRECT_DATABASE_URL is required to run database seed.");
+}
+
 const pool = new Pool({
-  connectionString: process.env.DIRECT_DATABASE_URL ?? process.env.DATABASE_URL,
+  connectionString: directDatabaseUrl,
   max: 1
 });
 
@@ -150,6 +156,9 @@ const variants = [
 
 const storagePathFromUrl = (url) => url.replace(/^\/images\/mock\//, "mock/");
 
+const seedImageId = (productSlug, index) =>
+  `seed-image-${productSlug}-${index === 0 ? "cover" : `gallery-${index}`}`;
+
 async function seedStoreSettings() {
   await prisma.storeSettings.upsert({
     where: { id: STORE_SETTINGS_ID },
@@ -255,20 +264,28 @@ async function seedProducts(categoryBySlug, subcategoryByKey) {
       }
     });
 
-    await prisma.productImage.deleteMany({
-      where: { productId: savedProduct.id }
-    });
-
-    await prisma.productImage.createMany({
-      data: product.images.map((url, index) => ({
-        productId: savedProduct.id,
-        url,
-        storagePath: storagePathFromUrl(url),
-        altText: `${product.name} — изображение ${index + 1}`,
-        isCover: index === 0,
-        sortOrder: index
-      }))
-    });
+    for (const [index, url] of product.images.entries()) {
+      await prisma.productImage.upsert({
+        where: { id: seedImageId(product.slug, index) },
+        update: {
+          productId: savedProduct.id,
+          url,
+          storagePath: storagePathFromUrl(url),
+          altText: `${product.name} — изображение ${index + 1}`,
+          isCover: index === 0,
+          sortOrder: index
+        },
+        create: {
+          id: seedImageId(product.slug, index),
+          productId: savedProduct.id,
+          url,
+          storagePath: storagePathFromUrl(url),
+          altText: `${product.name} — изображение ${index + 1}`,
+          isCover: index === 0,
+          sortOrder: index
+        }
+      });
+    }
 
     for (const variant of variants) {
       await prisma.productVariant.upsert({
