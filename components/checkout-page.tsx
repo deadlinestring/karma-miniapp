@@ -6,7 +6,7 @@ import { CheckCircle2 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { AppShell } from "@/components/app-shell";
 import { ActionButton } from "@/components/action-button";
-import { formatPrice } from "@/lib/pricing";
+import { formatKopecks } from "@/lib/pricing";
 import { useCartStore, useCartTotals } from "@/store/cart-store";
 
 const fields = [
@@ -20,7 +20,7 @@ const fields = [
 
 export function CheckoutPage() {
   const items = useCartStore((state) => state.items);
-  const { total } = useCartTotals();
+  const { totalKopecks } = useCartTotals();
   const [accepted, setAccepted] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
 
@@ -82,16 +82,16 @@ export function CheckoutPage() {
               {items.map((item) => (
                 <div key={item.lineId} className="flex justify-between gap-4 text-sm">
                   <span className="text-white/66">
-                    {item.title} × {item.quantity}
-                    <span className="block text-xs text-white/42">{item.typeLabel}, {item.size}</span>
+                    {item.productName} × {item.quantity}
+                    <span className="block text-xs text-white/42">{item.itemTypeLabel}, {item.sizeLabel}</span>
                   </span>
-                  <span className="font-bold text-white">{formatPrice(item.price * item.quantity)} ₽</span>
+                  <span className="font-bold text-white">{formatKopecks(item.unitPriceKopecks * item.quantity)} ₽</span>
                 </div>
               ))}
             </div>
             <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-4">
               <span className="text-white/58">Итого</span>
-              <span className="text-2xl font-black text-white">{formatPrice(total)} ₽</span>
+              <span className="text-2xl font-black text-white">{formatKopecks(totalKopecks)} ₽</span>
             </div>
             <ActionButton className="mt-4 w-full" disabled={!canPay} onClick={() => setShowDemo(true)}>
               Перейти к оплате

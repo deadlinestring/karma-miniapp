@@ -104,3 +104,10 @@ Prisma migrations и другие CLI-операции используют Supa
 - Пользовательские данные заказов, адресов и платежей не должны читаться напрямую из frontend.
 - Mock-изображения остаются временными до этапа админки и Supabase Storage.
 - Frontend пока еще не переведен с mock-данных на базу.
+## Storefront repository
+
+- Storefront читает каталог только server-side через Prisma repository.
+- Supabase browser client не используется для чтения database-таблиц.
+- Silent fallback на mock-товары запрещен: при ошибке базы пользователь видит аккуратное состояние ошибки.
+- Цены UI берутся из `ProductVariant`, а не из hardcoded frontend-значений.
+- Корзина хранит snapshot выбранного database-варианта в localStorage до этапа реальных заказов.

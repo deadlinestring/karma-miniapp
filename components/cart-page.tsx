@@ -5,7 +5,7 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { ActionButton } from "@/components/action-button";
 import { ProductVisual } from "@/components/product-visual";
-import { formatPrice } from "@/lib/pricing";
+import { formatKopecks } from "@/lib/pricing";
 import { useCartStore, useCartTotals } from "@/store/cart-store";
 
 export function CartPage() {
@@ -13,7 +13,7 @@ export function CartPage() {
   const increment = useCartStore((state) => state.increment);
   const decrement = useCartStore((state) => state.decrement);
   const removeItem = useCartStore((state) => state.removeItem);
-  const { total } = useCartTotals();
+  const { totalKopecks } = useCartTotals();
 
   return (
     <AppShell>
@@ -45,7 +45,7 @@ export function CartPage() {
                   <ProductVisual
                     compact
                     product={{
-                      title: item.title,
+                      name: item.productName,
                       accent: item.accent,
                       motif: item.isCustom ? "идея" : item.subcategory,
                       coverImage: item.coverImage
@@ -53,9 +53,9 @@ export function CartPage() {
                   />
                   <div className="min-w-0">
                     <p className="text-xs text-white/48">{item.category} • {item.subcategory}</p>
-                    <h2 className="mt-1 text-base font-black text-white">{item.title}</h2>
-                    <p className="mt-2 text-xs text-white/58">{item.typeLabel}, {item.size}</p>
-                    <p className="mt-2 text-lg font-black text-white">{formatPrice(item.price)} ₽</p>
+                    <h2 className="mt-1 text-base font-black text-white">{item.productName}</h2>
+                    <p className="mt-2 text-xs text-white/58">{item.itemTypeLabel}, {item.sizeLabel}</p>
+                    <p className="mt-2 text-lg font-black text-white">{formatKopecks(item.unitPriceKopecks)} ₽</p>
                     <div className="mt-3 flex items-center justify-between gap-2">
                       <div className="flex items-center rounded-2xl border border-white/10 bg-white/7">
                         <button
@@ -91,7 +91,7 @@ export function CartPage() {
           <div className="mt-5 rounded-[24px] border border-white/10 bg-white/8 p-4">
             <div className="flex items-center justify-between">
               <span className="text-white/58">Итого</span>
-              <span className="text-2xl font-black text-white">{formatPrice(total)} ₽</span>
+              <span className="text-2xl font-black text-white">{formatKopecks(totalKopecks)} ₽</span>
             </div>
             <Link href="/checkout">
               <ActionButton className="mt-4 w-full">Перейти к оформлению</ActionButton>

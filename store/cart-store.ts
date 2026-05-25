@@ -2,18 +2,20 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { ProductSize, ProductType } from "@/lib/pricing";
+import type { StorefrontItemType } from "@/lib/storefront-types";
 
 export type CartItem = {
   lineId: string;
   productId: string;
-  title: string;
+  productSlug: string;
+  productName: string;
   category: string;
   subcategory: string;
-  type: ProductType;
-  typeLabel: string;
-  size: ProductSize;
-  price: number;
+  itemType: StorefrontItemType;
+  itemTypeLabel: string;
+  sizeCm: number;
+  sizeLabel: string;
+  unitPriceKopecks: number;
   quantity: number;
   accent: "violet" | "cyan" | "blue" | "pink";
   coverImage?: string;
@@ -30,7 +32,28 @@ type CartState = {
 };
 
 const makeLineId = (item: Omit<CartItem, "lineId" | "quantity">) =>
-  `${item.productId}-${item.type}-${item.size}`;
+  `${item.productId}-${item.itemType}-${item.sizeCm}`;
+
+const isCartItem = (item: unknown): item is CartItem => {
+  if (!item || typeof item !== "object") {
+    return false;
+  }
+
+  const candidate = item as Partial<CartItem>;
+
+  return (
+    typeof candidate.lineId === "string" &&
+    typeof candidate.productId === "string" &&
+    typeof candidate.productSlug === "string" &&
+    typeof candidate.productName === "string" &&
+    typeof candidate.itemType === "string" &&
+    typeof candidate.itemTypeLabel === "string" &&
+    typeof candidate.sizeCm === "number" &&
+    typeof candidate.sizeLabel === "string" &&
+    typeof candidate.unitPriceKopecks === "number" &&
+    typeof candidate.quantity === "number"
+  );
+};
 
 export const useCartStore = create<CartState>()(
   persist(
@@ -76,7 +99,20 @@ export const useCartStore = create<CartState>()(
       clearCart: () => set({ items: [] })
     }),
     {
-      name: "karma-cart"
+      name: "karma-cart",
+      version: 2,
+      migrate: (persistedState) => {
+        if (
+          persistedState &&
+          typeof persistedState === "object" &&
+          Array.isArray((persistedState as Partial<CartState>).items) &&
+          (persistedState as Partial<CartState>).items?.every(isCartItem)
+        ) {
+          return persistedState as CartState;
+        }
+
+        return { items: [] } as unknown as CartState;
+      }
     }
   )
 );
@@ -84,7 +120,7 @@ export const useCartStore = create<CartState>()(
 export const useCartTotals = () => {
   const items = useCartStore((state) => state.items);
   const count = items.reduce((sum, item) => sum + item.quantity, 0);
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalKopecks = items.reduce((sum, item) => sum + item.unitPriceKopecks * item.quantity, 0);
 
-  return { count, total };
+  return { count, totalKopecks };
 };

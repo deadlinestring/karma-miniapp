@@ -5,21 +5,36 @@ import { Brush, Sparkles, Wand2 } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useState } from "react";
-import { categories, popularProducts, products, type Product } from "@/lib/products";
+import type { StorefrontHomeData, StorefrontProduct } from "@/lib/storefront-types";
 import { AppShell } from "@/components/app-shell";
 import { ProductCard } from "@/components/product-card";
 import { ProductModal } from "@/components/product-modal";
 
-export function HomePage() {
-  const [openedProduct, setOpenedProduct] = useState<Product | null>(null);
-  const customProduct = products.find((product) => product.isCustom);
+export function HomePage({
+  data,
+  loadError = false
+}: {
+  data: StorefrontHomeData | null;
+  loadError?: boolean;
+}) {
+  const [openedProduct, setOpenedProduct] = useState<StorefrontProduct | null>(null);
+
+  if (loadError || !data) {
+    return (
+      <AppShell>
+        <CatalogLoadError />
+      </AppShell>
+    );
+  }
+
+  const heroImage = data.settings.heroImageUrl || "/images/mock/hero-night-light.svg";
 
   return (
     <AppShell>
       <section className="relative min-h-[540px] overflow-hidden rounded-[30px] border border-white/10 bg-white/8 p-6 shadow-violet">
         <Image
-          src="/images/mock/hero-night-light.svg"
-          alt="Светящийся акриловый ночник KARMA"
+          src={heroImage}
+          alt={`Светящийся акриловый ночник ${data.settings.storeName}`}
           fill
           priority
           sizes="(max-width: 640px) 100vw, 560px"
@@ -32,10 +47,10 @@ export function HomePage() {
             НОЧНИКИ ПО ТВОЕЙ ИДЕЕ
           </p>
           <h1 className="mt-5 text-4xl font-black leading-[1.05] text-white">
-            Ночник, который сделает комнату твоей
+            {data.settings.heroTitle}
           </h1>
           <p className="mt-4 text-base leading-7 text-white/70">
-            Выбери любимого персонажа, автомобиль или создай свой дизайн
+            {data.settings.heroSubtitle}
           </p>
           <div className="mt-6 grid grid-cols-2 gap-3">
             <motion.div whileTap={{ scale: 0.97 }}>
@@ -49,7 +64,7 @@ export function HomePage() {
             <motion.button
               whileTap={{ scale: 0.97 }}
               className="h-14 rounded-2xl border border-white/12 bg-white/8 text-sm font-black text-white"
-              onClick={() => customProduct && setOpenedProduct(customProduct)}
+              onClick={() => data.customProduct && setOpenedProduct(data.customProduct)}
             >
               Свой дизайн
             </motion.button>
@@ -60,14 +75,16 @@ export function HomePage() {
       <section className="mt-7">
         <h2 className="text-xl font-black text-white">Категории</h2>
         <div className="mt-3 grid grid-cols-2 gap-3">
-          {categories.map((category) => (
+          {data.categories.map((category) => (
             <Link
-              key={category.name}
+              key={category.id}
               href={`/catalog?category=${encodeURIComponent(category.name)}`}
               className="neon-border rounded-3xl bg-white/7 p-4 transition hover:bg-white/10"
             >
               <p className="text-lg font-black text-white">{category.name}</p>
-              <p className="mt-2 text-xs text-white/52">{category.subcategories.join(" • ")}</p>
+              <p className="mt-2 text-xs text-white/52">
+                {category.subcategories.map((subcategory) => subcategory.name).join(" • ")}
+              </p>
             </Link>
           ))}
         </div>
@@ -81,7 +98,7 @@ export function HomePage() {
           </Link>
         </div>
         <div className="mt-3 grid gap-4">
-          {popularProducts.map((product) => (
+          {data.featuredProducts.map((product) => (
             <ProductCard key={product.id} product={product} onOpen={setOpenedProduct} variant="featured" />
           ))}
         </div>
@@ -111,5 +128,14 @@ export function HomePage() {
 
       <ProductModal product={openedProduct} onClose={() => setOpenedProduct(null)} />
     </AppShell>
+  );
+}
+
+function CatalogLoadError() {
+  return (
+    <div className="mt-6 rounded-[28px] border border-white/10 bg-white/7 p-8 text-center shadow-violet">
+      <h1 className="text-2xl font-black text-white">Не удалось загрузить каталог</h1>
+      <p className="mt-3 text-sm leading-6 text-white/60">Попробуйте обновить страницу чуть позже.</p>
+    </div>
   );
 }

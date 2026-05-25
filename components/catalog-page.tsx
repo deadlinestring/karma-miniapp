@@ -6,25 +6,38 @@ import { useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { ProductCard } from "@/components/product-card";
 import { ProductModal } from "@/components/product-modal";
-import { categories, products, type CategoryName, type Product } from "@/lib/products";
+import type { StorefrontCatalogData, StorefrontProduct } from "@/lib/storefront-types";
 
-type FilterValue = "Все" | CategoryName;
+type FilterValue = "Все" | string;
 
-export function CatalogPage() {
+export function CatalogPage({
+  data,
+  loadError = false
+}: {
+  data: StorefrontCatalogData | null;
+  loadError?: boolean;
+}) {
   const searchParams = useSearchParams();
-  const initialCategory = searchParams.get("category") as CategoryName | null;
-  const productId = searchParams.get("product");
+  const initialCategory = searchParams.get("category");
+  const productSlug = searchParams.get("product");
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<FilterValue>(
-    initialCategory && categories.some((item) => item.name === initialCategory) ? initialCategory : "Все"
-  );
-  const [openedProduct, setOpenedProduct] = useState<Product | null>(null);
+  const [category, setCategory] = useState<FilterValue>("Все");
+  const [openedProduct, setOpenedProduct] = useState<StorefrontProduct | null>(null);
+
+  const categories = useMemo(() => data?.categories ?? [], [data?.categories]);
+  const products = useMemo(() => data?.products ?? [], [data?.products]);
 
   useEffect(() => {
-    if (productId) {
-      setOpenedProduct(products.find((product) => product.id === productId) ?? null);
+    if (initialCategory && categories.some((item) => item.name === initialCategory)) {
+      setCategory(initialCategory);
     }
-  }, [productId]);
+  }, [categories, initialCategory]);
+
+  useEffect(() => {
+    if (productSlug) {
+      setOpenedProduct(products.find((product) => product.slug === productSlug) ?? null);
+    }
+  }, [productSlug, products]);
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -33,12 +46,20 @@ export function CatalogPage() {
       const categoryMatch = category === "Все" || product.category === category;
       const queryMatch =
         normalizedQuery.length === 0 ||
-        product.title.toLowerCase().includes(normalizedQuery) ||
+        product.name.toLowerCase().includes(normalizedQuery) ||
         product.subcategory.toLowerCase().includes(normalizedQuery);
 
       return categoryMatch && queryMatch;
     });
-  }, [category, query]);
+  }, [category, products, query]);
+
+  if (loadError || !data) {
+    return (
+      <AppShell>
+        <CatalogLoadError />
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell>
@@ -88,5 +109,14 @@ export function CatalogPage() {
 
       <ProductModal product={openedProduct} onClose={() => setOpenedProduct(null)} />
     </AppShell>
+  );
+}
+
+function CatalogLoadError() {
+  return (
+    <div className="mt-6 rounded-[28px] border border-white/10 bg-white/7 p-8 text-center shadow-violet">
+      <h1 className="text-2xl font-black text-white">Не удалось загрузить каталог</h1>
+      <p className="mt-3 text-sm leading-6 text-white/60">Попробуйте обновить страницу чуть позже.</p>
+    </div>
   );
 }

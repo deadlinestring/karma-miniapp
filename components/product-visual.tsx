@@ -1,4 +1,3 @@
-import type { Product } from "@/lib/products";
 import Image from "next/image";
 
 const accentClasses = {
@@ -13,22 +12,29 @@ export function ProductVisual({
   compact = false,
   priority = false
 }: {
-  product: Pick<Product, "title" | "accent" | "motif"> & Partial<Pick<Product, "coverImage">>;
+  product: {
+    name?: string;
+    title?: string;
+    accent: "violet" | "cyan" | "blue" | "pink";
+    motif: string;
+    coverImage?: string;
+  };
   compact?: boolean;
   priority?: boolean;
 }) {
   const image = product.coverImage ?? "/images/mock/product-custom.svg";
+  const title = product.name ?? product.title ?? "KARMA";
 
   return (
     <div
       className={`relative overflow-hidden rounded-[22px] border border-white/10 bg-graphite ${
         compact ? "aspect-[4/5]" : "aspect-[4/5]"
       } ${accentClasses[product.accent]}`}
-      aria-label={`Визуальная обложка товара ${product.title}`}
+      aria-label={`Визуальная обложка товара ${title}`}
     >
       <Image
         src={image}
-        alt={`Обложка товара ${product.title}`}
+        alt={`Обложка товара ${title}`}
         fill
         priority={priority}
         sizes={compact ? "(max-width: 640px) 50vw, 220px" : "(max-width: 640px) 100vw, 560px"}
@@ -38,7 +44,7 @@ export function ProductVisual({
       <div className="absolute inset-x-4 top-4 h-px bg-gradient-to-r from-transparent via-white/45 to-transparent" />
       <div className="absolute bottom-4 left-4 right-4">
         <p className="text-[10px] uppercase tracking-[0.22em] text-white/50">{product.motif}</p>
-        <p className="mt-1 line-clamp-1 text-lg font-black text-white">{product.title}</p>
+        <p className="mt-1 line-clamp-1 text-lg font-black text-white">{title}</p>
       </div>
     </div>
   );

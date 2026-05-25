@@ -43,6 +43,8 @@ export const priceOptions: PriceOption[] = [
 
 export const formatPrice = (price: number) => new Intl.NumberFormat("ru-RU").format(price);
 
+export const formatKopecks = (priceKopecks: number) => formatPrice(priceKopecks / 100);
+
 export const getTypeLabel = (type: ProductType) =>
   priceOptions.find((option) => option.type === type)?.label ?? "Стандарт";
 

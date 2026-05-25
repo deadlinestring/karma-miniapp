@@ -4,73 +4,92 @@ import { useEffect, useMemo, useState } from "react";
 import { Check, ImagePlus, Sparkles, Wand2, X } from "lucide-react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import type { Product } from "@/lib/products";
-import {
-  formatPrice,
-  getDefaultSelection,
-  getPrice,
-  getTypeLabel,
-  priceOptions,
-  type ProductSize,
-  type ProductType
-} from "@/lib/pricing";
+import type { StorefrontItemType, StorefrontProduct, StorefrontVariant } from "@/lib/storefront-types";
+import { formatKopecks } from "@/lib/pricing";
 import { useCartStore } from "@/store/cart-store";
 import { ActionButton } from "@/components/action-button";
 import { ProductVisual } from "@/components/product-visual";
+
+const itemTypeOrder: StorefrontItemType[] = ["STANDARD", "PREMIUM", "WALL_PANEL"];
 
 export function ProductModal({
   product,
   onClose
 }: {
-  product: Product | null;
+  product: StorefrontProduct | null;
   onClose: () => void;
 }) {
-  const defaultSelection = getDefaultSelection();
-  const [selectedType, setSelectedType] = useState<ProductType>(defaultSelection.type);
-  const [selectedSize, setSelectedSize] = useState<ProductSize>(defaultSelection.size);
+  const [selectedType, setSelectedType] = useState<StorefrontItemType>("STANDARD");
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [activeImage, setActiveImage] = useState<string | null>(null);
   const [added, setAdded] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
 
-  useEffect(() => {
-    if (product) {
-      setSelectedType(defaultSelection.type);
-      setSelectedSize(defaultSelection.size);
-      setActiveImage(product.coverImage);
-      setAdded(false);
-    }
-  }, [product, defaultSelection.size, defaultSelection.type]);
+  const variantsByType = useMemo(() => {
+    const groups = new Map<StorefrontItemType, StorefrontVariant[]>();
 
-  const activeOption = useMemo(
-    () => priceOptions.find((option) => option.type === selectedType) ?? priceOptions[0],
-    [selectedType]
+    for (const variant of product?.variants ?? []) {
+      const variants = groups.get(variant.itemType) ?? [];
+      groups.set(variant.itemType, [...variants, variant].sort((a, b) => a.sizeCm - b.sizeCm));
+    }
+
+    return groups;
+  }, [product]);
+
+  const availableTypes = useMemo(
+    () => itemTypeOrder.filter((type) => variantsByType.has(type)),
+    [variantsByType]
   );
 
   useEffect(() => {
-    if (!activeOption.sizes.some((item) => item.size === selectedSize)) {
-      setSelectedSize(activeOption.sizes[0].size);
+    if (product) {
+      const firstVariant = product.variants[0];
+      setSelectedType(firstVariant?.itemType ?? "STANDARD");
+      setSelectedVariantId(firstVariant?.id ?? null);
+      setActiveImage(product.coverImage);
+      setAdded(false);
     }
-  }, [activeOption, selectedSize]);
+  }, [product]);
+
+  const activeVariants = useMemo(
+    () => variantsByType.get(selectedType) ?? [],
+    [selectedType, variantsByType]
+  );
+
+  useEffect(() => {
+    if (!activeVariants.some((variant) => variant.id === selectedVariantId)) {
+      setSelectedVariantId(activeVariants[0]?.id ?? null);
+    }
+  }, [activeVariants, selectedVariantId]);
 
   if (!product) {
     return null;
   }
 
-  const price = getPrice(selectedType, selectedSize);
+  const selectedVariant =
+    activeVariants.find((variant) => variant.id === selectedVariantId) ??
+    activeVariants[0] ??
+    product.variants[0];
 
   const handleAdd = () => {
+    if (!selectedVariant) {
+      return;
+    }
+
     addItem({
       productId: product.id,
-      title: product.title,
+      productSlug: product.slug,
+      productName: product.name,
       category: product.category,
       subcategory: product.subcategory,
-      type: selectedType,
-      typeLabel: getTypeLabel(selectedType),
-      size: selectedSize,
-      price,
-      accent: product.accent,
+      itemType: selectedVariant.itemType,
+      itemTypeLabel: selectedVariant.itemTypeLabel,
+      sizeCm: selectedVariant.sizeCm,
+      sizeLabel: selectedVariant.sizeLabel,
+      unitPriceKopecks: selectedVariant.priceKopecks,
       coverImage: product.coverImage,
-      isCustom: product.isCustom
+      isCustom: product.isCustom,
+      accent: product.accent
     });
     setAdded(true);
   };
@@ -92,7 +111,7 @@ export function ProductModal({
           <div className="flex items-center justify-between border-b border-white/10 p-4">
             <div>
               <p className="text-[11px] uppercase tracking-[0.24em] text-neon-cyan">карточка</p>
-              <h2 className="text-xl font-black text-white">{product.title}</h2>
+              <h2 className="text-xl font-black text-white">{product.name}</h2>
             </div>
             <button
               className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/8"
@@ -115,11 +134,11 @@ export function ProductModal({
                       : "border-white/10 opacity-72"
                   }`}
                   onClick={() => setActiveImage(image)}
-                  aria-label={`Показать изображение ${product.title}`}
+                  aria-label={`Показать изображение ${product.name}`}
                 >
                   <Image
                     src={image}
-                    alt={`Дополнительное изображение ${product.title}`}
+                    alt={`Дополнительное изображение ${product.name}`}
                     fill
                     sizes="120px"
                     className="object-cover"
@@ -166,37 +185,45 @@ export function ProductModal({
             <section className="mt-5">
               <h3 className="text-sm font-bold text-white">Тип изделия</h3>
               <div className="mt-3 grid gap-2">
-                {priceOptions.map((option) => (
-                  <button
-                    key={option.type}
-                    className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-left transition ${
-                      selectedType === option.type
-                        ? "border-neon-cyan/50 bg-neon-cyan/10 text-white shadow-glow"
-                        : "border-white/10 bg-white/6 text-white/70"
-                    }`}
-                    onClick={() => setSelectedType(option.type)}
-                  >
-                    <span className="font-bold">{option.label}</span>
-                    {selectedType === option.type ? <Check size={18} /> : null}
-                  </button>
-                ))}
+                {availableTypes.map((type) => {
+                  const option = variantsByType.get(type)?.[0];
+
+                  if (!option) {
+                    return null;
+                  }
+
+                  return (
+                    <button
+                      key={type}
+                      className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-left transition ${
+                        selectedType === type
+                          ? "border-neon-cyan/50 bg-neon-cyan/10 text-white shadow-glow"
+                          : "border-white/10 bg-white/6 text-white/70"
+                      }`}
+                      onClick={() => setSelectedType(type)}
+                    >
+                      <span className="font-bold">{option.itemTypeLabel}</span>
+                      {selectedType === type ? <Check size={18} /> : null}
+                    </button>
+                  );
+                })}
               </div>
             </section>
 
             <section className="mt-5">
               <h3 className="text-sm font-bold text-white">Размер</h3>
               <div className="mt-3 grid grid-cols-3 gap-2">
-                {activeOption.sizes.map((item) => (
+                {activeVariants.map((variant) => (
                   <button
-                    key={item.size}
+                    key={variant.id}
                     className={`rounded-2xl border px-3 py-3 text-sm font-bold transition ${
-                      selectedSize === item.size
+                      selectedVariant?.id === variant.id
                         ? "border-neon-violet/60 bg-neon-violet/15 text-white shadow-violet"
                         : "border-white/10 bg-white/6 text-white/68"
                     }`}
-                    onClick={() => setSelectedSize(item.size)}
+                    onClick={() => setSelectedVariantId(variant.id)}
                   >
-                    {item.size}
+                    {variant.sizeLabel}
                   </button>
                 ))}
               </div>
@@ -206,9 +233,11 @@ export function ProductModal({
           <div className="border-t border-white/10 bg-night/92 p-4">
             <div className="mb-3 flex items-end justify-between">
               <span className="text-sm text-white/55">Цена</span>
-              <span className="text-2xl font-black text-white">{formatPrice(price)} ₽</span>
+              <span className="text-2xl font-black text-white">
+                {selectedVariant ? `${formatKopecks(selectedVariant.priceKopecks)} ₽` : "—"}
+              </span>
             </div>
-            <ActionButton className="w-full" onClick={handleAdd}>
+            <ActionButton className="w-full" onClick={handleAdd} disabled={!selectedVariant}>
               {added ? "Добавлено в корзину" : "Добавить в корзину"}
             </ActionButton>
           </div>
