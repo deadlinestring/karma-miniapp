@@ -164,3 +164,13 @@ Prisma migrations и другие CLI-операции используют Supa
 - Изменения StoreSettings отображаются на storefront без redeploy.
 - Hero upload в public bucket `catalog-images` успешно проверен через production Mini App.
 - Старые загруженные изображения пока автоматически не удаляются, поэтому стратегию замены и очистки ассетов нужно продумать до массовой работы с товарными фото.
+
+## Admin product images
+
+- Product images загружаются только через защищенные server-side admin endpoints после Telegram initData validation.
+- Storage paths для новых фото товаров формируются сервером: `products/<productId>/<uuid>.<ext>`.
+- Новая cover-картинка загружается без автоматического удаления старой; старая обложка становится обычным изображением товара.
+- Назначение cover выполняется через Prisma transaction и дополнительно защищено PostgreSQL partial unique index одной обложки.
+- Текущую cover-картинку удалять запрещено: сначала администратор должен выбрать другую главную фотографию.
+- Mock-изображения можно удалить из записей `ProductImage` после замены, но их не нужно удалять из Supabase Storage.
+- Все uploads используют существующую server-side file-validation по сигнатуре файла и лимит 4 MB.

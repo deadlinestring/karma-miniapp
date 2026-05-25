@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ShieldCheck, ShieldX } from "lucide-react";
+import { AdminProductImagesPanel } from "@/components/admin-product-images-panel";
 import { AdminSettingsPanel } from "@/components/admin-settings-panel";
 
 type AdminUser = {
@@ -127,7 +128,10 @@ export function AdminAccessPanel() {
         </div>
 
         {state.status === "authorized" ? (
-          <AdminSettingsPanel initData={state.initData} />
+          <>
+            <AdminSettingsPanel initData={state.initData} />
+            <AdminProductImagesPanel initData={state.initData} />
+          </>
         ) : (
           <Link
             href="/"

@@ -15,6 +15,13 @@ type UploadedPublicImage = {
   storagePath: string;
 };
 
+type UploadPublicProductImageInput = {
+  productId: string;
+  buffer: Buffer;
+  contentType: string;
+  extension: string;
+};
+
 let storageClient: SupabaseClient | null = null;
 
 function getStorageConfig() {
@@ -74,4 +81,44 @@ export async function deletePublicStoreImage(storagePath: string) {
   const client = getSupabaseStorageClient();
 
   await client.storage.from(bucket).remove([storagePath]);
+}
+
+export async function uploadPublicProductImage(input: UploadPublicProductImageInput): Promise<UploadedPublicImage> {
+  const { bucket } = getStorageConfig();
+  const storagePath = `products/${input.productId}/${randomUUID()}.${input.extension}`;
+  const client = getSupabaseStorageClient();
+  const { error } = await client.storage.from(bucket).upload(storagePath, input.buffer, {
+    contentType: input.contentType,
+    cacheControl: "31536000",
+    upsert: false
+  });
+
+  if (error) {
+    throw new Error("supabase_storage_upload_failed");
+  }
+
+  const { data } = client.storage.from(bucket).getPublicUrl(storagePath);
+
+  return {
+    storagePath,
+    publicUrl: data.publicUrl
+  };
+}
+
+export async function deletePublicProductImage(productId: string, storagePath: string) {
+  if (!isManagedProductImagePath(productId, storagePath)) {
+    return;
+  }
+
+  const { bucket } = getStorageConfig();
+  const client = getSupabaseStorageClient();
+  const { error } = await client.storage.from(bucket).remove([storagePath]);
+
+  if (error) {
+    throw new Error("supabase_storage_delete_failed");
+  }
+}
+
+export function isManagedProductImagePath(productId: string, storagePath: string | null | undefined) {
+  return typeof storagePath === "string" && storagePath.startsWith(`products/${productId}/`);
 }
