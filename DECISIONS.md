@@ -94,3 +94,13 @@ Prisma migrations и другие CLI-операции используют Supa
 - Mock-изображения seed создаются и обновляются только через детерминированные `seed-image-*` ID.
 - Реальные изображения, загруженные будущей админкой, seed не затрагивает.
 - Seed использует только `DIRECT_DATABASE_URL`; fallback на runtime `DATABASE_URL` запрещен.
+## Supabase bootstrap и доступ к данным
+
+- Каталог и настройки магазина уже существуют в Supabase.
+- Initial migration успешно применена, RLS включен на всех 12 таблицах, partial unique index единственной обложки создан.
+- Тестовый каталог наполнен безопасным seed: `StoreSettings = 1`, `Category = 4`, `Subcategory = 8`, `Product = 10`, `ProductImage = 30`, `ProductVariant = 90`.
+- Публичный пользовательский интерфейс должен читать каталог только через server-side Prisma/repository, а не напрямую через Supabase browser client.
+- Таблицы в public schema остаются с включенным RLS и без публичных policies.
+- Пользовательские данные заказов, адресов и платежей не должны читаться напрямую из frontend.
+- Mock-изображения остаются временными до этапа админки и Supabase Storage.
+- Frontend пока еще не переведен с mock-данных на базу.
