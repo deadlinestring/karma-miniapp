@@ -270,9 +270,12 @@
 
 - Live CRUD товара успешно проверен на `Монки Д. Луффи`.
 - Подготовка CSV import metadata preview — готова после локальной проверки.
-- Migration `00000000000002_add_product_external_id` подготовлена, но еще не применена.
+- Migration `00000000000002_add_product_external_id` для `Product.externalId` применена успешно в production.
+- Текущие ручные товары, включая `Монки Д. Луффи`, сохранили `externalId = NULL`.
 - `Product.externalId` подготовлен как nullable stable identifier для будущего повторяемого импорта.
+- Preview-only CSV import подготовлен к production deployment.
 - CSV-шаблон для Excel использует UTF-8 BOM и разделитель `;`.
 - Preview CSV выполняет validation и показывает будущие действия `CREATE` / `UPDATE` / `ERROR`, но не изменяет каталог.
+- Live скачивание шаблона и preview через Telegram еще не выполнялись.
 - Выполнение импорта товаров еще не реализовано.
 - Фото импортируемых товаров будут добавляться вручную через существующую админку.
