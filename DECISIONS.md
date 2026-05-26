@@ -194,3 +194,13 @@ Prisma migrations и другие CLI-операции используют Supa
 - Cart snapshot сохраняет `priceListItemId`, `itemType`, `sizeCm`, `unitPriceKopecks` и `note`.
 - Для `WALL_PANEL / 55 см` пользователю показывается note `Двойная подсветка сверху и снизу`; это же значение сохраняется в cart snapshot.
 - Legacy `ProductVariant` будет удален или архивирован только отдельным этапом после production-проверки storefront на `PriceListItem`.
+
+## Production shared price list verification
+
+- `PriceList main` является источником реальных цен магазина.
+- `PriceListItem` является единственным источником рабочих вариантов для storefront и cart.
+- Legacy `ProductVariant` временно остается в базе только как transitional/legacy data.
+- Production-проверка подтвердила отображение note для панели 55 см и корректную работу корзины/checkout с новым прайсом.
+- Следующая архитектура админки должна быть разделена на: Главная страница, Прайс-листы, Категории, Товары, Импорт товаров.
+- Фотографии выбранного каталога загружаются вручную через уже реализованный интерфейс.
+- Будущий Excel/CSV import нужен для метаданных товаров, а не для фотографий.
