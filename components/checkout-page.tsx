@@ -35,7 +35,7 @@ export function CheckoutPage() {
 
       {items.length === 0 ? (
         <div className="mt-6 rounded-[28px] border border-white/10 bg-white/7 p-8 text-center">
-          <h2 className="text-xl font-black text-white">Сначала добавь товар</h2>
+          <h2 className="text-xl font-black text-white">Сначала добавьте товар</h2>
           <p className="mt-2 text-sm text-white/58">Оформление появится после добавления ночника в корзину.</p>
           <Link
             href="/catalog"
@@ -82,8 +82,11 @@ export function CheckoutPage() {
               {items.map((item) => (
                 <div key={item.lineId} className="flex justify-between gap-4 text-sm">
                   <span className="text-white/66">
-                    {item.productName} × {item.quantity}
+                    {item.productName} x {item.quantity}
                     <span className="block text-xs text-white/42">{item.itemTypeLabel}, {item.sizeLabel}</span>
+                    {item.note ? (
+                      <span className="mt-1 block text-xs font-semibold text-neon-cyan">{item.note}</span>
+                    ) : null}
                   </span>
                   <span className="font-bold text-white">{formatKopecks(item.unitPriceKopecks * item.quantity)} ₽</span>
                 </div>

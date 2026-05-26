@@ -155,14 +155,32 @@ function productSelect() {
     images: {
       orderBy: [{ sortOrder: "asc" as const }]
     },
-    variants: {
-      where: { isActive: true },
-      orderBy: [{ itemType: "asc" as const }, { sizeCm: "asc" as const }]
+    priceList: {
+      select: {
+        id: true,
+        isActive: true,
+        items: {
+          where: { isActive: true },
+          orderBy: [
+            { sortOrder: "asc" as const },
+            { itemType: "asc" as const },
+            { sizeCm: "asc" as const }
+          ],
+          select: {
+            id: true,
+            itemType: true,
+            sizeCm: true,
+            priceKopecks: true,
+            note: true,
+            sortOrder: true
+          }
+        }
+      }
     }
   };
 }
 
-function mapProductRecord(product: ProductRecord): StorefrontProduct {
+export function mapProductRecord(product: ProductRecord): StorefrontProduct {
   const images = product.images.map<StorefrontImage>((image) => ({
     id: image.id,
     url: image.url,
@@ -172,13 +190,16 @@ function mapProductRecord(product: ProductRecord): StorefrontProduct {
     sortOrder: image.sortOrder
   }));
   const cover = images.find((image) => image.isCover) ?? images[0];
-  const variants = product.variants.map<StorefrontVariant>((variant) => ({
-    id: variant.id,
-    itemType: variant.itemType,
-    itemTypeLabel: itemTypeLabels[variant.itemType],
-    sizeCm: variant.sizeCm,
-    sizeLabel: `${variant.sizeCm} см`,
-    priceKopecks: variant.priceKopecks
+  const priceItems = product.priceList?.isActive ? product.priceList.items : [];
+  const variants = priceItems.map<StorefrontVariant>((item) => ({
+    priceListItemId: item.id,
+    itemType: item.itemType,
+    itemTypeLabel: itemTypeLabels[item.itemType],
+    sizeCm: item.sizeCm,
+    sizeLabel: `${item.sizeCm} см`,
+    priceKopecks: item.priceKopecks,
+    note: item.note,
+    sortOrder: item.sortOrder
   }));
   const minPriceKopecks = variants.reduce(
     (minPrice, variant) => Math.min(minPrice, variant.priceKopecks),
@@ -202,6 +223,7 @@ function mapProductRecord(product: ProductRecord): StorefrontProduct {
     isCustom: product.productType === "CUSTOM",
     variants,
     minPriceKopecks,
+    isOrderAvailable: variants.length > 0,
     accent: accentByIndex[Math.abs(hashString(product.slug)) % accentByIndex.length],
     motif: product.subcategory.name
   };

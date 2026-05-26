@@ -11,11 +11,13 @@ export type CartItem = {
   productName: string;
   category: string;
   subcategory: string;
+  priceListItemId: string;
   itemType: StorefrontItemType;
   itemTypeLabel: string;
   sizeCm: number;
   sizeLabel: string;
   unitPriceKopecks: number;
+  note: string | null;
   quantity: number;
   accent: "violet" | "cyan" | "blue" | "pink";
   coverImage?: string;
@@ -32,9 +34,9 @@ type CartState = {
 };
 
 const makeLineId = (item: Omit<CartItem, "lineId" | "quantity">) =>
-  `${item.productId}-${item.itemType}-${item.sizeCm}`;
+  `${item.productId}-${item.priceListItemId}`;
 
-const isCartItem = (item: unknown): item is CartItem => {
+export const isCartItem = (item: unknown): item is CartItem => {
   if (!item || typeof item !== "object") {
     return false;
   }
@@ -46,11 +48,13 @@ const isCartItem = (item: unknown): item is CartItem => {
     typeof candidate.productId === "string" &&
     typeof candidate.productSlug === "string" &&
     typeof candidate.productName === "string" &&
+    typeof candidate.priceListItemId === "string" &&
     typeof candidate.itemType === "string" &&
     typeof candidate.itemTypeLabel === "string" &&
     typeof candidate.sizeCm === "number" &&
     typeof candidate.sizeLabel === "string" &&
     typeof candidate.unitPriceKopecks === "number" &&
+    (candidate.note === null || typeof candidate.note === "string") &&
     typeof candidate.quantity === "number"
   );
 };
@@ -100,7 +104,7 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: "karma-cart",
-      version: 2,
+      version: 3,
       migrate: (persistedState) => {
         if (
           persistedState &&

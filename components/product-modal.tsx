@@ -30,7 +30,10 @@ export function ProductModal({
 
     for (const variant of product?.variants ?? []) {
       const variants = groups.get(variant.itemType) ?? [];
-      groups.set(variant.itemType, [...variants, variant].sort((a, b) => a.sizeCm - b.sizeCm));
+      groups.set(
+        variant.itemType,
+        [...variants, variant].sort((a, b) => a.sortOrder - b.sortOrder || a.sizeCm - b.sizeCm)
+      );
     }
 
     return groups;
@@ -45,7 +48,7 @@ export function ProductModal({
     if (product) {
       const firstVariant = product.variants[0];
       setSelectedType(firstVariant?.itemType ?? "STANDARD");
-      setSelectedVariantId(firstVariant?.id ?? null);
+      setSelectedVariantId(firstVariant?.priceListItemId ?? null);
       setActiveImage(product.coverImage);
       setAdded(false);
     }
@@ -57,8 +60,8 @@ export function ProductModal({
   );
 
   useEffect(() => {
-    if (!activeVariants.some((variant) => variant.id === selectedVariantId)) {
-      setSelectedVariantId(activeVariants[0]?.id ?? null);
+    if (!activeVariants.some((variant) => variant.priceListItemId === selectedVariantId)) {
+      setSelectedVariantId(activeVariants[0]?.priceListItemId ?? null);
     }
   }, [activeVariants, selectedVariantId]);
 
@@ -67,12 +70,12 @@ export function ProductModal({
   }
 
   const selectedVariant =
-    activeVariants.find((variant) => variant.id === selectedVariantId) ??
+    activeVariants.find((variant) => variant.priceListItemId === selectedVariantId) ??
     activeVariants[0] ??
     product.variants[0];
 
   const handleAdd = () => {
-    if (!selectedVariant) {
+    if (!selectedVariant || !product.isOrderAvailable) {
       return;
     }
 
@@ -82,11 +85,13 @@ export function ProductModal({
       productName: product.name,
       category: product.category,
       subcategory: product.subcategory,
+      priceListItemId: selectedVariant.priceListItemId,
       itemType: selectedVariant.itemType,
       itemTypeLabel: selectedVariant.itemTypeLabel,
       sizeCm: selectedVariant.sizeCm,
       sizeLabel: selectedVariant.sizeLabel,
       unitPriceKopecks: selectedVariant.priceKopecks,
+      note: selectedVariant.note,
       coverImage: product.coverImage,
       isCustom: product.isCustom,
       accent: product.accent
@@ -159,7 +164,7 @@ export function ProductModal({
 
             <div className="mt-4 grid gap-2">
               {[
-                { icon: Sparkles, text: "Мягкое тёплое свечение" },
+                { icon: Sparkles, text: "Мягкое теплое свечение" },
                 { icon: Wand2, text: "Изготовим под заказ" },
                 { icon: ImagePlus, text: "Можно изменить дизайн под себя" }
               ].map((item) => {
@@ -184,60 +189,73 @@ export function ProductModal({
 
             <section className="mt-5">
               <h3 className="text-sm font-bold text-white">Тип изделия</h3>
-              <div className="mt-3 grid gap-2">
-                {availableTypes.map((type) => {
-                  const option = variantsByType.get(type)?.[0];
+              {product.isOrderAvailable ? (
+                <div className="mt-3 grid gap-2">
+                  {availableTypes.map((type) => {
+                    const option = variantsByType.get(type)?.[0];
 
-                  if (!option) {
-                    return null;
-                  }
+                    if (!option) {
+                      return null;
+                    }
 
-                  return (
+                    return (
+                      <button
+                        key={type}
+                        className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-left transition ${
+                          selectedType === type
+                            ? "border-neon-cyan/50 bg-neon-cyan/10 text-white shadow-glow"
+                            : "border-white/10 bg-white/6 text-white/70"
+                        }`}
+                        onClick={() => setSelectedType(type)}
+                      >
+                        <span className="font-bold">{option.itemTypeLabel}</span>
+                        {selectedType === type ? <Check size={18} /> : null}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="mt-3 rounded-2xl border border-neon-pink/25 bg-neon-pink/10 p-4 text-sm font-bold text-neon-pink">
+                  Временно недоступен для заказа
+                </div>
+              )}
+            </section>
+
+            {product.isOrderAvailable ? (
+              <section className="mt-5">
+                <h3 className="text-sm font-bold text-white">Размер</h3>
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  {activeVariants.map((variant) => (
                     <button
-                      key={type}
-                      className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-left transition ${
-                        selectedType === type
-                          ? "border-neon-cyan/50 bg-neon-cyan/10 text-white shadow-glow"
-                          : "border-white/10 bg-white/6 text-white/70"
+                      key={variant.priceListItemId}
+                      className={`rounded-2xl border px-3 py-3 text-sm font-bold transition ${
+                        selectedVariant?.priceListItemId === variant.priceListItemId
+                          ? "border-neon-violet/60 bg-neon-violet/15 text-white shadow-violet"
+                          : "border-white/10 bg-white/6 text-white/68"
                       }`}
-                      onClick={() => setSelectedType(type)}
+                      onClick={() => setSelectedVariantId(variant.priceListItemId)}
                     >
-                      <span className="font-bold">{option.itemTypeLabel}</span>
-                      {selectedType === type ? <Check size={18} /> : null}
+                      {variant.sizeLabel}
                     </button>
-                  );
-                })}
-              </div>
-            </section>
-
-            <section className="mt-5">
-              <h3 className="text-sm font-bold text-white">Размер</h3>
-              <div className="mt-3 grid grid-cols-3 gap-2">
-                {activeVariants.map((variant) => (
-                  <button
-                    key={variant.id}
-                    className={`rounded-2xl border px-3 py-3 text-sm font-bold transition ${
-                      selectedVariant?.id === variant.id
-                        ? "border-neon-violet/60 bg-neon-violet/15 text-white shadow-violet"
-                        : "border-white/10 bg-white/6 text-white/68"
-                    }`}
-                    onClick={() => setSelectedVariantId(variant.id)}
-                  >
-                    {variant.sizeLabel}
-                  </button>
-                ))}
-              </div>
-            </section>
+                  ))}
+                </div>
+              </section>
+            ) : null}
           </div>
 
           <div className="border-t border-white/10 bg-night/92 p-4">
+            {selectedVariant?.note ? (
+              <p className="mb-3 rounded-2xl border border-neon-cyan/25 bg-neon-cyan/10 px-3 py-2 text-sm font-semibold text-neon-cyan">
+                {selectedVariant.note}
+              </p>
+            ) : null}
             <div className="mb-3 flex items-end justify-between">
               <span className="text-sm text-white/55">Цена</span>
               <span className="text-2xl font-black text-white">
                 {selectedVariant ? `${formatKopecks(selectedVariant.priceKopecks)} ₽` : "—"}
               </span>
             </div>
-            <ActionButton className="w-full" onClick={handleAdd} disabled={!selectedVariant}>
+            <ActionButton className="w-full" onClick={handleAdd} disabled={!selectedVariant || !product.isOrderAvailable}>
               {added ? "Добавлено в корзину" : "Добавить в корзину"}
             </ActionButton>
           </div>

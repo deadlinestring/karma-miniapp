@@ -8,6 +8,18 @@ import { formatKopecks } from "@/lib/pricing";
 import { ProductVisual } from "@/components/product-visual";
 import { ActionButton } from "@/components/action-button";
 
+function ProductPrice({ product, className = "text-sm" }: { product: StorefrontProduct; className?: string }) {
+  if (!product.isOrderAvailable) {
+    return <span className={`${className} font-bold text-neon-pink`}>Временно недоступен</span>;
+  }
+
+  return (
+    <span className={className}>
+      от <span className="font-black text-white">{formatKopecks(product.minPriceKopecks)} ₽</span>
+    </span>
+  );
+}
+
 export function ProductCard({
   product,
   onOpen,
@@ -31,7 +43,7 @@ export function ProductCard({
               {product.name}
             </h3>
             <p className="mt-2 text-xs text-white/58">
-              от <span className="text-sm font-black text-white">{formatKopecks(product.minPriceKopecks)} ₽</span>
+              <ProductPrice product={product} className="text-sm" />
             </p>
           </div>
         </Link>
@@ -57,7 +69,7 @@ export function ProductCard({
         </p>
         <div className="mt-4 flex items-center justify-between gap-3">
           <p className="text-sm text-white/60">
-            от <span className="text-lg font-black text-white">{formatKopecks(product.minPriceKopecks)} ₽</span>
+            <ProductPrice product={product} className="text-lg" />
           </p>
           <ActionButton className="flex items-center gap-2 px-3 py-2" onClick={() => onOpen(product)}>
             <Eye size={16} />

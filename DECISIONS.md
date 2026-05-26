@@ -185,3 +185,12 @@ Prisma migrations и другие CLI-операции используют Supa
 - Повторный seed не должен затрагивать реальные админские product images и не должен возвращать mock-cover поверх загруженной admin-cover.
 - Новый товар в будущем по умолчанию должен получать `priceListId = "main"`.
 - Для будущего Excel/CSV import понадобится стабильное поле вроде `externalId` или `sku`, но его добавление откладывается до этапа CRUD/import.
+
+## Storefront price source
+
+- Реальная матрица цен хранится в `PriceList main` и строках `PriceListItem`.
+- Storefront и cart используют `PriceListItem` как единственный источник доступных вариантов, размеров и цены.
+- Silent fallback на legacy `ProductVariant` запрещен: если у товара нет активного прайса или активных пунктов прайса, товар показывается как временно недоступный для заказа.
+- Cart snapshot сохраняет `priceListItemId`, `itemType`, `sizeCm`, `unitPriceKopecks` и `note`.
+- Для `WALL_PANEL / 55 см` пользователю показывается note `Двойная подсветка сверху и снизу`; это же значение сохраняется в cart snapshot.
+- Legacy `ProductVariant` будет удален или архивирован только отдельным этапом после production-проверки storefront на `PriceListItem`.

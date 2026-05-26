@@ -32,12 +32,14 @@ export type StorefrontImage = {
 };
 
 export type StorefrontVariant = {
-  id: string;
+  priceListItemId: string;
   itemType: StorefrontItemType;
   itemTypeLabel: string;
   sizeCm: number;
   sizeLabel: string;
   priceKopecks: number;
+  note: string | null;
+  sortOrder: number;
 };
 
 export type StorefrontProduct = {
@@ -57,6 +59,7 @@ export type StorefrontProduct = {
   isCustom: boolean;
   variants: StorefrontVariant[];
   minPriceKopecks: number;
+  isOrderAvailable: boolean;
   accent: "violet" | "cyan" | "blue" | "pink";
   motif: string;
 };

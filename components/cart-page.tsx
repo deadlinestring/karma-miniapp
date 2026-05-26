@@ -55,6 +55,11 @@ export function CartPage() {
                     <p className="text-xs text-white/48">{item.category} • {item.subcategory}</p>
                     <h2 className="mt-1 text-base font-black text-white">{item.productName}</h2>
                     <p className="mt-2 text-xs text-white/58">{item.itemTypeLabel}, {item.sizeLabel}</p>
+                    {item.note ? (
+                      <p className="mt-2 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 px-3 py-2 text-xs font-semibold text-neon-cyan">
+                        {item.note}
+                      </p>
+                    ) : null}
                     <p className="mt-2 text-lg font-black text-white">{formatKopecks(item.unitPriceKopecks)} ₽</p>
                     <div className="mt-3 flex items-center justify-between gap-2">
                       <div className="flex items-center rounded-2xl border border-white/10 bg-white/7">
