@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, FileSpreadsheet, FolderTree, Home, Package, ShieldCheck, ShieldX, Tags } from "lucide-react";
 import { AdminCategoriesPanel } from "@/components/admin-categories-panel";
 import { AdminPriceListsPanel } from "@/components/admin-price-lists-panel";
-import { AdminProductImagesPanel } from "@/components/admin-product-images-panel";
+import { AdminProductsPanel } from "@/components/admin-products-panel";
 import { AdminSettingsPanel } from "@/components/admin-settings-panel";
 
 type AdminUser = {
@@ -45,7 +45,7 @@ const sections: Array<{
   {
     id: "products",
     title: "Товары",
-    description: "Фотографии товаров: обложки и галереи.",
+    description: "Карточки товаров, публикация, обложки и галереи.",
     icon: Package
   },
   {
@@ -245,7 +245,7 @@ function AdminWorkspace({
 
       {activeSection === "home" ? <AdminSettingsPanel initData={initData} /> : null}
       {activeSection === "price-lists" ? <AdminPriceListsPanel initData={initData} /> : null}
-      {activeSection === "products" ? <AdminProductImagesPanel initData={initData} /> : null}
+      {activeSection === "products" ? <AdminProductsPanel initData={initData} /> : null}
       {activeSection === "categories" ? <AdminCategoriesPanel initData={initData} /> : null}
       {activeSection === "import" ? (
         <AdminPlaceholder title="Импорт товаров" text="Массовый импорт данных товаров из Excel/CSV будет подключен после CRUD каталога." />

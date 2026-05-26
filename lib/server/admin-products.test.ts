@@ -1,8 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   addAdminProductGalleryImageWithServices,
+  createAdminProductWithServices,
   deleteAdminProductImageWithServices,
+  getAdminProductsWithServices,
   setAdminProductCoverImageWithServices,
+  updateAdminProductWithServices,
   uploadAdminProductCoverImageWithServices,
   type AdminProductServices
 } from "./admin-products";
@@ -15,22 +18,62 @@ const image: ValidatedAdminImageFile = {
   size: 3
 };
 
-function makeFullProduct(images = [{ id: "image-cover", url: "/cover.svg", altText: null, isCover: true, sortOrder: 10 }]) {
+function makeFullProduct(overrides: Record<string, unknown> = {}) {
   return {
     id: "product-1",
     name: "Наруто Узумаки",
     slug: "naruto-uzumaki",
+    description: "Тестовый товар",
+    productType: "REGULAR",
+    isActive: true,
+    isFeatured: false,
+    subcategoryId: "subcategory-1",
+    createdAt: new Date("2026-01-01T00:00:00.000Z"),
+    updatedAt: new Date("2026-01-02T00:00:00.000Z"),
     subcategory: {
+      id: "subcategory-1",
       name: "Наруто",
-      category: { name: "Аниме" }
+      slug: "naruto",
+      isActive: true,
+      category: {
+        id: "category-1",
+        name: "Аниме",
+        slug: "anime",
+        isActive: true
+      }
     },
-    images
+    priceList: {
+      id: "main",
+      name: "Основной прайс KARMA",
+      slug: "main",
+      isActive: true,
+      items: [{ id: "pli-1" }]
+    },
+    images: [{ id: "image-cover", url: "/cover.svg", altText: null, isCover: true, sortOrder: 10 }],
+    ...overrides
+  };
+}
+
+function makeSubcategory(overrides: Record<string, unknown> = {}) {
+  return {
+    id: "subcategory-1",
+    isActive: true,
+    category: {
+      id: "category-1",
+      name: "Аниме",
+      slug: "anime",
+      isActive: true
+    },
+    ...overrides
   };
 }
 
 function makeServices({
   productImage,
   fullProduct = makeFullProduct(),
+  subcategory = makeSubcategory(),
+  priceList = { id: "main", isActive: true, items: [{ id: "pli-1" }] },
+  slugExists = false,
   createRejects = false
 }: {
   productImage?: {
@@ -40,6 +83,9 @@ function makeServices({
     isCover: boolean;
   } | null;
   fullProduct?: ReturnType<typeof makeFullProduct>;
+  subcategory?: ReturnType<typeof makeSubcategory> | null;
+  priceList?: { id: string; isActive: boolean; items: Array<{ id: string }> } | null;
+  slugExists?: boolean;
   createRejects?: boolean;
 } = {}) {
   const productImageResult =
@@ -75,10 +121,27 @@ function makeServices({
   };
   const db = {
     product: {
-      findFirst: vi.fn().mockImplementation((args) =>
-        Promise.resolve(args.select?.images ? fullProduct : { id: "product-1", name: "Наруто Узумаки" })
-      ),
-      findMany: vi.fn()
+      count: vi.fn().mockResolvedValue(1),
+      findMany: vi.fn().mockResolvedValue([fullProduct]),
+      findUnique: vi.fn().mockImplementation((args) => {
+        if (args.where?.slug) {
+          return Promise.resolve(slugExists ? { id: "existing-product" } : null);
+        }
+
+        if (args.select?.subcategory) {
+          return Promise.resolve(fullProduct);
+        }
+
+        return Promise.resolve({ id: fullProduct.id, name: fullProduct.name });
+      }),
+      create: vi.fn().mockResolvedValue({ id: fullProduct.id }),
+      update: vi.fn().mockResolvedValue({})
+    },
+    subcategory: {
+      findUnique: vi.fn().mockResolvedValue(subcategory)
+    },
+    priceList: {
+      findUnique: vi.fn().mockResolvedValue(priceList)
     },
     productImage: {
       aggregate: vi.fn().mockResolvedValue({ _max: { sortOrder: 20 } }),
@@ -99,6 +162,155 @@ function makeServices({
     } satisfies AdminProductServices
   };
 }
+
+describe("admin products repository", () => {
+  it("creates a hidden product with the main price list", async () => {
+    const { services } = makeServices();
+
+    await createAdminProductWithServices(
+      {
+        name: "Саске Учиха",
+        description: "Новый ночник",
+        subcategoryId: "subcategory-1"
+      },
+      services
+    );
+
+    expect(services.db.product.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        name: "Саске Учиха",
+        slug: "saske-uchiha",
+        subcategoryId: "subcategory-1",
+        priceListId: "main",
+        productType: "REGULAR",
+        isActive: false,
+        isFeatured: false
+      }),
+      select: { id: true }
+    });
+  });
+
+  it("rejects a product slug conflict", async () => {
+    const { services } = makeServices({ slugExists: true });
+
+    await expect(
+      createAdminProductWithServices({ name: "Наруто Узумаки", description: "Описание", subcategoryId: "subcategory-1" }, services)
+    ).rejects.toThrow("product_slug_exists");
+  });
+
+  it("does not allow direct price list changes", async () => {
+    const { services } = makeServices();
+
+    await expect(updateAdminProductWithServices("product-1", { priceListId: "other" }, services)).rejects.toThrow("forbidden_product_field");
+  });
+
+  it("renames a product without changing slug", async () => {
+    const { services } = makeServices();
+
+    await updateAdminProductWithServices("product-1", { name: "Наруто новый" }, services);
+
+    expect(services.db.product.update).toHaveBeenCalledWith({
+      where: { id: "product-1" },
+      data: expect.objectContaining({ name: "Наруто новый" })
+    });
+    expect(services.db.product.update).not.toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ slug: expect.anything() }) }));
+  });
+
+  it("moves a product by changing only the subcategory relation", async () => {
+    const { services } = makeServices({ subcategory: makeSubcategory({ id: "subcategory-2" }) });
+
+    await updateAdminProductWithServices("product-1", { subcategoryId: "subcategory-2" }, services);
+
+    expect(services.db.product.update).toHaveBeenCalledWith({
+      where: { id: "product-1" },
+      data: { subcategoryId: "subcategory-2" }
+    });
+  });
+
+  it("rejects publishing without exactly one cover image", async () => {
+    const { services } = makeServices({ fullProduct: makeFullProduct({ isActive: false, images: [] }) });
+
+    await expect(updateAdminProductWithServices("product-1", { isActive: true }, services)).rejects.toThrow("cover_required");
+  });
+
+  it("rejects publishing with an inactive category", async () => {
+    const { services } = makeServices({
+      fullProduct: makeFullProduct({ isActive: false }),
+      subcategory: makeSubcategory({ category: { id: "category-1", name: "Аниме", slug: "anime", isActive: false } })
+    });
+
+    await expect(updateAdminProductWithServices("product-1", { isActive: true, subcategoryId: "subcategory-1" }, services)).rejects.toThrow(
+      "category_inactive"
+    );
+  });
+
+  it("rejects publishing with an inactive subcategory", async () => {
+    const { services } = makeServices({ fullProduct: makeFullProduct({ isActive: false }), subcategory: makeSubcategory({ isActive: false }) });
+
+    await expect(updateAdminProductWithServices("product-1", { isActive: true, subcategoryId: "subcategory-1" }, services)).rejects.toThrow(
+      "subcategory_inactive"
+    );
+  });
+
+  it("rejects publishing without an active price list", async () => {
+    const { services } = makeServices({
+      fullProduct: makeFullProduct({ isActive: false, priceList: { id: "main", name: "Основной прайс KARMA", slug: "main", isActive: false, items: [] } })
+    });
+
+    await expect(updateAdminProductWithServices("product-1", { isActive: true }, services)).rejects.toThrow("price_list_not_ready");
+  });
+
+  it("rejects featured status for a hidden product", async () => {
+    const { services } = makeServices({ fullProduct: makeFullProduct({ isActive: false }) });
+
+    await expect(updateAdminProductWithServices("product-1", { isFeatured: true }, services)).rejects.toThrow("featured_requires_active_product");
+  });
+
+  it("clears featured status when hiding a product", async () => {
+    const { services } = makeServices({ fullProduct: makeFullProduct({ isActive: true, isFeatured: true }) });
+
+    await updateAdminProductWithServices("product-1", { isActive: false }, services);
+
+    expect(services.db.product.update).toHaveBeenCalledWith({
+      where: { id: "product-1" },
+      data: { isActive: false, isFeatured: false }
+    });
+  });
+
+  it("builds admin list filters and clamps page size", async () => {
+    const { services } = makeServices();
+
+    const result = await getAdminProductsWithServices(
+      {
+        search: " наруто ",
+        categoryId: "category-1",
+        status: "featured",
+        page: "2",
+        pageSize: "500"
+      },
+      services
+    );
+
+    expect(result.pageSize).toBe(50);
+    expect(services.db.product.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          name: { contains: "наруто", mode: "insensitive" },
+          subcategory: { categoryId: "category-1" },
+          isFeatured: true
+        },
+        skip: 50,
+        take: 50
+      })
+    );
+  });
+
+  it("does not expose a physical delete flow", async () => {
+    const adminProductsModule = await import("./admin-products");
+
+    expect("deleteAdminProductWithServices" in adminProductsModule).toBe(false);
+  });
+});
 
 describe("admin product images repository", () => {
   it("creates gallery upload as non-cover image", async () => {
