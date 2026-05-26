@@ -31,6 +31,14 @@ export type ProductImportPreview = {
   rows: ProductImportPreviewRow[];
 };
 
+export type ProductImportApplyResult = {
+  createdCount: number;
+  createdProducts: Array<{
+    name: string;
+    externalId: string;
+  }>;
+};
+
 export type ProductImportServices = {
   db: PrismaLike;
 };
@@ -55,10 +63,29 @@ export async function previewProductImportFile(file: File) {
   return previewProductImportFileWithServices(file, defaultServices);
 }
 
+export async function applyCreateOnlyProductImportFile(file: File, confirmCreateHiddenProducts: boolean) {
+  return applyCreateOnlyProductImportFileWithServices(file, confirmCreateHiddenProducts, defaultServices);
+}
+
 export async function previewProductImportFileWithServices(file: File, services: ProductImportServices): Promise<ProductImportPreview> {
   validateCsvFile(file);
   const text = stripBom(await file.text());
   return previewProductImportTextWithServices(text, services);
+}
+
+export async function applyCreateOnlyProductImportFileWithServices(
+  file: File,
+  confirmCreateHiddenProducts: boolean,
+  services: ProductImportServices
+): Promise<ProductImportApplyResult> {
+  validateCsvFile(file);
+
+  if (!confirmCreateHiddenProducts) {
+    throw new Error("confirm_required");
+  }
+
+  const text = stripBom(await file.text());
+  return applyCreateOnlyProductImportTextWithServices(text, confirmCreateHiddenProducts, services);
 }
 
 export async function previewProductImportTextWithServices(text: string, services: ProductImportServices): Promise<ProductImportPreview> {
@@ -113,6 +140,7 @@ export async function previewProductImportTextWithServices(text: string, service
   );
   const productsBySlug = new Map(existingProducts.map((product) => [product.slug, product]));
   const seenExternalIds = new Set<string>();
+  const seenSlugs = new Set<string>();
 
   const previewRows = rows.map((row, index) =>
     validateImportRow({
@@ -121,7 +149,8 @@ export async function previewProductImportTextWithServices(text: string, service
       categoriesBySlug,
       productsByExternalId,
       productsBySlug,
-      seenExternalIds
+      seenExternalIds,
+      seenSlugs
     })
   );
 
@@ -132,6 +161,116 @@ export async function previewProductImportTextWithServices(text: string, service
     errorCount: previewRows.filter((row) => row.action === "ERROR").length,
     rows: previewRows
   };
+}
+
+export async function applyCreateOnlyProductImportTextWithServices(
+  text: string,
+  confirmCreateHiddenProducts: boolean,
+  services: ProductImportServices
+): Promise<ProductImportApplyResult> {
+  if (!confirmCreateHiddenProducts) {
+    throw new Error("confirm_required");
+  }
+
+  const preview = await previewProductImportTextWithServices(text, services);
+  assertPreviewCanApply(preview);
+
+  return services.db.$transaction(async (tx) => {
+    const transactionServices = { db: tx as PrismaLike };
+    const transactionPreview = await previewProductImportTextWithServices(text, transactionServices);
+    assertPreviewCanApply(transactionPreview);
+
+    const priceList = await tx.priceList.findUnique({
+      where: { id: "main" },
+      select: {
+        id: true,
+        isActive: true,
+        items: {
+          where: { isActive: true },
+          select: { id: true }
+        }
+      }
+    });
+
+    if (!priceList?.isActive || priceList.items.length === 0) {
+      throw new Error("main_price_list_not_ready");
+    }
+
+    const categories = await tx.category.findMany({
+      select: {
+        slug: true,
+        isActive: true,
+        subcategories: {
+          select: {
+            id: true,
+            slug: true,
+            isActive: true
+          }
+        }
+      }
+    });
+    const categoriesBySlug = new Map(categories.map((category) => [category.slug, category]));
+    const createdProducts: ProductImportApplyResult["createdProducts"] = [];
+
+    for (const row of transactionPreview.rows) {
+      const category = categoriesBySlug.get(row.categorySlug);
+      const subcategory = category?.subcategories.find((item) => item.slug === row.subcategorySlug);
+
+      if (!category?.isActive || !subcategory?.isActive) {
+        throw new Error("taxonomy_not_ready");
+      }
+
+      const created = await tx.product.create({
+        data: {
+          externalId: row.externalId,
+          name: row.name,
+          slug: createSlug(row.name),
+          description: row.description,
+          subcategoryId: subcategory.id,
+          productType: row.productType,
+          priceListId: "main",
+          isActive: false,
+          isFeatured: false
+        },
+        select: {
+          name: true,
+          externalId: true
+        }
+      });
+
+      createdProducts.push({
+        name: created.name,
+        externalId: created.externalId ?? row.externalId
+      });
+    }
+
+    return {
+      createdCount: createdProducts.length,
+      createdProducts
+    };
+  });
+}
+
+function assertPreviewCanApply(preview: ProductImportPreview) {
+  if (preview.totalRows <= 0) {
+    throw new Error("empty_csv");
+  }
+
+  if (preview.errorCount > 0) {
+    throw new Error("import_has_errors");
+  }
+
+  if (preview.updateCount > 0) {
+    throw new Error("import_has_updates");
+  }
+
+  if (preview.createCount <= 0) {
+    throw new Error("empty_csv");
+  }
+
+  if (preview.createCount !== preview.totalRows || preview.rows.some((row) => row.action !== "CREATE")) {
+    throw new Error("import_not_create_only");
+  }
 }
 
 function validateCsvFile(file: File) {
@@ -158,7 +297,8 @@ function validateImportRow({
   categoriesBySlug,
   productsByExternalId,
   productsBySlug,
-  seenExternalIds
+  seenExternalIds,
+  seenSlugs
 }: {
   row: string[];
   rowNumber: number;
@@ -166,6 +306,7 @@ function validateImportRow({
   productsByExternalId: Map<string, { id: string; externalId: string | null; slug: string }>;
   productsBySlug: Map<string, { id: string; externalId: string | null; slug: string }>;
   seenExternalIds: Set<string>;
+  seenSlugs: Set<string>;
 }): ProductImportPreviewRow {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -231,6 +372,14 @@ function validateImportRow({
 
   if (!existingByExternalId && existingBySlug) {
     errors.push("slug нового товара уже занят существующей ручной карточкой");
+  }
+
+  if (!existingByExternalId && candidateSlug) {
+    if (seenSlugs.has(candidateSlug)) {
+      errors.push("slug нового товара дублируется внутри файла");
+    }
+
+    seenSlugs.add(candidateSlug);
   }
 
   const action = errors.length > 0 ? "ERROR" : existingByExternalId ? "UPDATE" : "CREATE";

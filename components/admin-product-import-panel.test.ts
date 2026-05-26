@@ -16,4 +16,19 @@ describe("admin product import panel", () => {
     expect(source).not.toContain("localStorage");
     expect(source).not.toMatch(/initData=.*href/);
   });
+
+  it("sends the original CSV file to apply with authenticated fetch", () => {
+    expect(source).toContain('fetch("/api/admin/import/products/apply"');
+    expect(source).toContain('formData.set("file", file)');
+    expect(source).toContain('formData.set("confirmCreateHiddenProducts", "true")');
+    expect(source).toContain('"X-Telegram-Init-Data": initData');
+    expect(source).not.toContain("JSON.stringify(preview");
+  });
+
+  it("shows apply only after a clean CREATE-only preview", () => {
+    expect(source).toContain("preview.createCount > 0 && preview.updateCount === 0 && preview.errorCount === 0");
+    expect(source).toContain("Создать скрытые товары");
+    expect(source).toContain("Исправьте ошибки в CSV");
+    expect(source).toContain("Обновление существующих импортированных товаров пока не поддерживается");
+  });
 });

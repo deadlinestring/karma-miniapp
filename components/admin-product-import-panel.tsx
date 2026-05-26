@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, useEffect, useState } from "react";
-import { Download, FileSearch } from "lucide-react";
+import { CheckCircle2, Download, FileSearch, PackageOpen } from "lucide-react";
 
 type CategoryTree = {
   categories: Array<{
@@ -35,11 +35,22 @@ type ImportPreview = {
   rows: ImportPreviewRow[];
 };
 
-export function AdminProductImportPanel({ initData }: { initData: string }) {
+type ImportApplyResult = {
+  createdCount: number;
+  createdProducts: Array<{
+    name: string;
+    externalId: string;
+  }>;
+};
+
+export function AdminProductImportPanel({ initData, onOpenProducts }: { initData: string; onOpenProducts?: () => void }) {
   const [categories, setCategories] = useState<CategoryTree["categories"]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<ImportPreview | null>(null);
+  const [applyResult, setApplyResult] = useState<ImportApplyResult | null>(null);
+  const [isApplyConfirmed, setIsApplyConfirmed] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
+  const [isApplying, setIsApplying] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,6 +86,8 @@ export function AdminProductImportPanel({ initData }: { initData: string }) {
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     setFile(event.target.files?.[0] ?? null);
     setPreview(null);
+    setApplyResult(null);
+    setIsApplyConfirmed(false);
     setMessage(null);
     setError(null);
   }
@@ -129,11 +142,56 @@ export function AdminProductImportPanel({ initData }: { initData: string }) {
       }
 
       setPreview(data.preview);
+      setApplyResult(null);
+      setIsApplyConfirmed(false);
       setMessage("Предпросмотр готов. Каталог не изменен.");
     } catch {
       setError("Не удалось проверить CSV-файл.");
     } finally {
       setIsBusy(false);
+    }
+  }
+
+  async function applyImport() {
+    if (!file) {
+      setError("Выберите CSV-файл.");
+      return;
+    }
+
+    if (!isApplyConfirmed) {
+      setError("Подтвердите создание скрытых товаров.");
+      return;
+    }
+
+    setIsApplying(true);
+    setMessage(null);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.set("file", file);
+      formData.set("confirmCreateHiddenProducts", "true");
+
+      const response = await fetch("/api/admin/import/products/apply", {
+        method: "POST",
+        headers: { "X-Telegram-Init-Data": initData },
+        body: formData
+      });
+      const data = (await response.json().catch(() => ({}))) as { result?: ImportApplyResult; message?: string };
+
+      if (!response.ok || !data.result) {
+        throw new Error(data.message ?? "apply_failed");
+      }
+
+      setApplyResult(data.result);
+      setPreview(null);
+      setFile(null);
+      setIsApplyConfirmed(false);
+      setMessage(`Создано скрытых товаров: ${data.result.createdCount}. Добавьте обложки и включите показ в разделе «Товары».`);
+    } catch (caughtError) {
+      setError(caughtError instanceof Error && caughtError.message !== "apply_failed" ? caughtError.message : "Не удалось применить импорт.");
+    } finally {
+      setIsApplying(false);
     }
   }
 
@@ -143,7 +201,7 @@ export function AdminProductImportPanel({ initData }: { initData: string }) {
       <h2 className="mt-2 text-xl font-black text-white">Импорт товаров</h2>
       <p className="mt-2 text-sm leading-6 text-white/58">
         Здесь можно подготовить массовое добавление карточек. Товары будут создаваться скрытыми, без фотографий, и получат
-        основной прайс. На этом этапе доступен только предпросмотр — база не изменяется.
+        основной прайс. Сначала выполните предпросмотр, затем примените только файл без ошибок и обновлений.
       </p>
 
       {message ? <p className="mt-4 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 p-3 text-sm text-neon-cyan">{message}</p> : null}
@@ -212,17 +270,40 @@ export function AdminProductImportPanel({ initData }: { initData: string }) {
         </button>
       </div>
 
-      {preview ? <PreviewResult preview={preview} /> : null}
+      {preview ? (
+        <PreviewResult
+          preview={preview}
+          isApplyConfirmed={isApplyConfirmed}
+          isApplying={isApplying}
+          onConfirmChange={setIsApplyConfirmed}
+          onApply={applyImport}
+        />
+      ) : null}
+      {applyResult ? <ApplyResult result={applyResult} onOpenProducts={onOpenProducts} /> : null}
     </section>
   );
 }
 
-function PreviewResult({ preview }: { preview: ImportPreview }) {
+function PreviewResult({
+  preview,
+  isApplyConfirmed,
+  isApplying,
+  onConfirmChange,
+  onApply
+}: {
+  preview: ImportPreview;
+  isApplyConfirmed: boolean;
+  isApplying: boolean;
+  onConfirmChange: (checked: boolean) => void;
+  onApply: () => void;
+}) {
+  const canApply = preview.createCount > 0 && preview.updateCount === 0 && preview.errorCount === 0;
+
   return (
     <div className="mt-5 rounded-3xl border border-white/10 bg-night/60 p-4">
       <h3 className="text-lg font-black text-white">Результат предпросмотра</h3>
       <p className="mt-2 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 p-3 text-sm text-neon-cyan">
-        Предпросмотр не изменяет каталог. Кнопка применения импорта будет добавлена после проверки шаблона.
+        Предпросмотр не изменяет каталог. Применение доступно только для файла, где все строки являются новыми товарами без ошибок.
       </p>
       <div className="mt-4 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
         <Summary label="Строк" value={preview.totalRows} />
@@ -230,6 +311,41 @@ function PreviewResult({ preview }: { preview: ImportPreview }) {
         <Summary label="Обновить" value={preview.updateCount} />
         <Summary label="Ошибок" value={preview.errorCount} />
       </div>
+      {canApply ? (
+        <div className="mt-4 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 p-4">
+          <p className="text-sm font-bold text-neon-cyan">
+            Файл готов к импорту. Все товары будут созданы скрытыми, без фотографий и с основным прайсом.
+          </p>
+          <label className="mt-3 flex gap-3 text-sm leading-5 text-white/70">
+            <input
+              type="checkbox"
+              checked={isApplyConfirmed}
+              onChange={(event) => onConfirmChange(event.target.checked)}
+              className="mt-1 h-4 w-4 accent-neon-cyan"
+            />
+            <span>Понимаю, что товары будут созданы скрытыми и потребуют загрузки фотографий.</span>
+          </label>
+          <button
+            type="button"
+            onClick={onApply}
+            disabled={!isApplyConfirmed || isApplying}
+            className="mt-4 inline-flex h-11 items-center gap-2 rounded-2xl bg-gradient-to-r from-neon-violet to-neon-cyan px-4 text-sm font-black text-white shadow-glow disabled:opacity-50"
+          >
+            <PackageOpen size={16} />
+            Создать скрытые товары
+          </button>
+        </div>
+      ) : null}
+      {preview.errorCount > 0 ? (
+        <p className="mt-4 rounded-2xl border border-neon-pink/20 bg-neon-pink/10 p-3 text-sm text-neon-pink">
+          Исправьте ошибки в CSV и выполните проверку заново.
+        </p>
+      ) : null}
+      {preview.updateCount > 0 ? (
+        <p className="mt-4 rounded-2xl border border-neon-pink/20 bg-neon-pink/10 p-3 text-sm text-neon-pink">
+          Обновление существующих импортированных товаров пока не поддерживается. Оставьте в файле только новые товары.
+        </p>
+      ) : null}
       <div className="mt-4 grid gap-3">
         {preview.rows.map((row) => (
           <div key={`${row.rowNumber}-${row.externalId}`} className="rounded-2xl border border-white/10 bg-white/7 p-3">
@@ -242,14 +358,36 @@ function PreviewResult({ preview }: { preview: ImportPreview }) {
             <h4 className="mt-3 text-base font-black text-white">{row.name || "Без названия"}</h4>
             <p className="mt-1 font-mono text-xs text-white/48">{row.externalId || "external_id не указан"}</p>
             <p className="mt-2 text-sm text-white/58">
-              {row.categoryName ?? (row.categorySlug || "категория не указана")} /{" "}
-              {row.subcategoryName ?? (row.subcategorySlug || "подкатегория не указана")}
+              {row.categoryName ?? (row.categorySlug || "категория не указана")} / {row.subcategoryName ?? (row.subcategorySlug || "подкатегория не указана")}
             </p>
             {row.errors.length ? <p className="mt-2 text-sm text-neon-pink">{row.errors.join("; ")}</p> : null}
             {row.warnings.length ? <p className="mt-2 text-xs text-white/48">{row.warnings.join("; ")}</p> : null}
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function ApplyResult({ result, onOpenProducts }: { result: ImportApplyResult; onOpenProducts?: () => void }) {
+  return (
+    <div className="mt-5 rounded-3xl border border-neon-cyan/20 bg-neon-cyan/10 p-4">
+      <CheckCircle2 className="text-neon-cyan" size={28} />
+      <h3 className="mt-3 text-lg font-black text-white">Создано скрытых товаров: {result.createdCount}</h3>
+      <p className="mt-2 text-sm leading-6 text-white/64">Добавьте обложку и включите показ в магазине для нужных карточек.</p>
+      <div className="mt-3 grid gap-2">
+        {result.createdProducts.map((product) => (
+          <div key={product.externalId} className="rounded-2xl border border-white/10 bg-white/7 p-3">
+            <p className="text-sm font-black text-white">{product.name}</p>
+            <p className="mt-1 font-mono text-xs text-white/48">{product.externalId}</p>
+          </div>
+        ))}
+      </div>
+      {onOpenProducts ? (
+        <button type="button" onClick={onOpenProducts} className="mt-4 inline-flex h-11 items-center rounded-2xl bg-white px-4 text-sm font-black text-night">
+          Перейти в раздел Товары
+        </button>
+      ) : null}
     </div>
   );
 }

@@ -248,7 +248,7 @@ function AdminWorkspace({
       {activeSection === "price-lists" ? <AdminPriceListsPanel initData={initData} /> : null}
       {activeSection === "products" ? <AdminProductsPanel initData={initData} /> : null}
       {activeSection === "categories" ? <AdminCategoriesPanel initData={initData} /> : null}
-      {activeSection === "import" ? <AdminProductImportPanel initData={initData} /> : null}
+      {activeSection === "import" ? <AdminProductImportPanel initData={initData} onOpenProducts={() => onOpenSection("products")} /> : null}
     </div>
   );
 }
