@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, FileSpreadsheet, FolderTree, Home, Package, ShieldCheck, ShieldX, Tags } from "lucide-react";
 import { AdminCategoriesPanel } from "@/components/admin-categories-panel";
 import { AdminPriceListsPanel } from "@/components/admin-price-lists-panel";
+import { AdminProductImportPanel } from "@/components/admin-product-import-panel";
 import { AdminProductsPanel } from "@/components/admin-products-panel";
 import { AdminSettingsPanel } from "@/components/admin-settings-panel";
 
@@ -57,7 +58,7 @@ const sections: Array<{
   {
     id: "import",
     title: "Импорт товаров",
-    description: "Будущий Excel/CSV import метаданных.",
+    description: "CSV-шаблон и безопасный предпросмотр метаданных.",
     icon: FileSpreadsheet
   }
 ];
@@ -247,9 +248,7 @@ function AdminWorkspace({
       {activeSection === "price-lists" ? <AdminPriceListsPanel initData={initData} /> : null}
       {activeSection === "products" ? <AdminProductsPanel initData={initData} /> : null}
       {activeSection === "categories" ? <AdminCategoriesPanel initData={initData} /> : null}
-      {activeSection === "import" ? (
-        <AdminPlaceholder title="Импорт товаров" text="Массовый импорт данных товаров из Excel/CSV будет подключен после CRUD каталога." />
-      ) : null}
+      {activeSection === "import" ? <AdminProductImportPanel initData={initData} /> : null}
     </div>
   );
 }

@@ -90,6 +90,7 @@ model Product {
   id            String           @id @default(cuid())
   subcategoryId String
   priceListId   String?
+  externalId    String?          @unique
   name          String
   slug          String           @unique
   description   String
