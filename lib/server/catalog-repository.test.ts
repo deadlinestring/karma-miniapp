@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { mapProductRecord } from "./catalog-repository";
+import { mapProductRecord, storefrontCategoryWhere, storefrontSubcategoryWhere } from "./catalog-repository";
 
 const note = "Двойная подсветка сверху и снизу";
 
@@ -112,5 +112,21 @@ describe("storefront price list mapper", () => {
 
     expect(product.minPriceKopecks).toBe(249000);
     expect(product.isOrderAvailable).toBe(true);
+  });
+
+  it("filters public categories and subcategories to active branches with active products", () => {
+    expect(storefrontSubcategoryWhere()).toEqual({
+      isActive: true,
+      products: { some: { isActive: true } }
+    });
+    expect(storefrontCategoryWhere()).toEqual({
+      isActive: true,
+      subcategories: {
+        some: {
+          isActive: true,
+          products: { some: { isActive: true } }
+        }
+      }
+    });
   });
 });

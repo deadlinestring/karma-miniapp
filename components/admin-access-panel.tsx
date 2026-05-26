@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, FileSpreadsheet, FolderTree, Home, Package, ShieldCheck, ShieldX, Tags } from "lucide-react";
+import { AdminCategoriesPanel } from "@/components/admin-categories-panel";
 import { AdminPriceListsPanel } from "@/components/admin-price-lists-panel";
 import { AdminProductImagesPanel } from "@/components/admin-product-images-panel";
 import { AdminSettingsPanel } from "@/components/admin-settings-panel";
@@ -245,9 +246,7 @@ function AdminWorkspace({
       {activeSection === "home" ? <AdminSettingsPanel initData={initData} /> : null}
       {activeSection === "price-lists" ? <AdminPriceListsPanel initData={initData} /> : null}
       {activeSection === "products" ? <AdminProductImagesPanel initData={initData} /> : null}
-      {activeSection === "categories" ? (
-        <AdminPlaceholder title="Категории" text="Управление категориями и подкатегориями будет подключено следующим этапом." />
-      ) : null}
+      {activeSection === "categories" ? <AdminCategoriesPanel initData={initData} /> : null}
       {activeSection === "import" ? (
         <AdminPlaceholder title="Импорт товаров" text="Массовый импорт данных товаров из Excel/CSV будет подключен после CRUD каталога." />
       ) : null}

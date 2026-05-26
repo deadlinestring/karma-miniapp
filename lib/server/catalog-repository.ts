@@ -52,11 +52,11 @@ export async function getStorefrontSettings(): Promise<StorefrontSettings> {
 
 export async function getStorefrontCategories(): Promise<StorefrontCategory[]> {
   const categories = await prisma.category.findMany({
-    where: { isActive: true },
+    where: storefrontCategoryWhere(),
     orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     include: {
       subcategories: {
-        where: { isActive: true },
+        where: storefrontSubcategoryWhere(),
         orderBy: [{ sortOrder: "asc" }, { name: "asc" }]
       }
     }
@@ -74,6 +74,22 @@ export async function getStorefrontCategories(): Promise<StorefrontCategory[]> {
       coverImageUrl: subcategory.coverImageUrl
     }))
   }));
+}
+
+export function storefrontCategoryWhere() {
+  return {
+    isActive: true,
+    subcategories: {
+      some: storefrontSubcategoryWhere()
+    }
+  };
+}
+
+export function storefrontSubcategoryWhere() {
+  return {
+    isActive: true,
+    products: { some: { isActive: true } }
+  };
 }
 
 export async function getFeaturedStorefrontProducts(): Promise<StorefrontProduct[]> {
