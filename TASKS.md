@@ -323,3 +323,13 @@
 - Discount rule уточнён после проверки quote: `WALL_PANEL` участвует как физическое изделие, скидка `30%` применяется один раз к самому дешёвому unit в заказе.
 - Создание заказа ещё не реализовано: кнопка checkout остаётся отключённой до следующего этапа.
 - Оплата ещё не подключена.
+
+## Order creation without online payment
+
+- Order creation без онлайн-оплаты подготовлен локально через `POST /api/orders`.
+- Endpoint требует валидный Telegram Mini App `initData`, но не требует admin-доступ.
+- Перед записью сервер заново пересчитывает quote и сохраняет snapshot товаров, скидки, доставки, отрисовки и итогов.
+- Создаются только `TelegramUser`, `Order`, `OrderItem` и `DeliveryAddress`; `Payment` не создаётся.
+- Checkout form собирает контакт, адрес доставки и согласие на обработку данных, затем показывает публичный номер заказа.
+- Live создание заказа ещё не выполнялось; `Order = 0`, `Payment = 0` до отдельного production live-теста.
+- Payment provider не выбран; Telegram admin notifications остаются следующим этапом после live-теста заказа.

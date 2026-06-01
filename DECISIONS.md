@@ -330,3 +330,13 @@ Prisma migrations и другие CLI-операции используют Supa
 - Hidden products, inactive categories/subcategories и чужие `PriceListItem` не могут быть рассчитаны в quote.
 - `POST /api/orders/quote` не создаёт `Order`, `Payment` и не выполняет write-операции в Supabase.
 - Следующий write-flow должен начинаться отдельным endpoint `POST /api/orders`, который повторно выполнит те же проверки.
+
+## Order creation without payment
+
+- `POST /api/orders` создаёт заказ только внутри Telegram Mini App: server-side validation `Telegram.WebApp.initData` обязательна, admin-доступ не требуется.
+- Order creation не доверяет клиентским суммам: перед записью внутри create-flow заново выполняется server quote.
+- На первом этапе создаются `TelegramUser`, `Order`, `OrderItem` и `DeliveryAddress`; `Payment`, payment redirect и provider integration не создаются.
+- Public order number имеет формат `KRM-YYYYMMDD-XXXXXX` и не раскрывает internal database id.
+- Checkout не очищает cart автоматически после успешного создания заказа, чтобы пользователь мог сохранить выбранные позиции до отдельного UX-решения.
+- Submit button блокируется во время отправки; полноценный server-side idempotency key нужен перед подключением онлайн-оплаты.
+- Custom drawing item получает item-level `PENDING_REVIEW`; Telegram admin notifications будут отдельным этапом.

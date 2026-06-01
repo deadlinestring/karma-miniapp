@@ -66,7 +66,7 @@ Last updated: 2026-06-01
 
 ## Recommended next step
 
-Build server-side quote/order creation, delivery address, Telegram notifications, order statuses and test payment. The Order flow migration has already been applied.
+Finish and live-test server-side order creation without online payment, then add Telegram admin notifications. The Order flow migration has already been applied.
 
 Updated checkpoint: the prepared Order flow foundation commit `00a863a` is ready to be published, and migration `00000000000003_prepare_order_flow` has already been applied successfully to production Supabase. Current production counts remain `Order = 0` and `Payment = 0`; no real order creation has happened.
 
@@ -75,6 +75,8 @@ Next concrete implementation step: build `POST /api/orders/quote` with server-si
 Quote checkpoint: `POST /api/orders/quote` is published as a read-only endpoint. Checkout uses server quote for delivery, discount, custom drawing surcharge and total, but `POST /api/orders` is still the next step. Production orders remain `0`.
 
 Urgent quote fix checkpoint: the discount business rule was clarified after quote publication. The quote discount is being updated so `STANDARD`, `PREMIUM` and `WALL_PANEL` all count as physical products, with one `30%` discount applied to the cheapest unit when the order contains at least two physical items.
+
+Order creation checkpoint: `POST /api/orders` is being prepared without online payment. The endpoint requires Telegram Mini App initData, recalculates server quote before writing, and creates `TelegramUser`, `Order`, `OrderItem` and `DeliveryAddress` only. `Payment` and Telegram admin notifications remain disabled until separate stages. Production `Order` and `Payment` counts must remain `0` before the live test.
 
 ## New order flow requirements
 
