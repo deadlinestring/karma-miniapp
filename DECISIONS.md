@@ -314,3 +314,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - Custom image order требует admin review. До `APPROVED` заказ не должен автоматически уходить в оплату; при `REJECTED` администратор указывает причину.
 - Для custom uploads нужен отдельный private bucket, предлагаемый env: `SUPABASE_CUSTOM_ORDER_BUCKET`, без live-настройки на этом этапе.
 - ЮKassa требует отдельного согласования доступа до интеграции; платёжный провайдер не подключается в этом этапе.
+
+## Order flow migration application
+
+- Migration `00000000000003_prepare_order_flow` применена в production Supabase после additive SQL review.
+- Production DB теперь поддерживает order snapshots, delivery method/address snapshot, discount fields, custom drawing surcharge и custom image review fields.
+- Order flow начинается с server-side quote: клиентский cart snapshot не является источником суммы заказа.
+- Реальный payment provider не подключается до отдельного согласования доступа и провайдера.
+- Custom image order должен пройти admin review до оплаты; `PENDING_REVIEW` не должен уходить в payment flow.

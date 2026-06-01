@@ -66,7 +66,11 @@ Last updated: 2026-06-01
 
 ## Recommended next step
 
-Apply the prepared Order flow migration after review, then build server-side quote/order creation, delivery address, Telegram notifications, order statuses and test payment.
+Build server-side quote/order creation, delivery address, Telegram notifications, order statuses and test payment. The Order flow migration has already been applied.
+
+Updated checkpoint: the prepared Order flow foundation commit `00a863a` is ready to be published, and migration `00000000000003_prepare_order_flow` has already been applied successfully to production Supabase. Current production counts remain `Order = 0` and `Payment = 0`; no real order creation has happened.
+
+Next concrete implementation step: build `POST /api/orders/quote` with server-side price, delivery, discount and custom drawing validation. Do not connect YooKassa or another payment provider until provider access and integration responsibility are explicitly agreed.
 
 ## New order flow requirements
 

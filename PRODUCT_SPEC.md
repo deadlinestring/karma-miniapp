@@ -443,3 +443,11 @@ Production-сценарий подтверждён: импортированы �
 ### Customer contact and payment
 
 Заказ должен хранить Telegram ID/username/name, ручной телефон или другой fallback contact, адрес доставки и комментарий. ЮKassa / Т-Банк подключаются только после отдельного согласования доступа; до этого возможен demo/test-payment flow.
+
+### Production order schema status
+
+Production database уже поддерживает order structure для будущего checkout: order/item snapshots, delivery method, delivery address line, discount fields, custom drawing surcharge и custom image review statuses.
+
+Pricing foundation готов: следующий функциональный шаг - quote endpoint и checkout UI, где сервер заново проверяет корзину, цены, доставку, скидку и custom drawing surcharge.
+
+Custom design order с загруженным изображением требует admin image review до оплаты. До `APPROVED` такой заказ не должен попадать в payment flow.

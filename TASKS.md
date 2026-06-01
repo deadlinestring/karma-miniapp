@@ -304,3 +304,13 @@
 - Real order creation ещё не реализован: подготовлены schema/migration и расчёт, но API создания заказа не добавлен.
 - Payment provider пока не выбран; реальная оплата через ЮKassa / Т-Банк не подключается до отдельного согласования провайдера и доступа.
 - Migration `00000000000003_prepare_order_flow` подготовлена, но не применена.
+
+## Order flow migration application
+
+- Order flow foundation подготовлен и зафиксирован в локальном commit `00a863a`.
+- Migration `00000000000003_prepare_order_flow` применена успешно в production Supabase.
+- Production database поддерживает order snapshots, delivery fields, скидки, custom drawing surcharge и custom image review statuses.
+- Server-side pricing module готов для следующего шага quote/order flow.
+- Real order creation ещё не реализован: `Order = 0`, `Payment = 0`.
+- Следующий шаг: `POST /api/orders/quote` с повторной server-side проверкой цен, доставки, скидки и custom drawing surcharge.
+- Payment provider пока не выбран; ЮKassa или Т-Банк не подключаются до отдельного согласования доступа.
