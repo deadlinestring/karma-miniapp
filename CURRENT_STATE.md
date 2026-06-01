@@ -1,6 +1,6 @@
 # CURRENT STATE
 
-Last updated: 2026-06-01
+Last updated: 2026-06-02
 
 ## Production
 
@@ -25,7 +25,7 @@ Last updated: 2026-06-01
 - Hidden products: `2`
 - `ProductImage = 33`
 - `PriceList main` is active with 10 active items.
-- `Order = 0`
+- `Order = 1`
 - `Payment = 0`
 - `StoreSettings main` exists.
 
@@ -66,7 +66,7 @@ Last updated: 2026-06-01
 
 ## Recommended next step
 
-Finish and live-test server-side order creation without online payment, then add Telegram admin notifications. The Order flow migration has already been applied.
+Deploy and live-test Telegram admin notifications for new orders. The first live order without online payment has already been created successfully, and payment provider integration is still not connected.
 
 Updated checkpoint: the prepared Order flow foundation commit `00a863a` is ready to be published, and migration `00000000000003_prepare_order_flow` has already been applied successfully to production Supabase. Current production counts remain `Order = 0` and `Payment = 0`; no real order creation has happened.
 
@@ -81,6 +81,8 @@ Order creation checkpoint: `POST /api/orders` is being prepared without online p
 Live order checkpoint: first production order without online payment was created successfully as `KRM-20260601-128352`. Current expected counts after that user action: `Order = 1`, `Payment = 0`. The next required stage is Telegram admin notifications and/or an admin orders view.
 
 UX hotfix checkpoint: success/error/status messages in checkout and admin panels need automatic scroll into view so users can see action results inside Telegram Mini App. Future admin discount management, including global discounts and product-specific discounts, remains a separate design stage.
+
+Telegram notification checkpoint: server-side admin notifications for new orders are prepared locally. Notifications are sent after the successful order transaction, use `NotificationLog` for deduplication, and must not roll back checkout if Telegram delivery fails. Live notification sending has not been tested yet.
 
 ## New order flow requirements
 

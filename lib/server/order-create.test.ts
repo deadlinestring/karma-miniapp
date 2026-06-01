@@ -205,4 +205,30 @@ describe("createOrderWithServices", () => {
       })
     );
   });
+
+  it("notifies admins after successful order transaction", async () => {
+    const { services } = makeServices();
+    const notifyOrderCreated = vi.fn().mockResolvedValue(undefined);
+
+    await createOrderWithServices(validPayload, telegramUser, {
+      ...services,
+      notifyOrderCreated
+    });
+
+    expect(notifyOrderCreated).toHaveBeenCalledWith("KRM-20260602-ABC123");
+  });
+
+  it("keeps order creation successful when admin notification fails", async () => {
+    const { services, forbiddenPayment } = makeServices();
+    const notifyOrderCreated = vi.fn().mockRejectedValue(new Error("telegram failed"));
+
+    const result = await createOrderWithServices(validPayload, telegramUser, {
+      ...services,
+      notifyOrderCreated
+    });
+
+    expect(result.publicNumber).toBe("KRM-20260602-ABC123");
+    expect(notifyOrderCreated).toHaveBeenCalledWith("KRM-20260602-ABC123");
+    expect(forbiddenPayment).not.toHaveBeenCalled();
+  });
 });

@@ -8,6 +8,7 @@ import {
   type OrderQuoteResult,
   type OrderQuoteServices
 } from "@/lib/server/order-quote";
+import { sendOrderCreatedAdminNotifications } from "@/lib/server/order-notifications";
 import { prisma } from "@/lib/server/prisma";
 
 type PrismaLike = typeof prisma;
@@ -15,6 +16,7 @@ type PrismaLike = typeof prisma;
 export type OrderCreateServices = {
   db: Pick<PrismaLike, "$transaction">;
   generatePublicNumber?: () => string;
+  notifyOrderCreated?: (publicNumber: string) => Promise<unknown>;
 };
 
 export type OrderCreateInput = {
@@ -56,7 +58,10 @@ type ParsedCreateInput = {
   consentPersonalData: true;
 };
 
-const defaultServices: OrderCreateServices = { db: prisma };
+const defaultServices: OrderCreateServices = {
+  db: prisma,
+  notifyOrderCreated: sendOrderCreatedAdminNotifications
+};
 const TELEGRAM_ORDER_REQUIRED_MESSAGE =
   "Откройте магазин внутри Telegram, чтобы оформить заказ.";
 const ORDER_CREATED_MESSAGE =
@@ -83,7 +88,7 @@ export async function createOrderWithServices(
   const payload = parseCreateInput(input);
   const generatePublicNumber = services.generatePublicNumber ?? createPublicNumber;
 
-  return services.db.$transaction(async (tx) => {
+  const result = await services.db.$transaction(async (tx) => {
     const quote = await quoteOrderWithServices(payload.quotePayload, {
       db: tx as OrderQuoteServices["db"]
     });
@@ -179,6 +184,10 @@ export async function createOrderWithServices(
       message: hasCustomDrawing ? CUSTOM_REVIEW_MESSAGE : ORDER_CREATED_MESSAGE
     };
   });
+
+  await services.notifyOrderCreated?.(result.publicNumber).catch(() => undefined);
+
+  return result;
 }
 
 function parseCreateInput(input: unknown): ParsedCreateInput {

@@ -343,3 +343,13 @@ Prisma migrations и другие CLI-операции используют Supa
 - Первый production live-заказ без онлайн-оплаты создан успешно: `KRM-20260601-128352`; после проверки `Payment = 0`.
 - Важные success/error/status сообщения должны автоматически прокручиваться в видимую область, потому что в Telegram Mini App пользователь может оставаться ниже блока результата.
 - Управление скидками через админку не добавляется в order flow автоматически: глобальные скидки и скидки на конкретные товары требуют отдельного проектирования правил, приоритетов и snapshot-поведения.
+
+## Telegram admin order notifications
+
+- Уведомление администраторам о новом заказе отправляется только после успешного завершения transaction создания заказа.
+- Отправка уведомления не выполняется внутри order transaction, чтобы сбой Telegram Bot API не откатывал уже созданный заказ.
+- Failure policy: если Telegram notification не отправилась, checkout всё равно возвращает покупателю успешный заказ; попытка фиксируется в `NotificationLog`.
+- `NotificationLog` достаточно для первого этапа: успешная отправка дедуплицируется по ключу `order:new:<publicNumber>:admin:<telegramId>`.
+- Failed attempts логируются отдельным ключом и не блокируют будущую повторную успешную отправку.
+- `TELEGRAM_BOT_TOKEN` и `ADMIN_TELEGRAM_IDS` используются только server-side; client components не получают Prisma Client, bot token или raw initData.
+- Сообщение администратору содержит публичный номер заказа, snapshot товаров, сумму, скидку, доставку, контакт и адрес, но не раскрывает internal database id, raw initData, secrets или приватные file URLs.
