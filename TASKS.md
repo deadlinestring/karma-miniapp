@@ -314,3 +314,11 @@
 - Real order creation ещё не реализован: `Order = 0`, `Payment = 0`.
 - Следующий шаг: `POST /api/orders/quote` с повторной server-side проверкой цен, доставки, скидки и custom drawing surcharge.
 - Payment provider пока не выбран; ЮKassa или Т-Банк не подключаются до отдельного согласования доступа.
+
+## Order quote endpoint
+
+- `POST /api/orders/quote` подготовлен как read-only расчёт корзины без создания `Order` и `Payment`.
+- Quote endpoint заново читает активный товар, активную категорию/подкатегорию, активный `PriceList main` и выбранный `PriceListItem`.
+- Checkout использует server quote для отображения товаров, доставки Почтой России, скидки, custom drawing surcharge и итоговой суммы.
+- Создание заказа ещё не реализовано: кнопка checkout остаётся отключённой до следующего этапа.
+- Оплата ещё не подключена.

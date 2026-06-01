@@ -1,13 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2 } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
 import { AppShell } from "@/components/app-shell";
 import { ActionButton } from "@/components/action-button";
 import { formatKopecks } from "@/lib/pricing";
-import { useCartStore, useCartTotals } from "@/store/cart-store";
+import { useCartStore, type CartItem } from "@/store/cart-store";
 
 const fields = [
   { name: "name", label: "Имя", placeholder: "Как к вам обращаться" },
@@ -18,13 +16,88 @@ const fields = [
   { name: "flat", label: "Квартира", placeholder: "Квартира" }
 ];
 
+type QuoteItem = {
+  productId: string;
+  productName: string;
+  itemTypeLabel: string;
+  sizeCm: number;
+  quantity: number;
+  unitPriceKopecks: number;
+  lineSubtotalKopecks: number;
+  note: string | null;
+  customDrawingSurchargeKopecks: number;
+  discountKopecks: number;
+  lineTotalKopecks: number;
+};
+
+type QuoteResponse =
+  | {
+      ok: true;
+      items: QuoteItem[];
+      summary: {
+        itemsSubtotalKopecks: number;
+        customDrawingTotalKopecks: number;
+        deliveryMethod: "RUSSIAN_POST";
+        deliveryAmountKopecks: number;
+        discountAmountKopecks: number;
+        totalKopecks: number;
+      };
+      warnings: string[];
+    }
+  | { ok: false; message: string };
+
 export function CheckoutPage() {
   const items = useCartStore((state) => state.items);
-  const { totalKopecks } = useCartTotals();
   const [accepted, setAccepted] = useState(false);
-  const [showDemo, setShowDemo] = useState(false);
+  const [quote, setQuote] = useState<Extract<QuoteResponse, { ok: true }> | null>(null);
+  const [quoteError, setQuoteError] = useState<string | null>(null);
+  const [isQuoteLoading, setIsQuoteLoading] = useState(false);
 
-  const canPay = items.length > 0 && accepted;
+  const quotePayload = useMemo(() => buildQuotePayload(items), [items]);
+
+  useEffect(() => {
+    if (items.length === 0) {
+      setQuote(null);
+      setQuoteError(null);
+      setIsQuoteLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    setIsQuoteLoading(true);
+    setQuoteError(null);
+
+    fetch("/api/orders/quote", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(quotePayload),
+      signal: controller.signal
+    })
+      .then(async (response) => {
+        const body = (await response.json()) as QuoteResponse;
+
+        if (!response.ok || !body.ok) {
+          throw new Error(body.ok ? "Не удалось рассчитать заказ." : body.message);
+        }
+
+        setQuote(body);
+      })
+      .catch((error) => {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        setQuote(null);
+        setQuoteError(error instanceof Error ? error.message : "Не удалось рассчитать заказ.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setIsQuoteLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [items.length, quotePayload]);
 
   return (
     <AppShell>
@@ -36,7 +109,9 @@ export function CheckoutPage() {
       {items.length === 0 ? (
         <div className="mt-6 rounded-[28px] border border-white/10 bg-white/7 p-8 text-center">
           <h2 className="text-xl font-black text-white">Сначала добавьте товар</h2>
-          <p className="mt-2 text-sm text-white/58">Оформление появится после добавления ночника в корзину.</p>
+          <p className="mt-2 text-sm text-white/58">
+            Оформление появится после добавления ночника в корзину.
+          </p>
           <Link
             href="/catalog"
             className="mt-5 inline-flex h-12 items-center justify-center rounded-2xl bg-gradient-to-r from-neon-violet to-neon-cyan px-5 text-sm font-black text-white"
@@ -71,58 +146,143 @@ export function CheckoutPage() {
                 className="mt-1 h-4 w-4 accent-neon-cyan"
               />
               <span className="text-sm leading-5 text-white/66">
-                Согласен на обработку данных для демонстрационного оформления заказа.
+                Согласен на обработку данных для оформления заказа.
               </span>
             </label>
           </section>
 
           <section className="mt-5 rounded-[24px] border border-white/10 bg-white/8 p-4">
-            <h2 className="text-lg font-black text-white">Состав заказа</h2>
+            <h2 className="text-lg font-black text-white">Расчёт заказа</h2>
+
+            {isQuoteLoading ? (
+              <p className="mt-3 rounded-2xl border border-white/10 bg-white/7 px-3 py-2 text-sm text-white/64">
+                Пересчитываем корзину по актуальным ценам...
+              </p>
+            ) : null}
+
+            {quoteError ? (
+              <p className="mt-3 rounded-2xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-100">
+                {quoteError}
+              </p>
+            ) : null}
+
             <div className="mt-3 grid gap-3">
-              {items.map((item) => (
-                <div key={item.lineId} className="flex justify-between gap-4 text-sm">
-                  <span className="text-white/66">
-                    {item.productName} x {item.quantity}
-                    <span className="block text-xs text-white/42">{item.itemTypeLabel}, {item.sizeLabel}</span>
-                    {item.note ? (
-                      <span className="mt-1 block text-xs font-semibold text-neon-cyan">{item.note}</span>
-                    ) : null}
-                  </span>
-                  <span className="font-bold text-white">{formatKopecks(item.unitPriceKopecks * item.quantity)} ₽</span>
+              {(quote?.items ?? fallbackQuoteItems(items)).map((item) => (
+                <div key={`${item.productId}-${item.itemTypeLabel}-${item.sizeCm}`} className="text-sm">
+                  <div className="flex justify-between gap-4">
+                    <span className="text-white/66">
+                      {item.productName} x {item.quantity}
+                      <span className="block text-xs text-white/42">
+                        {item.itemTypeLabel}, {item.sizeCm} см
+                      </span>
+                      {item.note ? (
+                        <span className="mt-1 block text-xs font-semibold text-neon-cyan">
+                          {item.note}
+                        </span>
+                      ) : null}
+                    </span>
+                    <span className="font-bold text-white">
+                      {formatKopecks(item.lineSubtotalKopecks)} ₽
+                    </span>
+                  </div>
+                  {item.customDrawingSurchargeKopecks > 0 ? (
+                    <div className="mt-2 flex justify-between text-xs text-neon-cyan">
+                      <span>Отрисовка</span>
+                      <span>{formatKopecks(item.customDrawingSurchargeKopecks)} ₽</span>
+                    </div>
+                  ) : null}
+                  {item.discountKopecks > 0 ? (
+                    <div className="mt-2 flex justify-between text-xs text-emerald-200">
+                      <span>Скидка на второй ночник</span>
+                      <span>-{formatKopecks(item.discountKopecks)} ₽</span>
+                    </div>
+                  ) : null}
                 </div>
               ))}
             </div>
-            <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-4">
-              <span className="text-white/58">Итого</span>
-              <span className="text-2xl font-black text-white">{formatKopecks(totalKopecks)} ₽</span>
+
+            <div className="mt-4 grid gap-2 border-t border-white/10 pt-4 text-sm">
+              <SummaryRow
+                label="Товары"
+                value={quote?.summary.itemsSubtotalKopecks ?? localItemsSubtotal(items)}
+              />
+              <SummaryRow label="Отрисовка" value={quote?.summary.customDrawingTotalKopecks ?? 0} />
+              <SummaryRow
+                label="Скидка"
+                value={quote ? -quote.summary.discountAmountKopecks : 0}
+              />
+              <SummaryRow
+                label="Доставка Почтой России"
+                value={quote?.summary.deliveryAmountKopecks ?? 0}
+              />
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-white/58">Итого</span>
+                <span className="text-2xl font-black text-white">
+                  {formatKopecks(quote?.summary.totalKopecks ?? localItemsSubtotal(items))} ₽
+                </span>
+              </div>
             </div>
-            <ActionButton className="mt-4 w-full" disabled={!canPay} onClick={() => setShowDemo(true)}>
-              Перейти к оплате
+
+            <ActionButton className="mt-4 w-full" disabled>
+              Создание заказа будет подключено следующим этапом
             </ActionButton>
+            {!accepted ? (
+              <p className="mt-2 text-center text-xs text-white/42">
+                Согласие понадобится на этапе создания заказа.
+              </p>
+            ) : null}
           </section>
         </>
       )}
-
-      <AnimatePresence>
-        {showDemo ? (
-          <motion.div
-            className="fixed inset-x-4 bottom-24 z-[70] mx-auto max-w-xl rounded-[24px] border border-neon-cyan/30 bg-[#08111a] p-4 shadow-glow"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-          >
-            <div className="flex gap-3">
-              <CheckCircle2 className="shrink-0 text-neon-cyan" size={24} />
-              <div>
-                <p className="font-black text-white">Демо-режим</p>
-                <p className="mt-1 text-sm leading-5 text-white/66">
-                  Демо-режим: подключение оплаты будет добавлено на следующем этапе
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
     </AppShell>
   );
+}
+
+function SummaryRow({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="flex items-center justify-between text-white/64">
+      <span>{label}</span>
+      <span className={value < 0 ? "font-bold text-emerald-200" : "font-bold text-white"}>
+        {value < 0 ? "-" : ""}
+        {formatKopecks(Math.abs(value))} ₽
+      </span>
+    </div>
+  );
+}
+
+function buildQuotePayload(items: CartItem[]) {
+  return {
+    deliveryMethod: "RUSSIAN_POST",
+    items: items.map((item) => ({
+      productId: item.productId,
+      priceListItemId: item.priceListItemId,
+      quantity: item.quantity,
+      custom: item.customDrawingStyle
+        ? {
+            drawingStyle: item.customDrawingStyle,
+            customDesignKey: item.customDesignKey ?? null
+          }
+        : null
+    }))
+  };
+}
+
+function fallbackQuoteItems(items: CartItem[]): QuoteItem[] {
+  return items.map((item) => ({
+    productId: item.productId,
+    productName: item.productName,
+    itemTypeLabel: item.itemTypeLabel,
+    sizeCm: item.sizeCm,
+    quantity: item.quantity,
+    unitPriceKopecks: item.unitPriceKopecks,
+    lineSubtotalKopecks: item.unitPriceKopecks * item.quantity,
+    note: item.note,
+    customDrawingSurchargeKopecks: 0,
+    discountKopecks: 0,
+    lineTotalKopecks: item.unitPriceKopecks * item.quantity
+  }));
+}
+
+function localItemsSubtotal(items: CartItem[]) {
+  return items.reduce((sum, item) => sum + item.unitPriceKopecks * item.quantity, 0);
 }

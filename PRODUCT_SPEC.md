@@ -451,3 +451,11 @@ Production database уже поддерживает order structure для бу�
 Pricing foundation готов: следующий функциональный шаг - quote endpoint и checkout UI, где сервер заново проверяет корзину, цены, доставку, скидку и custom drawing surcharge.
 
 Custom design order с загруженным изображением требует admin image review до оплаты. До `APPROVED` такой заказ не должен попадать в payment flow.
+
+### Server quote
+
+Checkout рассчитывает сумму через `POST /api/orders/quote`. Сервер принимает только `productId`, `priceListItemId`, `quantity`, delivery method и optional custom drawing metadata, а цены, тип изделия, размер и note берёт из базы.
+
+Quote summary показывает строки: товары, отрисовка, скидка, доставка Почтой России и итог. Если товар скрыт, категория скрыта или вариант цены недоступен, checkout показывает безопасную ошибку и не позволяет продолжить.
+
+Кнопка создания заказа остаётся отключённой: реальное создание `Order` будет следующим этапом после проверки server quote.

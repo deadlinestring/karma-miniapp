@@ -4,6 +4,11 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { StorefrontItemType } from "@/lib/storefront-types";
 
+export type CartCustomDrawingStyle =
+  | "CUSTOM_DRAWING_STYLE_1"
+  | "CUSTOM_DRAWING_STYLE_2"
+  | "CUSTOM_DRAWING_STYLE_3";
+
 export type CartItem = {
   lineId: string;
   productId: string;
@@ -22,6 +27,8 @@ export type CartItem = {
   accent: "violet" | "cyan" | "blue" | "pink";
   coverImage?: string;
   isCustom?: boolean;
+  customDrawingStyle?: CartCustomDrawingStyle | null;
+  customDesignKey?: string | null;
 };
 
 type CartState = {
@@ -33,8 +40,13 @@ type CartState = {
   clearCart: () => void;
 };
 
-const makeLineId = (item: Omit<CartItem, "lineId" | "quantity">) =>
-  `${item.productId}-${item.priceListItemId}`;
+const makeLineId = (item: Omit<CartItem, "lineId" | "quantity">) => {
+  const customKey = item.customDrawingStyle
+    ? `${item.customDrawingStyle}-${item.customDesignKey ?? "line"}`
+    : "catalog";
+
+  return `${item.productId}-${item.priceListItemId}-${customKey}`;
+};
 
 export const isCartItem = (item: unknown): item is CartItem => {
   if (!item || typeof item !== "object") {
@@ -55,7 +67,13 @@ export const isCartItem = (item: unknown): item is CartItem => {
     typeof candidate.sizeLabel === "string" &&
     typeof candidate.unitPriceKopecks === "number" &&
     (candidate.note === null || typeof candidate.note === "string") &&
-    typeof candidate.quantity === "number"
+    typeof candidate.quantity === "number" &&
+    (candidate.customDrawingStyle === undefined ||
+      candidate.customDrawingStyle === null ||
+      typeof candidate.customDrawingStyle === "string") &&
+    (candidate.customDesignKey === undefined ||
+      candidate.customDesignKey === null ||
+      typeof candidate.customDesignKey === "string")
   );
 };
 

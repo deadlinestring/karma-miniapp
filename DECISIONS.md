@@ -322,3 +322,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - Order flow начинается с server-side quote: клиентский cart snapshot не является источником суммы заказа.
 - Реальный payment provider не подключается до отдельного согласования доступа и провайдера.
 - Custom image order должен пройти admin review до оплаты; `PENDING_REVIEW` не должен уходить в payment flow.
+
+## Order quote endpoint
+
+- Quote endpoint является обязательным read-only слоем перед созданием заказа.
+- Server price is the source of truth: checkout total берётся из server quote, а не из localStorage snapshot.
+- Hidden products, inactive categories/subcategories и чужие `PriceListItem` не могут быть рассчитаны в quote.
+- `POST /api/orders/quote` не создаёт `Order`, `Payment` и не выполняет write-операции в Supabase.
+- Следующий write-flow должен начинаться отдельным endpoint `POST /api/orders`, который повторно выполнит те же проверки.

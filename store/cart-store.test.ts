@@ -19,7 +19,33 @@ describe("cart snapshot compatibility", () => {
         unitPriceKopecks: 899000,
         note: "Двойная подсветка сверху и снизу",
         quantity: 1,
-        accent: "violet"
+        accent: "violet",
+        customDrawingStyle: null,
+        customDesignKey: null
+      })
+    ).toBe(true);
+  });
+
+  it("accepts forward-compatible custom drawing metadata", () => {
+    expect(
+      isCartItem({
+        lineId: "product-1-pli-standard-20-CUSTOM_DRAWING_STYLE_1-design-1",
+        productId: "product-1",
+        productSlug: "custom",
+        productName: "Свой дизайн",
+        category: "Идея",
+        subcategory: "Свой дизайн",
+        priceListItemId: "pli-standard-20",
+        itemType: "STANDARD",
+        itemTypeLabel: "Стандарт",
+        sizeCm: 20,
+        sizeLabel: "20 см",
+        unitPriceKopecks: 249000,
+        note: null,
+        quantity: 1,
+        accent: "cyan",
+        customDrawingStyle: "CUSTOM_DRAWING_STYLE_1",
+        customDesignKey: "design-1"
       })
     ).toBe(true);
   });

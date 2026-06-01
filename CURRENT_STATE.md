@@ -72,6 +72,8 @@ Updated checkpoint: the prepared Order flow foundation commit `00a863a` is ready
 
 Next concrete implementation step: build `POST /api/orders/quote` with server-side price, delivery, discount and custom drawing validation. Do not connect YooKassa or another payment provider until provider access and integration responsibility are explicitly agreed.
 
+Quote checkpoint: `POST /api/orders/quote` is prepared locally as a read-only endpoint. Checkout uses server quote for delivery, discount, custom drawing surcharge and total, but `POST /api/orders` is still the next step. Production orders remain `0`.
+
 ## New order flow requirements
 
 - Server must re-check prices from `PriceListItem`; cart localStorage is only a UX snapshot.
