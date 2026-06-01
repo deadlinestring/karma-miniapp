@@ -38,9 +38,13 @@ export const CUSTOM_DRAWING_SURCHARGE_KOPECKS: Record<CustomDrawingStyle, number
 
 export const NIGHTLIGHT_DELIVERY_KOPECKS = 45000;
 export const WALL_PANEL_DELIVERY_KOPECKS = 55000;
-export const SECOND_NIGHTLIGHT_DISCOUNT_PERCENT = 30;
+export const SECOND_PHYSICAL_ITEM_DISCOUNT_PERCENT = 30;
 
-const NIGHTLIGHT_ITEM_TYPES = new Set<OrderPricingItemType>(["STANDARD", "PREMIUM"]);
+const PHYSICAL_ITEM_TYPES = new Set<OrderPricingItemType>([
+  "STANDARD",
+  "PREMIUM",
+  "WALL_PANEL"
+]);
 
 export function calculateOrderPricing(items: OrderPricingInputItem[]): OrderPricingResult {
   if (items.length === 0) {
@@ -55,7 +59,7 @@ export function calculateOrderPricing(items: OrderPricingInputItem[]): OrderPric
   }
 
   const surchargeByLine = calculateCustomDrawingSurcharges(items);
-  const discountByLine = calculateSecondNightlightDiscounts(items);
+  const discountByLine = calculateSecondPhysicalItemDiscounts(items);
 
   const lines = items.map<OrderPricingLine>((item, index) => {
     validatePricingItem(item);
@@ -126,13 +130,13 @@ function calculateCustomDrawingSurcharges(items: OrderPricingInputItem[]) {
   return surchargeByLine;
 }
 
-function calculateSecondNightlightDiscounts(items: OrderPricingInputItem[]) {
+function calculateSecondPhysicalItemDiscounts(items: OrderPricingInputItem[]) {
   const eligibleUnits: Array<{ lineIndex: number; unitPriceKopecks: number }> = [];
 
   items.forEach((item, lineIndex) => {
     validatePricingItem(item);
 
-    if (!NIGHTLIGHT_ITEM_TYPES.has(item.itemType)) {
+    if (!PHYSICAL_ITEM_TYPES.has(item.itemType)) {
       return;
     }
 
@@ -149,7 +153,7 @@ function calculateSecondNightlightDiscounts(items: OrderPricingInputItem[]) {
     unit.unitPriceKopecks < cheapest.unitPriceKopecks ? unit : cheapest
   );
   const discountKopecks = Math.floor(
-    (cheapestUnit.unitPriceKopecks * SECOND_NIGHTLIGHT_DISCOUNT_PERCENT) / 100
+    (cheapestUnit.unitPriceKopecks * SECOND_PHYSICAL_ITEM_DISCOUNT_PERCENT) / 100
   );
 
   return new Map([[cheapestUnit.lineIndex, discountKopecks]]);

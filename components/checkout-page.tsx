@@ -193,7 +193,7 @@ export function CheckoutPage() {
                   ) : null}
                   {item.discountKopecks > 0 ? (
                     <div className="mt-2 flex justify-between text-xs text-emerald-200">
-                      <span>Скидка на второй ночник</span>
+                      <span>Скидка на второе изделие</span>
                       <span>-{formatKopecks(item.discountKopecks)} ₽</span>
                     </div>
                   ) : null}

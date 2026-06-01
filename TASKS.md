@@ -299,7 +299,7 @@
 - Order flow design — подготовлен на уровне schema, migration SQL и server-side pricing foundation.
 - Подготовлена доставка Почтой России: `450 ₽` для заказов только со `STANDARD` / `PREMIUM`, `550 ₽` при наличии хотя бы одной `WALL_PANEL`.
 - Подготовлены custom drawing styles: стиль 1 `+690 ₽`, стиль 2 `+790 ₽`, стиль 3 `+990 ₽`.
-- Подготовлена скидка `30%` на второй ночник: применяется один раз к самому дешёвому eligible `STANDARD` / `PREMIUM`, delivery и custom drawing surcharge в скидке не участвуют.
+- Подготовлена скидка `30%` на второе изделие: применяется один раз к самому дешёвому eligible `STANDARD` / `PREMIUM` / `WALL_PANEL`, delivery и custom drawing surcharge в скидке не участвуют.
 - Custom image order заложен как сценарий с admin review: `PENDING_REVIEW`, `APPROVED`, `REJECTED`; до проверки администратором такой заказ не должен уходить в оплату.
 - Real order creation ещё не реализован: подготовлены schema/migration и расчёт, но API создания заказа не добавлен.
 - Payment provider пока не выбран; реальная оплата через ЮKassa / Т-Банк не подключается до отдельного согласования провайдера и доступа.
@@ -320,5 +320,6 @@
 - `POST /api/orders/quote` подготовлен как read-only расчёт корзины без создания `Order` и `Payment`.
 - Quote endpoint заново читает активный товар, активную категорию/подкатегорию, активный `PriceList main` и выбранный `PriceListItem`.
 - Checkout использует server quote для отображения товаров, доставки Почтой России, скидки, custom drawing surcharge и итоговой суммы.
+- Discount rule уточнён после проверки quote: `WALL_PANEL` участвует как физическое изделие, скидка `30%` применяется один раз к самому дешёвому unit в заказе.
 - Создание заказа ещё не реализовано: кнопка checkout остаётся отключённой до следующего этапа.
 - Оплата ещё не подключена.

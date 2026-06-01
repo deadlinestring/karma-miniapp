@@ -186,6 +186,24 @@ describe("quoteOrderWithServices", () => {
     expect(quote.items[2].note).toBe("Двойная подсветка сверху и снизу");
   });
 
+  it("discounts the cheapest unit when a premium nightlight is ordered with a wall panel", async () => {
+    const quote = await quoteOrderWithServices(
+      {
+        deliveryMethod: "RUSSIAN_POST",
+        items: [
+          { productId: "product-1", priceListItemId: "premium-30", quantity: 1 },
+          { productId: "product-1", priceListItemId: "wall-55", quantity: 1 }
+        ]
+      },
+      makeServices().services
+    );
+
+    expect(quote.summary.itemsSubtotalKopecks).toBe(1448000);
+    expect(quote.summary.discountAmountKopecks).toBe(164700);
+    expect(quote.summary.deliveryAmountKopecks).toBe(55000);
+    expect(quote.summary.totalKopecks).toBe(1338300);
+  });
+
   it("does not double-charge repeated custom design key", async () => {
     const quote = await quoteOrderWithServices(
       {

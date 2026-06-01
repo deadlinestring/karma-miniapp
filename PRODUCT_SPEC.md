@@ -429,8 +429,8 @@ Production-сценарий подтверждён: импортированы �
 - Snapshot заказа хранит product, `priceListItemId`, тип изделия, размер, цену, note и quantity.
 - Custom drawing styles: `CUSTOM_DRAWING_STYLE_1` `+690 ₽`, `CUSTOM_DRAWING_STYLE_2` `+790 ₽`, `CUSTOM_DRAWING_STYLE_3` `+990 ₽`.
 - Доплата за custom drawing не участвует в скидке и должна храниться snapshot-ом.
-- Скидка на второй ночник: `30%` на самый дешёвый eligible `STANDARD` / `PREMIUM`; `WALL_PANEL` не участвует, delivery не участвует.
-- Quantity считается как отдельные eligible единицы.
+- Скидка на второе изделие: `30%` один раз на самый дешёвый physical unit среди `STANDARD` / `PREMIUM` / `WALL_PANEL`.
+- Quantity считается как отдельные eligible единицы; delivery и custom drawing surcharge в скидке не участвуют.
 
 ### Delivery
 

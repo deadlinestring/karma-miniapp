@@ -307,8 +307,8 @@ Prisma migrations и другие CLI-операции используют Supa
 
 - Клиентский cart snapshot используется только как UX snapshot; перед quote/order сервер обязан заново проверить `PriceListItem`, активность товара, категории, подкатегории и актуальную цену.
 - Доставка Почтой России хранится snapshot-ом в заказе: `450 ₽`, если в заказе только ночники `STANDARD` / `PREMIUM`; `550 ₽`, если есть хотя бы одна `WALL_PANEL`.
-- Скидка на второй ночник составляет `30%` и применяется один раз к самому дешёвому eligible ночнику среди `STANDARD` / `PREMIUM`; quantity считается как отдельные единицы товара.
-- `WALL_PANEL`, доставка и доплата за custom drawing не участвуют в скидке.
+- Скидка на второе изделие составляет `30%` и применяется один раз к самому дешёвому physical unit среди `STANDARD` / `PREMIUM` / `WALL_PANEL`; quantity считается как отдельные единицы товара.
+- Доставка и доплата за custom drawing не участвуют в скидке и не влияют на выбор discounted unit.
 - Custom drawing требует выбора стиля: `CUSTOM_DRAWING_STYLE_1` `+690 ₽`, `CUSTOM_DRAWING_STYLE_2` `+790 ₽`, `CUSTOM_DRAWING_STYLE_3` `+990 ₽`.
 - Если один custom design используется для нескольких экземпляров, базовое решение foundation — считать доплату за отрисовку один раз на unique custom design key; item-level fallback допускается только если ключ дизайна ещё не введён в UI.
 - Custom image order требует admin review. До `APPROVED` заказ не должен автоматически уходить в оплату; при `REJECTED` администратор указывает причину.

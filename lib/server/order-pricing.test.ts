@@ -24,7 +24,7 @@ describe("calculateOrderPricing", () => {
     expect(result.deliveryKopecks).toBe(WALL_PANEL_DELIVERY_KOPECKS);
   });
 
-  it("does not apply second nightlight discount to a single nightlight", () => {
+  it("does not apply second item discount to a single physical product", () => {
     const result = calculateOrderPricing([
       { itemType: "PREMIUM", unitPriceKopecks: 549000, quantity: 1 }
     ]);
@@ -32,7 +32,7 @@ describe("calculateOrderPricing", () => {
     expect(result.discountKopecks).toBe(0);
   });
 
-  it("applies 30 percent discount to the cheaper nightlight", () => {
+  it("applies 30 percent discount to the cheaper standard or premium unit", () => {
     const result = calculateOrderPricing([
       { itemType: "PREMIUM", unitPriceKopecks: 549000, quantity: 1 },
       { itemType: "STANDARD", unitPriceKopecks: 249000, quantity: 1 }
@@ -42,21 +42,35 @@ describe("calculateOrderPricing", () => {
     expect(result.totalKopecks).toBe(549000 + 249000 + 45000 - 74700);
   });
 
-  it("treats quantity as separate eligible nightlight units", () => {
+  it("applies 30 percent discount when a nightlight is ordered with a wall panel", () => {
+    const result = calculateOrderPricing([
+      { itemType: "PREMIUM", unitPriceKopecks: 549000, quantity: 1 },
+      { itemType: "WALL_PANEL", unitPriceKopecks: 899000, quantity: 1 }
+    ]);
+
+    expect(result.itemsSubtotalKopecks).toBe(1448000);
+    expect(result.discountKopecks).toBe(164700);
+    expect(result.deliveryKopecks).toBe(55000);
+    expect(result.totalKopecks).toBe(1338300);
+  });
+
+  it("applies 30 percent discount to the cheaper wall panel when two panels are ordered", () => {
+    const result = calculateOrderPricing([
+      { itemType: "WALL_PANEL", unitPriceKopecks: 499000, quantity: 1 },
+      { itemType: "WALL_PANEL", unitPriceKopecks: 899000, quantity: 1 }
+    ]);
+
+    expect(result.discountKopecks).toBe(149700);
+    expect(result.deliveryKopecks).toBe(55000);
+    expect(result.totalKopecks).toBe(499000 + 899000 + 55000 - 149700);
+  });
+
+  it("treats quantity as separate eligible physical units", () => {
     const result = calculateOrderPricing([
       { itemType: "STANDARD", unitPriceKopecks: 249000, quantity: 2 }
     ]);
 
     expect(result.discountKopecks).toBe(74700);
-  });
-
-  it("does not discount wall panels", () => {
-    const result = calculateOrderPricing([
-      { itemType: "WALL_PANEL", unitPriceKopecks: 499000, quantity: 2 }
-    ]);
-
-    expect(result.discountKopecks).toBe(0);
-    expect(result.deliveryKopecks).toBe(55000);
   });
 
   it("adds custom drawing style surcharge", () => {

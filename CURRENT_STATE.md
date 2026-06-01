@@ -72,13 +72,15 @@ Updated checkpoint: the prepared Order flow foundation commit `00a863a` is ready
 
 Next concrete implementation step: build `POST /api/orders/quote` with server-side price, delivery, discount and custom drawing validation. Do not connect YooKassa or another payment provider until provider access and integration responsibility are explicitly agreed.
 
-Quote checkpoint: `POST /api/orders/quote` is prepared locally as a read-only endpoint. Checkout uses server quote for delivery, discount, custom drawing surcharge and total, but `POST /api/orders` is still the next step. Production orders remain `0`.
+Quote checkpoint: `POST /api/orders/quote` is published as a read-only endpoint. Checkout uses server quote for delivery, discount, custom drawing surcharge and total, but `POST /api/orders` is still the next step. Production orders remain `0`.
+
+Urgent quote fix checkpoint: the discount business rule was clarified after quote publication. The quote discount is being updated so `STANDARD`, `PREMIUM` and `WALL_PANEL` all count as physical products, with one `30%` discount applied to the cheapest unit when the order contains at least two physical items.
 
 ## New order flow requirements
 
 - Server must re-check prices from `PriceListItem`; cart localStorage is only a UX snapshot.
 - Delivery by Russian Post: `450 ₽` for orders with only `STANDARD` / `PREMIUM`, `550 ₽` when at least one `WALL_PANEL` exists.
-- Second nightlight discount: `30%` once, applied to the cheapest eligible `STANDARD` / `PREMIUM` unit; `WALL_PANEL`, delivery and custom drawing surcharge are excluded.
+- Second item discount: `30%` once, applied to the cheapest eligible `STANDARD` / `PREMIUM` / `WALL_PANEL` unit; delivery and custom drawing surcharge are excluded.
 - Custom drawing styles: style 1 `+690 ₽`, style 2 `+790 ₽`, style 3 `+990 ₽`.
 - Custom image orders need admin review before payment: `PENDING_REVIEW`, `APPROVED`, `REJECTED`.
 - Proposed private custom upload bucket env for a later stage: `SUPABASE_CUSTOM_ORDER_BUCKET`.
