@@ -41,6 +41,23 @@ enum FulfillmentStatus {
   CANCELLED
 }
 
+enum CustomDrawingStyle {
+  CUSTOM_DRAWING_STYLE_1
+  CUSTOM_DRAWING_STYLE_2
+  CUSTOM_DRAWING_STYLE_3
+}
+
+enum CustomImageReviewStatus {
+  NOT_REQUIRED
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum DeliveryMethod {
+  RUSSIAN_POST
+}
+
 model StoreSettings {
   id           String   @id @default("main")
   storeName    String
@@ -124,17 +141,17 @@ model PriceList {
 }
 
 model PriceListItem {
-  id            String    @id @default(cuid())
-  priceListId   String
-  itemType      ItemType
-  sizeCm        Int
-  priceKopecks  Int
-  note          String?
-  sortOrder     Int       @default(0)
-  isActive      Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  priceList     PriceList @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+  id           String    @id @default(cuid())
+  priceListId  String
+  itemType     ItemType
+  sizeCm       Int
+  priceKopecks Int
+  note         String?
+  sortOrder    Int       @default(0)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  priceList    PriceList @relation(fields: [priceListId], references: [id], onDelete: Cascade)
 
   @@unique([priceListId, itemType, sizeCm])
   @@index([priceListId, isActive, sortOrder])
@@ -155,15 +172,15 @@ model ProductImage {
 }
 
 model ProductVariant {
-  id            String   @id @default(cuid())
-  productId     String
-  itemType      ItemType
-  sizeCm        Int
-  priceKopecks  Int
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  productId    String
+  itemType     ItemType
+  sizeCm       Int
+  priceKopecks Int
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([productId, itemType, sizeCm])
   @@index([productId, isActive])
@@ -182,39 +199,49 @@ model TelegramUser {
 }
 
 model DeliveryAddress {
-  id         String   @id @default(cuid())
-  orderId    String   @unique
-  city       String
-  street     String
-  house      String
-  apartment  String?
-  postalCode String?
-  comment    String?
-  createdAt  DateTime @default(now())
-  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id          String   @id @default(cuid())
+  orderId     String   @unique
+  city        String
+  addressLine String?
+  street      String
+  house       String
+  apartment   String?
+  postalCode  String?
+  comment     String?
+  createdAt   DateTime @default(now())
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model Order {
-  id                       String            @id @default(cuid())
-  publicNumber             String            @unique
-  userId                   String?
-  customerName             String
-  customerPhone            String
-  customerTelegramUsername String?
-  customerTelegramId       BigInt?
-  comment                  String?
-  totalKopecks             Int
-  paymentProvider          PaymentProvider   @default(DEMO)
-  paymentStatus            PaymentStatus     @default(PENDING)
-  fulfillmentStatus        FulfillmentStatus @default(NEW)
-  consentPersonalData      Boolean           @default(false)
-  createdAt                DateTime          @default(now())
-  updatedAt                DateTime          @updatedAt
-  user                     TelegramUser?     @relation(fields: [userId], references: [id], onDelete: SetNull)
-  deliveryAddress          DeliveryAddress?
-  items                    OrderItem[]
-  payments                 Payment[]
-  notificationLogs         NotificationLog[]
+  id                        String            @id @default(cuid())
+  publicNumber              String            @unique
+  userId                    String?
+  customerName              String
+  customerPhone             String
+  customerTelegramUsername  String?
+  customerTelegramId        BigInt?
+  customerTelegramFirstName String?
+  customerTelegramLastName  String?
+  customerContact           String?
+  comment                   String?
+  adminNotes                String?
+  itemsSubtotalKopecks      Int               @default(0)
+  customDrawingKopecks      Int               @default(0)
+  deliveryMethod            DeliveryMethod    @default(RUSSIAN_POST)
+  deliveryKopecks           Int               @default(0)
+  discountKopecks           Int               @default(0)
+  totalKopecks              Int
+  paymentProvider           PaymentProvider   @default(DEMO)
+  paymentStatus             PaymentStatus     @default(PENDING)
+  fulfillmentStatus         FulfillmentStatus @default(NEW)
+  consentPersonalData       Boolean           @default(false)
+  createdAt                 DateTime          @default(now())
+  updatedAt                 DateTime          @updatedAt
+  user                      TelegramUser?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  deliveryAddress           DeliveryAddress?
+  items                     OrderItem[]
+  payments                  Payment[]
+  notificationLogs          NotificationLog[]
 
   @@index([userId, createdAt])
   @@index([paymentStatus, fulfillmentStatus])
@@ -222,37 +249,52 @@ model Order {
 }
 
 model OrderItem {
-  id                   String   @id @default(cuid())
-  orderId              String
-  productId            String?
-  productNameSnapshot  String
-  productImageSnapshot String?
-  itemTypeSnapshot     ItemType
-  sizeCmSnapshot       Int
-  unitPriceKopecks     Int
-  quantity             Int
-  subtotalKopecks      Int
-  createdAt            DateTime @default(now())
-  order                Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product              Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  id                            String                  @id @default(cuid())
+  orderId                       String
+  productId                     String?
+  priceListItemId               String?
+  productNameSnapshot           String
+  productSlugSnapshot           String?
+  productImageSnapshot          String?
+  itemTypeSnapshot              ItemType
+  itemTypeLabelSnapshot         String?
+  sizeCmSnapshot                Int
+  noteSnapshot                  String?
+  unitPriceKopecks              Int
+  baseSubtotalKopecks           Int                     @default(0)
+  customDrawingStyle            CustomDrawingStyle?
+  customDrawingSurchargeKopecks Int                     @default(0)
+  customDesignKey               String?
+  customImageUrl                String?
+  customImageStoragePath        String?
+  customImageReviewStatus       CustomImageReviewStatus @default(NOT_REQUIRED)
+  customImageReviewComment      String?
+  discountKopecks               Int                     @default(0)
+  quantity                      Int
+  subtotalKopecks               Int
+  createdAt                     DateTime                @default(now())
+  order                         Order                   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product                       Product?                @relation(fields: [productId], references: [id], onDelete: SetNull)
 
   @@index([orderId])
   @@index([productId])
+  @@index([priceListItemId])
+  @@index([customImageReviewStatus])
 }
 
 model Payment {
-  id                String        @id @default(cuid())
+  id                String          @id @default(cuid())
   orderId           String
   provider          PaymentProvider
   providerPaymentId String?
   amountKopecks     Int
-  status            PaymentStatus @default(PENDING)
-  idempotencyKey    String        @unique
+  status            PaymentStatus   @default(PENDING)
+  idempotencyKey    String          @unique
   confirmationUrl   String?
   rawWebhookPayload Json?
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-  order             Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  order             Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerPaymentId])
   @@index([orderId])
@@ -260,14 +302,14 @@ model Payment {
 }
 
 model NotificationLog {
-  id                  String   @id @default(cuid())
+  id                  String    @id @default(cuid())
   orderId             String
   type                String
   recipientTelegramId BigInt
-  deduplicationKey    String   @unique
+  deduplicationKey    String    @unique
   sentAt              DateTime?
-  createdAt           DateTime @default(now())
-  order               Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt           DateTime  @default(now())
+  order               Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([orderId])
   @@index([recipientTelegramId])

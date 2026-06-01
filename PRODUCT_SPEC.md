@@ -418,3 +418,28 @@ Production-сценарий подтверждён: импортированы �
 Товары без фото не публикуются покупателю. Для появления импортированной карточки в магазине администратор должен вручную загрузить cover через раздел `Товары`, проверить карточку и включить показ в магазине.
 
 Следующий крупный блок после стабилизации каталога — покупательский заказ: server-side создание заказа, адрес доставки, Telegram-уведомления, статусы заказа и тестовая оплата.
+
+## Order flow foundation
+
+Покупательский заказ должен создаваться только после server-side quote: сервер заново проверяет товары, активность категорий, `PriceListItem`, цену, тип изделия и размер. Значения из localStorage корзины не являются источником истины для оплаты.
+
+### Pricing rules
+
+- Item subtotal берётся из актуального `PriceListItem.priceKopecks`.
+- Snapshot заказа хранит product, `priceListItemId`, тип изделия, размер, цену, note и quantity.
+- Custom drawing styles: `CUSTOM_DRAWING_STYLE_1` `+690 ₽`, `CUSTOM_DRAWING_STYLE_2` `+790 ₽`, `CUSTOM_DRAWING_STYLE_3` `+990 ₽`.
+- Доплата за custom drawing не участвует в скидке и должна храниться snapshot-ом.
+- Скидка на второй ночник: `30%` на самый дешёвый eligible `STANDARD` / `PREMIUM`; `WALL_PANEL` не участвует, delivery не участвует.
+- Quantity считается как отдельные eligible единицы.
+
+### Delivery
+
+Доставка Почтой России отображается отдельной строкой: `450 ₽`, если в заказе только `STANDARD` / `PREMIUM`; `550 ₽`, если есть хотя бы одна `WALL_PANEL`.
+
+### Custom design order
+
+Пользователь загружает изображение, выбирает стиль отрисовки и ждёт проверки администратором. Статусы review: `PENDING_REVIEW`, `APPROVED`, `REJECTED`. До `APPROVED` custom order не должен автоматически уходить в оплату. Файлы custom order должны храниться отдельно от публичного catalog bucket, в private bucket.
+
+### Customer contact and payment
+
+Заказ должен хранить Telegram ID/username/name, ручной телефон или другой fallback contact, адрес доставки и комментарий. ЮKassa / Т-Банк подключаются только после отдельного согласования доступа; до этого возможен demo/test-payment flow.

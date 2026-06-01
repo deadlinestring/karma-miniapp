@@ -6,7 +6,7 @@ Last updated: 2026-06-01
 
 - Production URL: `https://karma-miniapp.vercel.app`
 - Telegram bot: `@karma_nightlight_store_bot`
-- Current `origin/main`: `be34320`
+- Current `origin/main`: `f7c7602`
 
 ## Live features
 
@@ -40,7 +40,7 @@ Last updated: 2026-06-01
   - images: `0`
   - cover: `0`
   - not shown in public storefront
-- `Донкихот Росиант`
+- `Донкихот Росинант`
   - `externalId = anime_onepiece_rosinante_001`
   - subcategory: `One Piece`
   - `priceListId = main`
@@ -50,14 +50,12 @@ Last updated: 2026-06-01
   - cover: `0`
   - not shown in public storefront
 
-Note: the second imported product is currently stored in production as `Донкихот Росиант`.
-
 ## Public storefront check
 
 - `/` opens.
 - `/catalog` opens.
 - `Монки Д. Луффи` is active, has one cover image, uses `PriceList main`, and is shown publicly.
-- `Ророноа Зоро` and `Донкихот Росиант` are hidden and are not shown publicly.
+- `Ророноа Зоро` and `Донкихот Росинант` are hidden and are not shown publicly.
 
 ## Do not repeat without read-only verification
 
@@ -68,9 +66,17 @@ Note: the second imported product is currently stored in production as `Донк
 
 ## Recommended next step
 
-Either upload cover images and publish selected imported products, or move to real order flow: server-side order creation, delivery address, Telegram notifications, order statuses and test payment.
+Apply the prepared Order flow migration after review, then build server-side quote/order creation, delivery address, Telegram notifications, order statuses and test payment.
+
+## New order flow requirements
+
+- Server must re-check prices from `PriceListItem`; cart localStorage is only a UX snapshot.
+- Delivery by Russian Post: `450 ₽` for orders with only `STANDARD` / `PREMIUM`, `550 ₽` when at least one `WALL_PANEL` exists.
+- Second nightlight discount: `30%` once, applied to the cheapest eligible `STANDARD` / `PREMIUM` unit; `WALL_PANEL`, delivery and custom drawing surcharge are excluded.
+- Custom drawing styles: style 1 `+690 ₽`, style 2 `+790 ₽`, style 3 `+990 ₽`.
+- Custom image orders need admin review before payment: `PENDING_REVIEW`, `APPROVED`, `REJECTED`.
+- Proposed private custom upload bucket env for a later stage: `SUPABASE_CUSTOM_ORDER_BUCKET`.
 
 ## Known payment risk
 
 ЮKassa access may be difficult because the user may not own the account. The payment provider should be agreed before payment integration starts.
-
