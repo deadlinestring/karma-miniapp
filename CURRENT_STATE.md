@@ -78,6 +78,10 @@ Urgent quote fix checkpoint: the discount business rule was clarified after quot
 
 Order creation checkpoint: `POST /api/orders` is being prepared without online payment. The endpoint requires Telegram Mini App initData, recalculates server quote before writing, and creates `TelegramUser`, `Order`, `OrderItem` and `DeliveryAddress` only. `Payment` and Telegram admin notifications remain disabled until separate stages. Production `Order` and `Payment` counts must remain `0` before the live test.
 
+Live order checkpoint: first production order without online payment was created successfully as `KRM-20260601-128352`. Current expected counts after that user action: `Order = 1`, `Payment = 0`. The next required stage is Telegram admin notifications and/or an admin orders view.
+
+UX hotfix checkpoint: success/error/status messages in checkout and admin panels need automatic scroll into view so users can see action results inside Telegram Mini App. Future admin discount management, including global discounts and product-specific discounts, remains a separate design stage.
+
 ## New order flow requirements
 
 - Server must re-check prices from `PriceListItem`; cart localStorage is only a UX snapshot.

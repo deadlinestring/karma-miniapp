@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { ActionButton } from "@/components/action-button";
+import { useScrollIntoViewOnChange } from "@/components/use-scroll-into-view-on-change";
 import { formatKopecks } from "@/lib/pricing";
 import { useCartStore, type CartItem } from "@/store/cart-store";
 
@@ -113,6 +114,9 @@ export function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [createdOrder, setCreatedOrder] = useState<Extract<OrderResponse, { ok: true }>["order"] | null>(null);
+  const createdOrderRef = useScrollIntoViewOnChange(createdOrder?.publicNumber);
+  const quoteErrorRef = useScrollIntoViewOnChange(quoteError);
+  const submitErrorRef = useScrollIntoViewOnChange(submitError);
 
   const quotePayload = useMemo(() => buildQuotePayload(items), [items]);
   const requiredFieldsFilled = fields
@@ -255,17 +259,19 @@ export function CheckoutPage() {
             </p>
           ) : null}
 
-          {createdOrder ? (
-            <section className="mt-5 rounded-[24px] border border-emerald-300/30 bg-emerald-400/10 p-4">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-200">
-                заказ создан
-              </p>
-              <h2 className="mt-2 text-2xl font-black text-white">
-                {createdOrder.publicNumber}
-              </h2>
-              <p className="mt-2 text-sm text-white/70">{createdOrder.message}</p>
-            </section>
-          ) : null}
+          <div ref={createdOrderRef}>
+            {createdOrder ? (
+              <section className="mt-5 rounded-[24px] border border-emerald-300/30 bg-emerald-400/10 p-4">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-200">
+                  заказ создан
+                </p>
+                <h2 className="mt-2 text-2xl font-black text-white">
+                  {createdOrder.publicNumber}
+                </h2>
+                <p className="mt-2 text-sm text-white/70">{createdOrder.message}</p>
+              </section>
+            ) : null}
+          </div>
 
           <section className="mt-5 grid gap-3">
             {fields.map((field) => (
@@ -319,11 +325,13 @@ export function CheckoutPage() {
               </p>
             ) : null}
 
-            {quoteError ? (
-              <p className="mt-3 rounded-2xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-100">
-                {quoteError}
-              </p>
-            ) : null}
+            <div ref={quoteErrorRef}>
+              {quoteError ? (
+                <p className="mt-3 rounded-2xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-100">
+                  {quoteError}
+                </p>
+              ) : null}
+            </div>
 
             <div className="mt-3 grid gap-3">
               {(quote?.items ?? fallbackQuoteItems(items)).map((item) => (
@@ -382,11 +390,13 @@ export function CheckoutPage() {
               </div>
             </div>
 
-            {submitError ? (
-              <p className="mt-3 rounded-2xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-100">
-                {submitError}
-              </p>
-            ) : null}
+            <div ref={submitErrorRef}>
+              {submitError ? (
+                <p className="mt-3 rounded-2xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-100">
+                  {submitError}
+                </p>
+              ) : null}
+            </div>
 
             <ActionButton className="mt-4 w-full" disabled={!canSubmit}>
               {isSubmitting ? "Создаём заказ..." : "Создать заказ"}

@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useEffect, useState } from "react";
 import { CheckCircle2, Download, FileSearch, PackageOpen } from "lucide-react";
+import { useScrollIntoViewOnChange } from "@/components/use-scroll-into-view-on-change";
 
 type CategoryTree = {
   categories: Array<{
@@ -53,6 +54,7 @@ export function AdminProductImportPanel({ initData, onOpenProducts }: { initData
   const [isApplying, setIsApplying] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const statusRef = useScrollIntoViewOnChange(message ?? error ?? applyResult?.createdCount);
 
   useEffect(() => {
     let isMounted = true;
@@ -204,8 +206,10 @@ export function AdminProductImportPanel({ initData, onOpenProducts }: { initData
         основной прайс. Сначала выполните предпросмотр, затем примените только файл без ошибок и обновлений.
       </p>
 
-      {message ? <p className="mt-4 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 p-3 text-sm text-neon-cyan">{message}</p> : null}
-      {error ? <p className="mt-4 rounded-2xl border border-neon-pink/20 bg-neon-pink/10 p-3 text-sm text-neon-pink">{error}</p> : null}
+      <div ref={statusRef}>
+        {message ? <p className="mt-4 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 p-3 text-sm text-neon-cyan">{message}</p> : null}
+        {error ? <p className="mt-4 rounded-2xl border border-neon-pink/20 bg-neon-pink/10 p-3 text-sm text-neon-pink">{error}</p> : null}
+      </div>
 
       <div className="mt-5 rounded-3xl border border-white/10 bg-night/60 p-4">
         <h3 className="text-lg font-black text-white">CSV-шаблон для Excel</h3>

@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Save } from "lucide-react";
+import { useScrollIntoViewOnChange } from "@/components/use-scroll-into-view-on-change";
 import { groupPriceListItems } from "@/lib/admin-price-list-groups";
 import type { StorefrontItemType } from "@/lib/storefront-types";
 
@@ -33,6 +34,7 @@ export function AdminPriceListsPanel({ initData }: { initData: string }) {
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const statusRef = useScrollIntoViewOnChange(message ?? error);
 
   useEffect(() => {
     let isMounted = true;
@@ -130,8 +132,10 @@ export function AdminPriceListsPanel({ initData }: { initData: string }) {
         </p>
       </div>
 
-      {message ? <p className="mt-4 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 p-3 text-sm text-neon-cyan">{message}</p> : null}
-      {error ? <p className="mt-4 rounded-2xl border border-neon-pink/20 bg-neon-pink/10 p-3 text-sm text-neon-pink">{error}</p> : null}
+      <div ref={statusRef}>
+        {message ? <p className="mt-4 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 p-3 text-sm text-neon-cyan">{message}</p> : null}
+        {error ? <p className="mt-4 rounded-2xl border border-neon-pink/20 bg-neon-pink/10 p-3 text-sm text-neon-pink">{error}</p> : null}
+      </div>
 
       <form onSubmit={savePrices} className="mt-5 grid gap-4">
         {groups.map((group) => (

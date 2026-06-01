@@ -4,6 +4,7 @@
 
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ImageUp, Plus, Save, Search, Star, Trash2 } from "lucide-react";
+import { useScrollIntoViewOnChange } from "@/components/use-scroll-into-view-on-change";
 
 type ProductType = "REGULAR" | "CUSTOM";
 type ProductStatus = "all" | "active" | "hidden" | "featured";
@@ -86,6 +87,7 @@ export function AdminProductsPanel({ initData }: { initData: string }) {
   const [isBusy, setIsBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const statusRef = useScrollIntoViewOnChange(message ?? error);
 
   useEffect(() => {
     let isMounted = true;
@@ -192,8 +194,10 @@ export function AdminProductsPanel({ initData }: { initData: string }) {
         </p>
       </div>
 
-      {message ? <p className="mt-4 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 p-3 text-sm text-neon-cyan">{message}</p> : null}
-      {error ? <p className="mt-4 rounded-2xl border border-neon-pink/20 bg-neon-pink/10 p-3 text-sm text-neon-pink">{error}</p> : null}
+      <div ref={statusRef}>
+        {message ? <p className="mt-4 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 p-3 text-sm text-neon-cyan">{message}</p> : null}
+        {error ? <p className="mt-4 rounded-2xl border border-neon-pink/20 bg-neon-pink/10 p-3 text-sm text-neon-pink">{error}</p> : null}
+      </div>
 
       {view.mode === "list" ? (
         <ProductListView

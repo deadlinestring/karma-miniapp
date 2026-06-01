@@ -5,6 +5,7 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { ImageUp, Save } from "lucide-react";
+import { useScrollIntoViewOnChange } from "@/components/use-scroll-into-view-on-change";
 
 type AdminSettings = {
   storeName: string;
@@ -36,6 +37,7 @@ export function AdminSettingsPanel({ initData }: { initData: string }) {
   const [heroFile, setHeroFile] = useState<File | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const statusRef = useScrollIntoViewOnChange(message ?? error);
 
   useEffect(() => {
     let isMounted = true;
@@ -165,8 +167,10 @@ export function AdminSettingsPanel({ initData }: { initData: string }) {
         Открыть магазин
       </Link>
 
-      {message ? <p className="rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 p-3 text-sm text-neon-cyan">{message}</p> : null}
-      {error ? <p className="rounded-2xl border border-neon-pink/20 bg-neon-pink/10 p-3 text-sm text-neon-pink">{error}</p> : null}
+      <div ref={statusRef}>
+        {message ? <p className="rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 p-3 text-sm text-neon-cyan">{message}</p> : null}
+        {error ? <p className="rounded-2xl border border-neon-pink/20 bg-neon-pink/10 p-3 text-sm text-neon-pink">{error}</p> : null}
+      </div>
 
       <form onSubmit={saveTexts} className="rounded-3xl border border-white/10 bg-white/7 p-5">
         <h2 className="text-xl font-black text-white">Оформление главной страницы</h2>

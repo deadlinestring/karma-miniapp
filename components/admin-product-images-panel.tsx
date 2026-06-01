@@ -4,6 +4,7 @@
 
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ImageUp, Star, Trash2 } from "lucide-react";
+import { useScrollIntoViewOnChange } from "@/components/use-scroll-into-view-on-change";
 
 type AdminProductImage = {
   id: string;
@@ -32,6 +33,7 @@ export function AdminProductImagesPanel({ initData }: { initData: string }) {
   const [isBusy, setIsBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const statusRef = useScrollIntoViewOnChange(message ?? error);
 
   const selectedProduct = useMemo(
     () => products.find((product) => product.id === selectedProductId) ?? null,
@@ -200,8 +202,10 @@ export function AdminProductImagesPanel({ initData }: { initData: string }) {
         </p>
       </div>
 
-      {message ? <p className="mt-4 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 p-3 text-sm text-neon-cyan">{message}</p> : null}
-      {error ? <p className="mt-4 rounded-2xl border border-neon-pink/20 bg-neon-pink/10 p-3 text-sm text-neon-pink">{error}</p> : null}
+      <div ref={statusRef}>
+        {message ? <p className="mt-4 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 p-3 text-sm text-neon-cyan">{message}</p> : null}
+        {error ? <p className="mt-4 rounded-2xl border border-neon-pink/20 bg-neon-pink/10 p-3 text-sm text-neon-pink">{error}</p> : null}
+      </div>
 
       {selectedProduct ? (
         <ProductImageManager

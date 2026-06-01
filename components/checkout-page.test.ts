@@ -37,7 +37,16 @@ describe("checkout page order flow integration", () => {
 
   it("shows successful order public number without payment UI", () => {
     expect(source).toContain("createdOrder.publicNumber");
+    expect(source).toContain("createdOrderRef");
+    expect(source).toContain("useScrollIntoViewOnChange(createdOrder?.publicNumber)");
     expect(source).toContain("Онлайн-оплата не подключена");
     expect(source).not.toContain("confirmationUrl");
+  });
+
+  it("scrolls important quote and submit errors into view", () => {
+    expect(source).toContain("quoteErrorRef");
+    expect(source).toContain("submitErrorRef");
+    expect(source).toContain("useScrollIntoViewOnChange(quoteError)");
+    expect(source).toContain("useScrollIntoViewOnChange(submitError)");
   });
 });
