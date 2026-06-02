@@ -131,3 +131,13 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Customer order detail is being updated so `Связаться` opens the support bot with order context in the `start` parameter.
 - Expected example: `https://t.me/karmashopsupportbot?start=order_KRM_20260601_805754`.
 - Next live test: click `Связаться` from an order detail page and verify BlueSales receives the conversation/order context.
+
+## FAQ / How to order checkpoint
+
+- FAQ / `Как заказать` is being prepared before deeper custom design/payment work.
+- Planned public page: `/faq`.
+- Planned admin section: `FAQ / Как заказать`.
+- FAQ texts should be stored in DB as editable `FaqSection` rows and rendered safely as plain text.
+- Prepared migration: `00000000000004_add_faq_sections`; it must not be applied without a separate explicit migration step.
+- Until FAQ DB rows exist, public UI should show fallback content about product types, custom drawing styles, image requirements, delivery and support bot.
+- Support communication remains through `@karmashopsupportbot` connected to BlueSales.

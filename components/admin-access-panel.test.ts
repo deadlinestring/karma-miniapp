@@ -10,5 +10,10 @@ describe("admin access panel navigation", () => {
     expect(source).toContain('title: "Заказы"');
     expect(source).toContain("<AdminOrdersPanel initData={initData}");
   });
-});
 
+  it("contains the FAQ section and renders the FAQ panel", () => {
+    expect(source).toContain('id: "faq"');
+    expect(source).toContain('title: "FAQ / Как заказать"');
+    expect(source).toContain("<AdminFaqPanel initData={initData}");
+  });
+});

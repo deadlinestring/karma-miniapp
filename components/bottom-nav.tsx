@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, LayoutGrid, PackageCheck, ShoppingBag } from "lucide-react";
+import { CircleHelp, Home, LayoutGrid, PackageCheck, ShoppingBag } from "lucide-react";
 import { useCartTotals } from "@/store/cart-store";
 
 const navItems = [
   { href: "/", label: "Главная", icon: Home },
   { href: "/catalog", label: "Каталог", icon: LayoutGrid },
+  { href: "/faq", label: "FAQ", icon: CircleHelp },
   { href: "/cart", label: "Корзина", icon: ShoppingBag },
   { href: "/orders", label: "Заказы", icon: PackageCheck }
 ];
@@ -18,7 +19,7 @@ export function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-night/90 px-3 pb-3 pt-2 backdrop-blur-xl">
-      <div className="mx-auto grid max-w-xl grid-cols-4 gap-1">
+      <div className="mx-auto grid max-w-xl grid-cols-5 gap-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = pathname === item.href;

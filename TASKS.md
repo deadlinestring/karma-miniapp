@@ -384,3 +384,13 @@
 - Кнопка `Связаться` подготовлена как clickable link в отдельный support bot `@karmashopsupportbot`, связанный с CRM BlueSales.
 - Ссылка передаёт публичный номер заказа через безопасный `start` parameter; live click test support bot ещё не выполнялся.
 - Payment provider remains future work; `Payment` is not created by this stage.
+
+## FAQ / Как заказать
+
+- Подготовлен публичный раздел `/faq` для покупателей: процесс заказа, виды изделий, своя картинка, стили отрисовки, требования к изображению, доставка и связь с менеджером.
+- Подготовлена новая модель `FaqSection` и additive migration `00000000000004_add_faq_sections`, но migration ещё не применялась.
+- Тексты FAQ будут храниться в базе и редактироваться через защищённый раздел админки `FAQ / Как заказать`.
+- До заполнения базы публичная страница показывает безопасный default fallback content.
+- После применения migration админка сможет показать default sections как редактируемый draft и создать их в базе через обычное сохранение, без seed/bootstrap.
+- FAQ нужен перед дальнейшими этапами custom design и payment flow, чтобы покупатель понимал правила до заказа.
+- Support bot `@karmashopsupportbot`, подключённый к BlueSales, остаётся каналом связи по вопросам.

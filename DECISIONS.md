@@ -391,3 +391,13 @@ Prisma migrations и другие CLI-операции используют Supa
 - Customer order detail формирует публичную deep link вида `https://t.me/karmashopsupportbot?start=order_<publicNumber>`, где дефисы номера заказа заменяются на `_`.
 - В `start` передаётся только публичный номер заказа; raw initData, admin IDs, bot token и server credentials не попадают в client UI.
 - Username support bot считается публичной настройкой. Для hotfix он хранится как client-side constant; перенос в StoreSettings/admin settings можно сделать отдельным этапом без изменения текущего правила поддержки.
+
+## FAQ / How to order content
+
+- FAQ нужен до углубления custom design и payment flow: покупатель должен понимать виды изделий, доставку, стили отрисовки, требования к изображению и как связаться по заказу.
+- Для FAQ подготовлена отдельная additive модель `FaqSection`, чтобы тексты редактировались из Telegram-админки без redeploy.
+- `FaqSection.content` хранится как plain text / markdown-lite. Public UI и admin preview рендерят строки как React text nodes; `dangerouslySetInnerHTML` не используется.
+- Public `/faq` показывает только active sections, отсортированные по `sortOrder`; если FAQ-таблица пустая или migration ещё не применена, используется безопасный fallback content.
+- Admin endpoint `PATCH /api/admin/faq` защищён Telegram admin auth и позволяет менять только `title`, `content`, `sortOrder`, `isActive` для известных FAQ slug.
+- Если после migration `FaqSection` пустая, admin GET возвращает default sections как редактируемый draft, а PATCH создаёт/обновляет их через upsert по slug. Production seed/bootstrap для FAQ не требуется на первом шаге.
+- Migration `00000000000004_add_faq_sections` подготовлена, но не применяется без отдельного подтверждения.
