@@ -353,3 +353,7 @@ Prisma migrations и другие CLI-операции используют Supa
 - Failed attempts логируются отдельным ключом и не блокируют будущую повторную успешную отправку.
 - `TELEGRAM_BOT_TOKEN` и `ADMIN_TELEGRAM_IDS` используются только server-side; client components не получают Prisma Client, bot token или raw initData.
 - Сообщение администратору содержит публичный номер заказа, snapshot товаров, сумму, скидку, доставку, контакт и адрес, но не раскрывает internal database id, raw initData, secrets или приватные file URLs.
+- Production live-test подтвердил получение Telegram admin notification для заказа `KRM-20260601-805754`.
+- `NotificationLog` dedup работает для пары order/admin: successful log создан, дублей successful notification для этого заказа не обнаружено.
+- Персональные данные покупателя не фиксируются полностью в документации; допустимо только подтверждать наличие recipient/contact/address/comment.
+- Оплата пока не подключена, `Payment` не создаётся.

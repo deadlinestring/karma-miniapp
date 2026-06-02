@@ -25,7 +25,7 @@ Last updated: 2026-06-02
 - Hidden products: `2`
 - `ProductImage = 33`
 - `PriceList main` is active with 10 active items.
-- `Order = 1`
+- `Order = 2`
 - `Payment = 0`
 - `StoreSettings main` exists.
 
@@ -66,7 +66,7 @@ Last updated: 2026-06-02
 
 ## Recommended next step
 
-Deploy and live-test Telegram admin notifications for new orders. The first live order without online payment has already been created successfully, and payment provider integration is still not connected.
+Build the orders admin panel and status management before payment-provider integration. Telegram admin notifications for new orders have been confirmed in production, and payment provider integration is still not connected.
 
 Updated checkpoint: the prepared Order flow foundation commit `00a863a` is ready to be published, and migration `00000000000003_prepare_order_flow` has already been applied successfully to production Supabase. Current production counts remain `Order = 0` and `Payment = 0`; no real order creation has happened.
 
@@ -83,6 +83,8 @@ Live order checkpoint: first production order without online payment was created
 UX hotfix checkpoint: success/error/status messages in checkout and admin panels need automatic scroll into view so users can see action results inside Telegram Mini App. Future admin discount management, including global discounts and product-specific discounts, remains a separate design stage.
 
 Telegram notification checkpoint: server-side admin notifications for new orders are prepared locally. Notifications are sent after the successful order transaction, use `NotificationLog` for deduplication, and must not roll back checkout if Telegram delivery fails. Live notification sending has not been tested yet.
+
+Live Telegram notification checkpoint: order `KRM-20260601-805754` was created through production checkout, checkout scrolled to the result, and a Telegram admin notification was received. Current expected counts after that user action: `Order = 2`, `Payment = 0`. The next recommended step is an admin orders panel / status management before online payment planning.
 
 ## New order flow requirements
 
