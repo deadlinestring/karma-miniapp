@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, FileSpreadsheet, FolderTree, Home, Package, ShieldCheck, ShieldX, Tags } from "lucide-react";
+import { ArrowLeft, ClipboardList, FileSpreadsheet, FolderTree, Home, Package, ShieldCheck, ShieldX, Tags } from "lucide-react";
 import { AdminCategoriesPanel } from "@/components/admin-categories-panel";
+import { AdminOrdersPanel } from "@/components/admin-orders-panel";
 import { AdminPriceListsPanel } from "@/components/admin-price-lists-panel";
 import { AdminProductImportPanel } from "@/components/admin-product-import-panel";
 import { AdminProductsPanel } from "@/components/admin-products-panel";
@@ -16,7 +17,7 @@ type AdminUser = {
   lastName?: string;
 };
 
-type AdminSection = "home" | "price-lists" | "products" | "categories" | "import";
+type AdminSection = "home" | "price-lists" | "products" | "categories" | "orders" | "import";
 
 type AdminAccessState =
   | { status: "browser" }
@@ -54,6 +55,12 @@ const sections: Array<{
     title: "Категории",
     description: "Будущее управление разделами каталога.",
     icon: FolderTree
+  },
+  {
+    id: "orders",
+    title: "Заказы",
+    description: "Список заказов, детали и статусы выполнения.",
+    icon: ClipboardList
   },
   {
     id: "import",
@@ -248,6 +255,7 @@ function AdminWorkspace({
       {activeSection === "price-lists" ? <AdminPriceListsPanel initData={initData} /> : null}
       {activeSection === "products" ? <AdminProductsPanel initData={initData} /> : null}
       {activeSection === "categories" ? <AdminCategoriesPanel initData={initData} /> : null}
+      {activeSection === "orders" ? <AdminOrdersPanel initData={initData} /> : null}
       {activeSection === "import" ? <AdminProductImportPanel initData={initData} onOpenProducts={() => onOpenSection("products")} /> : null}
     </div>
   );

@@ -355,3 +355,12 @@
 - `Payment` по-прежнему не создаётся.
 - Следующий этап: админка заказов / управление статусами заказа либо payment-provider planning.
 - Payment provider пока не выбран; онлайн-оплата не подключена.
+
+## Admin orders and fulfillment statuses
+
+- Раздел `Заказы` в защищённой Telegram-админке подготовлен после локальной проверки.
+- Админка заказов показывает список, карточку заказа, состав, суммы, контакт, доставку и notification summary.
+- Подготовлено изменение только fulfillment status заказа; `paymentStatus` остаётся read-only.
+- Live status update через Telegram ещё не выполнялся.
+- Удаление заказов и создание `Payment` не реализуются.
+- Payment provider planning остаётся отдельным будущим этапом.

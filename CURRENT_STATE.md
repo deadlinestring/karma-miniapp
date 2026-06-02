@@ -66,7 +66,7 @@ Last updated: 2026-06-02
 
 ## Recommended next step
 
-Build the orders admin panel and status management before payment-provider integration. Telegram admin notifications for new orders have been confirmed in production, and payment provider integration is still not connected.
+Live-test the protected Orders admin panel: open the panel, verify both existing orders, and change one test order fulfillment status only after explicit approval. Payment-provider integration is still not connected.
 
 Updated checkpoint: the prepared Order flow foundation commit `00a863a` is ready to be published, and migration `00000000000003_prepare_order_flow` has already been applied successfully to production Supabase. Current production counts remain `Order = 0` and `Payment = 0`; no real order creation has happened.
 
@@ -85,6 +85,8 @@ UX hotfix checkpoint: success/error/status messages in checkout and admin panels
 Telegram notification checkpoint: server-side admin notifications for new orders are prepared locally. Notifications are sent after the successful order transaction, use `NotificationLog` for deduplication, and must not roll back checkout if Telegram delivery fails. Live notification sending has not been tested yet.
 
 Live Telegram notification checkpoint: order `KRM-20260601-805754` was created through production checkout, checkout scrolled to the result, and a Telegram admin notification was received. Current expected counts after that user action: `Order = 2`, `Payment = 0`. The next recommended step is an admin orders panel / status management before online payment planning.
+
+Admin orders checkpoint: the protected Orders admin panel is prepared locally. It lists orders, opens order details, shows notification summary, and allows changing only fulfillment status. `paymentStatus` stays read-only. No production status update has been performed yet.
 
 ## New order flow requirements
 

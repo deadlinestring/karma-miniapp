@@ -357,3 +357,13 @@ Prisma migrations и другие CLI-операции используют Supa
 - `NotificationLog` dedup работает для пары order/admin: successful log создан, дублей successful notification для этого заказа не обнаружено.
 - Персональные данные покупателя не фиксируются полностью в документации; допустимо только подтверждать наличие recipient/contact/address/comment.
 - Оплата пока не подключена, `Payment` не создаётся.
+
+## Admin order management
+
+- Администратор может просматривать список заказов и детальную карточку заказа через защищённые Telegram admin endpoints.
+- В карточке заказа показываются snapshot товаров, суммы, доставка, контактные данные, комментарий, статусы и notification summary.
+- На первом этапе администратор может менять только `Order.fulfillmentStatus`; `paymentStatus` остаётся read-only до выбора и подключения платёжного провайдера.
+- Допустимые переходы fulfillment status ограничены минимальной state machine: `NEW -> IN_WORK/CANCELLED`, `IN_WORK -> MANUFACTURED/SHIPPED/CANCELLED`, `MANUFACTURED -> SHIPPED/CANCELLED`, `SHIPPED -> COMPLETED`.
+- `COMPLETED` и `CANCELLED` считаются финальными до отдельного этапа возврата/исправления статусов.
+- Удаление заказов не реализуется: заказы являются историей покупательского действия и нужны для аудита.
+- Изменение статуса заказа на этом этапе не отправляет покупателю или администратору дополнительные Telegram notifications.
