@@ -576,3 +576,11 @@ Production live-check confirmed that the buyer can open `Свой дизайн`,
 Checkout shows the style №3 surcharge as `+990 ₽`. The order was intentionally not submitted in this checkpoint, so no `Payment` is created and no custom review status is stored yet.
 
 The next controlled production scenario should create one custom order and verify that the custom item is saved with its snapshot and `PENDING_REVIEW`.
+
+### Production check: custom design order
+
+Controlled production order `KRM-20260602-8E3EBA` confirmed custom order creation without online payment.
+
+The order item uses `Свой дизайн`, style №3, custom surcharge `99000`, saved `customDesignKey`, saved private image storage path, and `PENDING_REVIEW` image review status. The private path is not shown publicly or documented in full.
+
+`Payment` remains `0`. The next product step is admin review for custom images or payment planning.

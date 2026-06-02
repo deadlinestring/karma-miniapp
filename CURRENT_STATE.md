@@ -173,3 +173,12 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Current read-only baseline remains `Order = 2`, `Payment = 0`.
 - Private custom upload bucket is configured and has a custom upload object; the full private path is intentionally not recorded.
 - Next recommended step: create one controlled custom order and verify `PENDING_REVIEW`.
+
+## Live custom design order checkpoint
+
+- Controlled custom order `KRM-20260602-8E3EBA` was created in production without online payment.
+- Current read-only baseline: `Order = 3`, `Payment = 0`.
+- The order saved style №3, `customDrawingKopecks = 99000`, custom item surcharge `99000`, `customDesignKey`, private image storage path, and `PENDING_REVIEW`.
+- Delivery address and Telegram user relation exist; an admin notification log exists for the order.
+- The private storage path was confirmed but not printed or recorded.
+- Next recommended step: admin review UI for custom images or payment planning.

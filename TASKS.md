@@ -422,3 +422,12 @@
 - No order was created in this checkpoint: `Order = 2`, `Payment = 0`.
 - Private custom upload bucket is configured and accessible; the uploaded object was confirmed without recording the full private storage path.
 - Next step: create one test custom order to verify saved custom snapshot and `PENDING_REVIEW`.
+
+## Live custom design order verification
+
+- Controlled production custom order was created successfully without online payment: `KRM-20260602-8E3EBA`.
+- The order saved custom style №3, custom surcharge `99000`, `customDesignKey`, private custom image storage path, and `customImageReviewStatus = PENDING_REVIEW`.
+- Private storage path was confirmed read-only but not recorded in docs because it contains Telegram-scoped path data.
+- Current read-only baseline after the user action: `Order = 3`, `Payment = 0`.
+- Admin notification log exists for the custom order; no manual Telegram messages were sent during this checkpoint.
+- Next step: admin review UI for custom images or payment planning.

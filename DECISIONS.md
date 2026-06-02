@@ -426,3 +426,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - The upload object stays private; documentation must not store full private storage paths because they include Telegram-scoped path data.
 - No `Order` or `Payment` was created during this live-check.
 - The next validation step is one controlled custom order to confirm order item snapshot and `customImageReviewStatus = PENDING_REVIEW`.
+
+## Live custom design order verification
+
+- Production live-test confirmed the full custom order path through order creation for `KRM-20260602-8E3EBA`.
+- Custom order items save the chosen drawing style, surcharge snapshot, `customDesignKey`, private image storage path, and review status `PENDING_REVIEW`.
+- Private storage paths must remain server/internal data and should not be printed in reports or docs.
+- Payment remains disconnected for custom orders: `Payment = 0`.
+- The next product decision is whether to build admin review UI for custom images first or move into payment-provider planning.
