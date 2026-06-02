@@ -122,3 +122,12 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Checkout success includes an `Открыть заказ` link to the created order.
 - No new orders, payments, status updates or Telegram messages are created by this stage.
 - Next live test: customer sees own orders and opens order detail inside Telegram Mini App.
+
+## Customer support bot checkpoint
+
+- Customer order pages were live-checked in Telegram Mini App.
+- Support bot was created separately and connected to CRM BlueSales.
+- Public support bot username: `karmashopsupportbot`.
+- Customer order detail is being updated so `Связаться` opens the support bot with order context in the `start` parameter.
+- Expected example: `https://t.me/karmashopsupportbot?start=order_KRM_20260601_805754`.
+- Next live test: click `Связаться` from an order detail page and verify BlueSales receives the conversation/order context.

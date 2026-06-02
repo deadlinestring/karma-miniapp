@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { type MouseEvent, useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { formatKopecks } from "@/lib/pricing";
+
+const SUPPORT_BOT_USERNAME = "karmashopsupportbot";
 
 type CustomerOrderDetail = {
   publicNumber: string;
@@ -103,6 +105,21 @@ export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string
 
     return () => controller.abort();
   }, [initData, publicNumber]);
+
+  const supportUrl = order ? buildSupportTelegramUrl(order.publicNumber) : null;
+
+  function handleSupportClick(event: MouseEvent<HTMLAnchorElement>) {
+    if (!supportUrl) {
+      return;
+    }
+
+    const openTelegramLink = window.Telegram?.WebApp?.openTelegramLink;
+
+    if (openTelegramLink) {
+      event.preventDefault();
+      openTelegramLink(supportUrl);
+    }
+  }
 
   return (
     <AppShell>
@@ -218,14 +235,28 @@ export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string
           <section className="rounded-[24px] border border-neon-cyan/20 bg-neon-cyan/8 p-4">
             <h2 className="text-lg font-black text-white">Нужно изменить заказ?</h2>
             <p className="mt-2 text-sm leading-6 text-white/64">
-              Напишите нам в Telegram, указав номер заказа {order.publicNumber}.
+              Напишите нам по заказу {order.publicNumber}. Менеджер ответит в Telegram.
             </p>
-            <p className="mt-3 text-sm font-bold text-neon-cyan">Связаться</p>
+            <a
+              href={supportUrl ?? "#"}
+              target="_blank"
+              rel="noreferrer"
+              onClick={handleSupportClick}
+              className="mt-3 inline-flex min-h-11 items-center rounded-2xl border border-neon-cyan/35 bg-neon-cyan/15 px-4 text-sm font-bold text-neon-cyan transition hover:bg-neon-cyan/22"
+            >
+              Связаться
+            </a>
           </section>
         </div>
       ) : null}
     </AppShell>
   );
+}
+
+export function buildSupportTelegramUrl(publicNumber: string) {
+  const safeOrderNumber = publicNumber.replace(/-/g, "_");
+
+  return `https://t.me/${SUPPORT_BOT_USERNAME}?start=order_${encodeURIComponent(safeOrderNumber)}`;
 }
 
 function StatusBlock({ label, value }: { label: string; value: string }) {

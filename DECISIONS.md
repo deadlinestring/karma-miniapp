@@ -383,3 +383,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - Customer order detail can show the customer's own contact, delivery address, comment, totals and item snapshots, but never raw initData, internal ids or secrets.
 - Checkout success links to `/orders/<publicNumber>` so the customer can reopen the saved order.
 - Payment status remains informational until a provider is selected and connected.
+
+## Customer support via Telegram bot
+
+- Поддержка по заказу ведётся через отдельный Telegram support bot `@karmashopsupportbot`, подключённый к CRM BlueSales.
+- Mini App не реализует собственный чат и не отправляет сообщения через Bot API при клике `Связаться`.
+- Customer order detail формирует публичную deep link вида `https://t.me/karmashopsupportbot?start=order_<publicNumber>`, где дефисы номера заказа заменяются на `_`.
+- В `start` передаётся только публичный номер заказа; raw initData, admin IDs, bot token и server credentials не попадают в client UI.
+- Username support bot считается публичной настройкой. Для hotfix он хранится как client-side constant; перенос в StoreSettings/admin settings можно сделать отдельным этапом без изменения текущего правила поддержки.

@@ -380,5 +380,7 @@
 - `GET /api/orders` returns only orders of the current Telegram user.
 - `GET /api/orders/[publicNumber]` returns safe not found for missing or чужой order number.
 - Checkout success now includes `Открыть заказ` link to the created order page.
-- Live customer order page test ещё не выполнялся.
+- Live customer order page test выполнен: пользователь открыл `Мои заказы` и детальную страницу заказа в Telegram Mini App.
+- Кнопка `Связаться` подготовлена как clickable link в отдельный support bot `@karmashopsupportbot`, связанный с CRM BlueSales.
+- Ссылка передаёт публичный номер заказа через безопасный `start` parameter; live click test support bot ещё не выполнялся.
 - Payment provider remains future work; `Payment` is not created by this stage.

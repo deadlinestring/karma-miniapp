@@ -17,6 +17,32 @@ describe("customer order detail page", () => {
     expect(source).toContain("Оплата");
     expect(source).toContain("Состав заказа");
     expect(source).toContain("Доставка и контакт");
-    expect(source).toContain("Напишите нам в Telegram");
+    expect(source).toContain("Напишите нам по заказу");
+    expect(source).toContain("Менеджер ответит в Telegram");
+  });
+
+  it("renders a clickable support bot link with safe order context", () => {
+    expect(source).toContain("karmashopsupportbot");
+    expect(source).toContain("https://t.me/${SUPPORT_BOT_USERNAME}?start=order_");
+    expect(source).toContain("buildSupportTelegramUrl(order.publicNumber)");
+    expect(source).toContain('target="_blank"');
+    expect(source).toContain('rel="noreferrer"');
+    expect(source).toContain("openTelegramLink(supportUrl)");
+    expect(source).toContain('publicNumber.replace(/-/g, "_")');
+  });
+
+  it("documents the expected Telegram support deep link conversion", () => {
+    const safeOrderNumber = "KRM-20260601-805754".replace(/-/g, "_");
+
+    expect(`https://t.me/karmashopsupportbot?start=order_${safeOrderNumber}`).toBe(
+      "https://t.me/karmashopsupportbot?start=order_KRM_20260601_805754"
+    );
+  });
+
+  it("does not expose bot secrets or admin identifiers in customer markup", () => {
+    expect(source).not.toContain("TELEGRAM_BOT_TOKEN");
+    expect(source).not.toContain("ADMIN_TELEGRAM_IDS");
+    expect(source).not.toContain("DATABASE_URL");
+    expect(source).not.toContain("SUPABASE_SERVICE_ROLE");
   });
 });
