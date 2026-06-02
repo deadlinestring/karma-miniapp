@@ -417,3 +417,12 @@ Prisma migrations и другие CLI-операции используют Supa
 - Order creation повторно пересчитывает quote и дополнительно проверяет, что `customImageStoragePath` принадлежит текущему Telegram user path `custom-orders/<telegramId>/`.
 - Custom order item сохраняет `customDrawingStyle`, surcharge snapshot, `customDesignKey`, `customImageStoragePath` и `customImageReviewStatus = PENDING_REVIEW`.
 - Payment provider не подключается: custom design сначала проходит review и ручной контакт менеджера; admin review UI проектируется отдельным этапом.
+
+## Live custom design checkout verification
+
+- Production live-check confirmed the custom upload and checkout part of custom design flow before order creation.
+- The `Свой дизайн` product is the public CUSTOM entrypoint; the buyer can select a drawing style and upload an image before adding the item to cart.
+- Style №3 surcharge is shown in checkout as `+990 ₽`.
+- The upload object stays private; documentation must not store full private storage paths because they include Telegram-scoped path data.
+- No `Order` or `Payment` was created during this live-check.
+- The next validation step is one controlled custom order to confirm order item snapshot and `customImageReviewStatus = PENDING_REVIEW`.

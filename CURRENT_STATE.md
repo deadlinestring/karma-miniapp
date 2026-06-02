@@ -163,3 +163,13 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Order creation saves custom items as `PENDING_REVIEW` and does not create `Payment`.
 - No migration was needed or applied for this stage.
 - Production data must remain unchanged until a separate live custom order test.
+
+## Live custom design checkout checkpoint
+
+- Custom design flow was live-checked in production after commit `609271d`.
+- Product `Свой дизайн` opens, style №3 can be selected, and image upload succeeds through the protected custom upload flow.
+- Cart accepts the uploaded custom item; checkout shows the custom style surcharge `+990 ₽`.
+- No custom order was submitted in this checkpoint.
+- Current read-only baseline remains `Order = 2`, `Payment = 0`.
+- Private custom upload bucket is configured and has a custom upload object; the full private path is intentionally not recorded.
+- Next recommended step: create one controlled custom order and verify `PENDING_REVIEW`.

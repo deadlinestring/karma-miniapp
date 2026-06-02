@@ -568,3 +568,11 @@ Production live-проверка подтвердила, что `/faq` рабо�
 Корзина и checkout показывают выбранный custom snapshot. Quote добавляет доплату за отрисовку один раз на уникальный загруженный design key, при этом доставка и скидка продолжают считаться по общим правилам.
 
 После создания заказа custom-позиция получает review status `PENDING_REVIEW`. Онлайн-оплата не подключена; покупателю показывается, что администратор проверит изображение и свяжется с ним перед подтверждением. Интерфейс admin review для custom images будет отдельным следующим этапом.
+
+### Production check: custom design checkout
+
+Production live-check confirmed that the buyer can open `Свой дизайн`, select style №3, upload an image through the protected custom upload flow, add the item to cart, and reach checkout.
+
+Checkout shows the style №3 surcharge as `+990 ₽`. The order was intentionally not submitted in this checkpoint, so no `Payment` is created and no custom review status is stored yet.
+
+The next controlled production scenario should create one custom order and verify that the custom item is saved with its snapshot and `PENDING_REVIEW`.

@@ -413,3 +413,12 @@
 - Order creation сохраняет snapshot custom style, surcharge, `customDesignKey`, private `customImageStoragePath` и review status `PENDING_REVIEW`.
 - Checkout сообщает, что свой дизайн сначала проверяется администратором; онлайн-оплата по-прежнему не подключена.
 - Admin review UI для custom image пока не реализован и остается следующим отдельным этапом после live-проверки upload/order flow.
+
+## Live custom design checkout verification
+
+- Production live-check after deployment commit `609271d` confirmed the first custom design layer up to checkout.
+- Product `Свой дизайн` opened publicly; style №3 was selected and the image uploaded successfully through the protected custom upload flow.
+- The custom item was added to cart, and checkout showed the style №3 surcharge: `+990 ₽`.
+- No order was created in this checkpoint: `Order = 2`, `Payment = 0`.
+- Private custom upload bucket is configured and accessible; the uploaded object was confirmed without recording the full private storage path.
+- Next step: create one test custom order to verify saved custom snapshot and `PENDING_REVIEW`.
