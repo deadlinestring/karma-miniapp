@@ -113,3 +113,12 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - No `Payment` rows were created.
 - Current status update flow does not send Telegram notifications to customer or admin.
 - Recommended next step: choose the next Order flow layer: payment provider planning, order status notifications, or customer order page.
+## Customer order pages checkpoint
+
+- Customer order pages are prepared locally.
+- `/orders` shows the current Telegram user's own orders.
+- `/orders/<publicNumber>` shows read-only order detail for the current Telegram user.
+- Other users' order numbers are returned as safe not found.
+- Checkout success includes an `Открыть заказ` link to the created order.
+- No new orders, payments, status updates or Telegram messages are created by this stage.
+- Next live test: customer sees own orders and opens order detail inside Telegram Mini App.

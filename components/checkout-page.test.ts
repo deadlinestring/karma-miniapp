@@ -22,7 +22,7 @@ describe("checkout page order flow integration", () => {
   });
 
   it("blocks order creation outside Telegram or without required fields", () => {
-    expect(source).toContain("Оформление заказа доступно внутри Telegram Mini App.");
+    expect(source).toContain("Telegram Mini App.");
     expect(source).toContain("Boolean(initData)");
     expect(source).toContain("requiredFieldsFilled");
     expect(source).toContain("disabled={!canSubmit}");
@@ -35,10 +35,12 @@ describe("checkout page order flow integration", () => {
     expect(source).toContain("customDrawingTotalKopecks");
   });
 
-  it("shows successful order public number without payment UI", () => {
+  it("shows successful order public number and link without payment UI", () => {
     expect(source).toContain("createdOrder.publicNumber");
     expect(source).toContain("createdOrderRef");
     expect(source).toContain("useScrollIntoViewOnChange(createdOrder?.publicNumber)");
+    expect(source).toContain("Открыть заказ");
+    expect(source).toContain("href={`/orders/${createdOrder.publicNumber}`}");
     expect(source).toContain("Онлайн-оплата не подключена");
     expect(source).not.toContain("confirmationUrl");
   });

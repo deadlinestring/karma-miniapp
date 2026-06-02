@@ -4,12 +4,40 @@ import {
   OrderCreateError,
   TELEGRAM_ORDER_REQUIRED_MESSAGE
 } from "@/lib/server/order-create";
+import { getCustomerOrders } from "@/lib/server/customer-orders";
 import { OrderQuoteError } from "@/lib/server/order-quote";
 import { TELEGRAM_INIT_DATA_HEADER } from "@/lib/server/admin-auth";
 import { validateTelegramInitData } from "@/lib/server/telegram-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+export async function GET(request: Request) {
+  const initData = request.headers.get(TELEGRAM_INIT_DATA_HEADER);
+  const telegramAuth = validateTelegramInitData(initData);
+
+  if (!telegramAuth.ok) {
+    return NextResponse.json(
+      { ok: false, message: "Заказы доступны внутри Telegram Mini App." },
+      { status: 401 }
+    );
+  }
+
+  try {
+    const url = new URL(request.url);
+    const orders = await getCustomerOrders(telegramAuth.user, {
+      page: url.searchParams.get("page"),
+      pageSize: url.searchParams.get("pageSize")
+    });
+
+    return NextResponse.json({ ok: true, orders });
+  } catch {
+    return NextResponse.json(
+      { ok: false, message: "Не удалось загрузить заказы. Попробуйте позже." },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(request: Request) {
   const initData = request.headers.get(TELEGRAM_INIT_DATA_HEADER);

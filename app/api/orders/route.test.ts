@@ -6,6 +6,52 @@ describe("orders create route", () => {
     vi.clearAllMocks();
     vi.doUnmock("@/lib/server/telegram-auth");
     vi.doUnmock("@/lib/server/order-create");
+    vi.doUnmock("@/lib/server/customer-orders");
+  });
+
+  it("rejects customer order list without Telegram initData", async () => {
+    const { GET } = await import("./route");
+
+    const response = await GET(new Request("http://localhost/api/orders"));
+    const body = (await response.json()) as { message: string };
+
+    expect(response.status).toBe(401);
+    expect(body.message).toContain("Telegram");
+  });
+
+  it("returns customer orders for a valid Telegram user", async () => {
+    const getCustomerOrders = vi.fn().mockResolvedValue({
+      items: [],
+      page: 1,
+      pageSize: 20,
+      total: 0,
+      totalPages: 1
+    });
+
+    vi.doMock("@/lib/server/telegram-auth", () => ({
+      validateTelegramInitData: vi.fn().mockReturnValue({
+        ok: true,
+        user: { id: "12345", username: "buyer" }
+      })
+    }));
+    vi.doMock("@/lib/server/customer-orders", () => ({
+      getCustomerOrders
+    }));
+
+    const { GET } = await import("./route");
+    const response = await GET(
+      new Request("http://localhost/api/orders?page=2", {
+        headers: { "X-Telegram-Init-Data": "valid" }
+      })
+    );
+    const body = (await response.json()) as { ok: boolean };
+
+    expect(response.status).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(getCustomerOrders).toHaveBeenCalledWith(
+      { id: "12345", username: "buyer" },
+      { page: "2", pageSize: null }
+    );
   });
 
   it("rejects order creation without Telegram initData", async () => {

@@ -1,0 +1,272 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { AppShell } from "@/components/app-shell";
+import { formatKopecks } from "@/lib/pricing";
+
+type CustomerOrderDetail = {
+  publicNumber: string;
+  fulfillmentStatusLabel: string;
+  paymentStatusLabel: string;
+  itemsSubtotalKopecks: number;
+  customDrawingKopecks: number;
+  discountKopecks: number;
+  deliveryKopecks: number;
+  totalKopecks: number;
+  deliveryMethod: string;
+  customer: {
+    name: string;
+    phone: string;
+    fallbackContact: string | null;
+  };
+  deliveryAddress: {
+    city: string;
+    addressLine: string | null;
+    street: string;
+    house: string;
+    apartment: string | null;
+    postalCode: string | null;
+    comment: string | null;
+  } | null;
+  comment: string | null;
+  items: Array<{
+    productName: string;
+    itemTypeLabel: string;
+    sizeCm: number;
+    unitPriceKopecks: number;
+    quantity: number;
+    lineSubtotalKopecks: number;
+    discountKopecks: number;
+    lineTotalKopecks: number;
+    note: string | null;
+    customDrawingStyle: string | null;
+    customDrawingSurchargeKopecks: number;
+    customImageReviewStatus: string;
+  }>;
+  createdAt: string;
+};
+
+type OrderDetailResponse =
+  | { ok: true; order: CustomerOrderDetail }
+  | { ok: false; message: string };
+
+export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string }) {
+  const [initData, setInitData] = useState<string | null>(null);
+  const [telegramChecked, setTelegramChecked] = useState(false);
+  const [order, setOrder] = useState<CustomerOrderDetail | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const telegramInitData = window.Telegram?.WebApp?.initData;
+
+    setInitData(telegramInitData || null);
+    setTelegramChecked(true);
+  }, []);
+
+  useEffect(() => {
+    if (!initData) {
+      return;
+    }
+
+    const controller = new AbortController();
+    setIsLoading(true);
+    setError(null);
+
+    fetch(`/api/orders/${publicNumber}`, {
+      headers: { "X-Telegram-Init-Data": initData },
+      signal: controller.signal
+    })
+      .then(async (response) => {
+        const body = (await response.json()) as OrderDetailResponse;
+
+        if (!response.ok || !body.ok) {
+          throw new Error(body.ok ? "Не удалось загрузить заказ." : body.message);
+        }
+
+        setOrder(body.order);
+      })
+      .catch((loadError) => {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        setOrder(null);
+        setError(loadError instanceof Error ? loadError.message : "Не удалось загрузить заказ.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [initData, publicNumber]);
+
+  return (
+    <AppShell>
+      <section>
+        <Link href="/orders" className="text-sm font-bold text-neon-cyan">
+          ← Мои заказы
+        </Link>
+        <p className="mt-4 text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">
+          заказ
+        </p>
+        <h1 className="mt-2 text-3xl font-black text-white">{publicNumber}</h1>
+      </section>
+
+      {telegramChecked && !initData ? (
+        <section className="mt-6 rounded-[24px] border border-amber-300/30 bg-amber-300/10 p-5">
+          <h2 className="text-lg font-black text-amber-100">Откройте магазин в Telegram</h2>
+          <p className="mt-2 text-sm leading-6 text-amber-50/80">
+            Детали заказа доступны внутри Telegram Mini App.
+          </p>
+        </section>
+      ) : null}
+
+      {isLoading ? (
+        <section className="mt-6 rounded-[24px] border border-white/10 bg-white/7 p-5 text-sm text-white/62">
+          Загружаем заказ...
+        </section>
+      ) : null}
+
+      {error ? (
+        <section className="mt-6 rounded-[24px] border border-red-400/30 bg-red-500/10 p-5 text-sm font-semibold text-red-100">
+          {error}
+        </section>
+      ) : null}
+
+      {order ? (
+        <div className="mt-6 grid gap-5">
+          <section className="rounded-[24px] border border-white/10 bg-white/7 p-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <StatusBlock label="Статус" value={order.fulfillmentStatusLabel} />
+              <StatusBlock label="Оплата" value={order.paymentStatusLabel} />
+            </div>
+            <p className="mt-4 text-xs text-white/46">{formatDate(order.createdAt)}</p>
+          </section>
+
+          <section className="rounded-[24px] border border-white/10 bg-white/7 p-4">
+            <h2 className="text-lg font-black text-white">Состав заказа</h2>
+            <div className="mt-4 grid gap-4">
+              {order.items.map((item, index) => (
+                <div key={`${item.productName}-${index}`} className="border-b border-white/10 pb-4 last:border-b-0 last:pb-0">
+                  <div className="flex justify-between gap-4">
+                    <div>
+                      <h3 className="font-bold text-white">{item.productName}</h3>
+                      <p className="mt-1 text-sm text-white/54">
+                        {item.itemTypeLabel}, {item.sizeCm} см · {item.quantity} шт.
+                      </p>
+                      {item.note ? (
+                        <p className="mt-1 text-xs font-semibold text-neon-cyan">{item.note}</p>
+                      ) : null}
+                      {item.customDrawingStyle ? (
+                        <p className="mt-1 text-xs text-white/48">
+                          Отрисовка: {item.customDrawingStyle}; review: {item.customImageReviewStatus}
+                        </p>
+                      ) : null}
+                    </div>
+                    <span className="font-black text-white">
+                      {formatKopecks(item.lineTotalKopecks)} ₽
+                    </span>
+                  </div>
+                  {item.discountKopecks > 0 ? (
+                    <p className="mt-2 text-xs font-semibold text-emerald-200">
+                      Скидка: -{formatKopecks(item.discountKopecks)} ₽
+                    </p>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="rounded-[24px] border border-white/10 bg-white/7 p-4">
+            <h2 className="text-lg font-black text-white">Итог</h2>
+            <div className="mt-4 grid gap-2 text-sm">
+              <SummaryRow label="Товары" value={order.itemsSubtotalKopecks} />
+              <SummaryRow label="Отрисовка" value={order.customDrawingKopecks} />
+              <SummaryRow label="Скидка" value={-order.discountKopecks} />
+              <SummaryRow label="Доставка" value={order.deliveryKopecks} />
+              <div className="flex items-center justify-between border-t border-white/10 pt-3">
+                <span className="text-white/58">Итого</span>
+                <span className="text-2xl font-black text-white">
+                  {formatKopecks(order.totalKopecks)} ₽
+                </span>
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-[24px] border border-white/10 bg-white/7 p-4">
+            <h2 className="text-lg font-black text-white">Доставка и контакт</h2>
+            <div className="mt-3 grid gap-2 text-sm text-white/64">
+              {order.deliveryAddress ? (
+                <>
+                  <p>{order.deliveryAddress.addressLine ?? formatAddress(order.deliveryAddress)}</p>
+                  {order.deliveryAddress.comment ? <p>{order.deliveryAddress.comment}</p> : null}
+                </>
+              ) : (
+                <p>Адрес сохранён в заказе.</p>
+              )}
+              <p>{order.customer.name}</p>
+              <p>{order.customer.phone}</p>
+              {order.customer.fallbackContact ? <p>{order.customer.fallbackContact}</p> : null}
+              {order.comment ? <p>Комментарий: {order.comment}</p> : null}
+            </div>
+          </section>
+
+          <section className="rounded-[24px] border border-neon-cyan/20 bg-neon-cyan/8 p-4">
+            <h2 className="text-lg font-black text-white">Нужно изменить заказ?</h2>
+            <p className="mt-2 text-sm leading-6 text-white/64">
+              Напишите нам в Telegram, указав номер заказа {order.publicNumber}.
+            </p>
+            <p className="mt-3 text-sm font-bold text-neon-cyan">Связаться</p>
+          </section>
+        </div>
+      ) : null}
+    </AppShell>
+  );
+}
+
+function StatusBlock({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/8 p-3">
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/42">{label}</p>
+      <p className="mt-1 text-base font-black text-white">{value}</p>
+    </div>
+  );
+}
+
+function SummaryRow({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="flex items-center justify-between text-white/64">
+      <span>{label}</span>
+      <span className={value < 0 ? "font-bold text-emerald-200" : "font-bold text-white"}>
+        {value < 0 ? "-" : ""}
+        {formatKopecks(Math.abs(value))} ₽
+      </span>
+    </div>
+  );
+}
+
+function formatAddress(address: NonNullable<CustomerOrderDetail["deliveryAddress"]>) {
+  return [
+    address.postalCode,
+    address.city,
+    `ул. ${address.street}`,
+    `д. ${address.house}`,
+    address.apartment ? `кв. ${address.apartment}` : null
+  ]
+    .filter(Boolean)
+    .join(", ");
+}
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("ru-RU", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(new Date(value));
+}

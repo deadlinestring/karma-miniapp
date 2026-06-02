@@ -375,3 +375,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - Status update текущей версии не отправляет Telegram notification клиенту или администратору.
 - Totals, item snapshots, delivery address, customer snapshot и payment rows не меняются при смене fulfillment status.
 - Заказ `KRM-20260601-128352` остался `NEW / PENDING`, что подтверждает точечное изменение только выбранного заказа.
+## Customer order pages
+
+- Customer orders are scoped by validated Telegram initData and the `Order -> TelegramUser` relation.
+- Customer order endpoints are read-only: they must not create orders, create payments, update statuses or send Telegram messages.
+- A user sees only their own orders; another user's public number is hidden behind the same safe not found response as a missing order.
+- Customer order detail can show the customer's own contact, delivery address, comment, totals and item snapshots, but never raw initData, internal ids or secrets.
+- Checkout success links to `/orders/<publicNumber>` so the customer can reopen the saved order.
+- Payment status remains informational until a provider is selected and connected.

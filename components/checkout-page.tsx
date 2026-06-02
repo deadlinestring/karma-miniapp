@@ -269,6 +269,12 @@ export function CheckoutPage() {
                   {createdOrder.publicNumber}
                 </h2>
                 <p className="mt-2 text-sm text-white/70">{createdOrder.message}</p>
+                <Link
+                  href={`/orders/${createdOrder.publicNumber}`}
+                  className="mt-4 inline-flex h-11 items-center justify-center rounded-2xl bg-gradient-to-r from-neon-violet to-neon-cyan px-4 text-sm font-black text-white shadow-glow"
+                >
+                  Открыть заказ
+                </Link>
               </section>
             ) : null}
           </div>

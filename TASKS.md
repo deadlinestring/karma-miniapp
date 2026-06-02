@@ -373,3 +373,12 @@
 - Заказ `KRM-20260601-128352` остался в прежнем состоянии `NEW / PENDING`.
 - Status update текущей версии не отправляет Telegram notification клиенту или администратору.
 - Следующий этап требует выбора направления: payment provider planning, order status notifications или customer order page.
+## Customer order pages
+
+- Customer order pages prepared locally: `/orders` and `/orders/[publicNumber]`.
+- Customer API endpoints are read-only and scoped by Telegram initData.
+- `GET /api/orders` returns only orders of the current Telegram user.
+- `GET /api/orders/[publicNumber]` returns safe not found for missing or чужой order number.
+- Checkout success now includes `Открыть заказ` link to the created order page.
+- Live customer order page test ещё не выполнялся.
+- Payment provider remains future work; `Payment` is not created by this stage.
