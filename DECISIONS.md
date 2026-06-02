@@ -402,3 +402,5 @@ Prisma migrations и другие CLI-операции используют Supa
 - Если после migration `FaqSection` пустая, admin GET возвращает default sections как редактируемый draft, а PATCH создаёт/обновляет их через upsert по slug. Production seed/bootstrap для FAQ не требуется на первом шаге.
 - Migration `00000000000004_add_faq_sections` применена к production Supabase. После применения `FaqSection = 0`, поэтому public fallback остаётся ожидаемым состоянием до первого admin save.
 - Следующая проверка должна подтвердить production `/faq` fallback и инициализацию default sections через защищённую Telegram-админку без seed/bootstrap.
+- Верхний FAQ intro и нижний contact CTA используют reserved `FaqSection.slug`: `faq-hero-eyebrow`, `faq-hero`, `faq-contact-cta`. Они редактируются через тот же admin FAQ flow и не показываются как обычные FAQ-карточки.
+- Для live UX после проверки `/faq` добавлен явный open/hover/focus feedback FAQ-карточек без новых UI-библиотек и без migration.

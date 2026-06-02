@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Eye, Save } from "lucide-react";
 import { useScrollIntoViewOnChange } from "@/components/use-scroll-into-view-on-change";
 
+const systemSectionSlugs = new Set(["faq-hero-eyebrow", "faq-hero", "faq-contact-cta"]);
+
 type AdminFaqSection = {
   id: string;
   slug: string;
@@ -123,7 +125,14 @@ export function AdminFaqPanel({ initData }: { initData: string }) {
           <section key={section.slug} className="rounded-3xl border border-white/10 bg-white/7 p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/40">{section.slug}</p>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/40">
+                  {section.slug}
+                  {systemSectionSlugs.has(section.slug) ? (
+                    <span className="ml-2 rounded-full border border-neon-cyan/30 bg-neon-cyan/10 px-2 py-0.5 text-[10px] text-neon-cyan">
+                      системный блок
+                    </span>
+                  ) : null}
+                </p>
                 <h3 className="mt-1 text-lg font-black text-white">{section.title || "Без заголовка"}</h3>
               </div>
               <label className="flex items-center gap-2 text-sm font-bold text-white/70">

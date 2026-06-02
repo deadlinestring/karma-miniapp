@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   DEFAULT_FAQ_SECTIONS,
+  FAQ_CONTACT_CTA_SLUG,
+  FAQ_HERO_SLUG,
+  getFaqSectionBySlug,
+  getOrdinaryFaqSections,
   getAdminFaqSectionsWithServices,
   getPublicFaqSectionsWithServices,
   updateAdminFaqSectionsWithServices,
@@ -23,9 +27,9 @@ describe("FAQ repository", () => {
     const findMany = vi.fn().mockResolvedValue([makeSection()]);
     const sections = await getPublicFaqSectionsWithServices({ faqSection: { findMany } });
 
-    expect(sections).toHaveLength(1);
+    expect(sections.map((section) => section.slug)).toContain("about-karma-lights");
+    expect(sections.find((section) => section.slug === "about-karma-lights")?.id).toBe("faq-1");
     expect(findMany).toHaveBeenCalledWith({
-      where: { isActive: true },
       orderBy: [{ sortOrder: "asc" }, { title: "asc" }]
     });
   });
@@ -42,20 +46,43 @@ describe("FAQ repository", () => {
     });
 
     expect(empty.map((section) => section.slug)).toContain("how-to-order");
+    expect(adminEmpty.map((section) => section.slug)).toContain(FAQ_HERO_SLUG);
+    expect(adminEmpty.map((section) => section.slug)).toContain(FAQ_CONTACT_CTA_SLUG);
     expect(adminEmpty.map((section) => section.slug)).toContain("drawing-styles");
-    expect(adminEmpty[0]).toMatchObject({ slug: "about-karma-lights", isActive: true });
+    expect(adminEmpty.find((section) => section.slug === "about-karma-lights")).toMatchObject({ isActive: true });
     expect(failed.map((section) => section.slug)).toContain("custom-image-order");
   });
 
-  it("public reads only active FAQ sections from storage", async () => {
-    const findMany = vi.fn().mockResolvedValue([makeSection({ slug: "how-to-order", title: "Active" })]);
-    await getPublicFaqSectionsWithServices({ faqSection: { findMany } });
+  it("public returns only active FAQ sections after merging storage with fallback", async () => {
+    const findMany = vi.fn().mockResolvedValue([
+      makeSection({ slug: "how-to-order", title: "Active" }),
+      makeSection({ slug: "drawing-styles", title: "Hidden", isActive: false })
+    ]);
+    const sections = await getPublicFaqSectionsWithServices({ faqSection: { findMany } });
 
-    expect(findMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { isActive: true }
-      })
-    );
+    expect(sections.map((section) => section.slug)).not.toContain("drawing-styles");
+  });
+
+  it("uses saved hero and CTA sections when present", async () => {
+    const findMany = vi.fn().mockResolvedValue([
+      makeSection({ slug: FAQ_HERO_SLUG, title: "Saved title", content: "Saved intro", sortOrder: 1 }),
+      makeSection({ slug: FAQ_CONTACT_CTA_SLUG, title: "Saved CTA", content: "Saved contact", sortOrder: 1000 })
+    ]);
+    const sections = await getPublicFaqSectionsWithServices({ faqSection: { findMany } });
+
+    expect(getFaqSectionBySlug(sections, FAQ_HERO_SLUG)).toMatchObject({ title: "Saved title", content: "Saved intro" });
+    expect(getFaqSectionBySlug(sections, FAQ_CONTACT_CTA_SLUG)).toMatchObject({ title: "Saved CTA", content: "Saved contact" });
+  });
+
+  it("keeps system sections out of ordinary FAQ cards", () => {
+    const sections = [
+      ...DEFAULT_FAQ_SECTIONS,
+      makeSection({ slug: FAQ_HERO_SLUG, title: "Hero", sortOrder: 1 }),
+      makeSection({ slug: FAQ_CONTACT_CTA_SLUG, title: "CTA", sortOrder: 1000 })
+    ];
+
+    expect(getOrdinaryFaqSections(sections).map((section) => section.slug)).not.toContain(FAQ_HERO_SLUG);
+    expect(getOrdinaryFaqSections(sections).map((section) => section.slug)).not.toContain(FAQ_CONTACT_CTA_SLUG);
   });
 
   it("validates editable FAQ sections and rejects unknown or unsafe payloads", () => {
@@ -116,7 +143,7 @@ describe("FAQ repository", () => {
       })
     );
     expect(transaction).toHaveBeenCalledWith([expect.any(Object)]);
-    expect(sections[0].title).toBe("Saved");
+    expect(sections.find((section) => section.slug === "about-karma-lights")?.title).toBe("Saved");
   });
 
   it("can initialize default FAQ sections through admin upsert", async () => {
@@ -136,6 +163,18 @@ describe("FAQ repository", () => {
       expect.objectContaining({
         where: { slug: "about-karma-lights" },
         create: expect.objectContaining({ slug: "about-karma-lights" })
+      })
+    );
+    expect(upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { slug: FAQ_HERO_SLUG },
+        create: expect.objectContaining({ slug: FAQ_HERO_SLUG })
+      })
+    );
+    expect(upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { slug: FAQ_CONTACT_CTA_SLUG },
+        create: expect.objectContaining({ slug: FAQ_CONTACT_CTA_SLUG })
       })
     );
     expect(sections).toHaveLength(DEFAULT_FAQ_SECTIONS.length);

@@ -1,19 +1,31 @@
 import Link from "next/link";
-import { MessageCircle } from "lucide-react";
+import { ChevronDown, MessageCircle } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import type { FaqSectionDto } from "@/lib/server/faq";
+import {
+  FAQ_CONTACT_CTA_SLUG,
+  FAQ_HERO_EYEBROW_SLUG,
+  FAQ_HERO_SLUG,
+  getFaqSectionBySlug,
+  getOrdinaryFaqSections,
+  type FaqSectionDto
+} from "@/lib/server/faq";
 
 const supportBotUrl = "https://t.me/karmashopsupportbot";
 
 export function FaqPage({ sections }: { sections: FaqSectionDto[] }) {
+  const eyebrow = getFaqSectionBySlug(sections, FAQ_HERO_EYEBROW_SLUG);
+  const hero = getFaqSectionBySlug(sections, FAQ_HERO_SLUG);
+  const contactCta = getFaqSectionBySlug(sections, FAQ_CONTACT_CTA_SLUG);
+  const ordinarySections = getOrdinaryFaqSections(sections);
+
   return (
     <AppShell>
       <section>
-        <p className="text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">help</p>
-        <h1 className="mt-2 text-3xl font-black text-white">Как заказать</h1>
-        <p className="mt-3 text-sm leading-6 text-white/62">
-          Коротко о видах светильников, своей картинке, доставке и связи с менеджером.
-        </p>
+        <p className="text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">{eyebrow.title}</p>
+        <h1 className="mt-2 text-3xl font-black text-white">{hero.title}</h1>
+        <div className="mt-3 grid gap-2 text-sm leading-6 text-white/62">
+          {renderFaqContent(hero.content)}
+        </div>
       </section>
 
       <section className="mt-6 rounded-[28px] border border-neon-cyan/20 bg-neon-cyan/8 p-5">
@@ -33,14 +45,18 @@ export function FaqPage({ sections }: { sections: FaqSectionDto[] }) {
       </section>
 
       <section className="mt-5 grid gap-3">
-        {sections.map((section, index) => (
+        {ordinarySections.map((section, index) => (
           <details
             key={section.slug}
             open={index < 2}
-            className="rounded-[24px] border border-white/10 bg-white/7 p-4"
+            className="group rounded-[24px] border border-white/10 bg-white/7 p-4 transition duration-200 ease-out hover:-translate-y-0.5 hover:border-neon-cyan/35 hover:bg-white/10 focus-within:border-neon-cyan/50 open:border-neon-cyan/45 open:bg-neon-cyan/10 open:shadow-glow motion-reduce:transform-none motion-reduce:transition-none"
           >
-            <summary className="cursor-pointer list-none text-base font-black text-white">
-              {section.title}
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-2xl text-base font-black text-white outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/70">
+              <span>{section.title}</span>
+              <ChevronDown
+                size={18}
+                className="shrink-0 text-neon-cyan transition-transform duration-200 group-open:rotate-180 motion-reduce:transition-none"
+              />
             </summary>
             <div className="mt-3 grid gap-3 text-sm leading-6 text-white/64">
               {renderFaqContent(section.content)}
@@ -50,10 +66,10 @@ export function FaqPage({ sections }: { sections: FaqSectionDto[] }) {
       </section>
 
       <section className="mt-5 rounded-[28px] border border-white/10 bg-white/7 p-5">
-        <h2 className="text-xl font-black text-white">Остались вопросы?</h2>
-        <p className="mt-2 text-sm leading-6 text-white/62">
-          Напишите менеджеру в Telegram. Поддержка работает через отдельный bot, подключённый к BlueSales.
-        </p>
+        <h2 className="text-xl font-black text-white">{contactCta.title}</h2>
+        <div className="mt-2 grid gap-2 text-sm leading-6 text-white/62">
+          {renderFaqContent(contactCta.content)}
+        </div>
         <Link
           href={supportBotUrl}
           target="_blank"

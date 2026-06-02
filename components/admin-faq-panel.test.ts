@@ -15,6 +15,8 @@ describe("admin FAQ panel", () => {
   it("uses textarea/plain preview without raw HTML rendering", () => {
     expect(source).toContain("<textarea");
     expect(source).toContain("Preview");
+    expect(source).toContain("systemSectionSlugs");
+    expect(source).toContain("системный блок");
     expect(source).toContain("useScrollIntoViewOnChange");
     expect(source).not.toContain("dangerouslySetInnerHTML");
   });

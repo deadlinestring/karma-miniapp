@@ -396,3 +396,6 @@
 - FAQ нужен перед дальнейшими этапами custom design и payment flow, чтобы покупатель понимал правила до заказа.
 - Support bot `@karmashopsupportbot`, подключённый к BlueSales, остаётся каналом связи по вопросам.
 - Следующий live-test: открыть production `/faq`, затем в Telegram-админке открыть `FAQ / Как заказать` и сохранить default sections через protected PATCH/upsert.
+- Live-проверка FAQ выявила UX/content доработки: верхний intro и нижний CTA должны редактироваться из FAQ-админки.
+- Для верхнего intro и нижнего CTA подготовлены reserved FAQ slugs без новой migration: `faq-hero-eyebrow`, `faq-hero`, `faq-contact-cta`.
+- FAQ-карточки получили более явный hover/focus/open feedback, чтобы раскрытые разделы визуально не сливались.

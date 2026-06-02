@@ -37,8 +37,28 @@ type FaqServices = {
 
 const titleMaxLength = 120;
 const contentMaxLength = 4000;
+export const FAQ_HERO_EYEBROW_SLUG = "faq-hero-eyebrow";
+export const FAQ_HERO_SLUG = "faq-hero";
+export const FAQ_CONTACT_CTA_SLUG = "faq-contact-cta";
+export const SYSTEM_FAQ_SLUGS = new Set([FAQ_HERO_EYEBROW_SLUG, FAQ_HERO_SLUG, FAQ_CONTACT_CTA_SLUG]);
 
 export const DEFAULT_FAQ_SECTIONS: FaqSectionDto[] = [
+  {
+    id: "fallback-hero-eyebrow",
+    slug: FAQ_HERO_EYEBROW_SLUG,
+    title: "HELP",
+    content: "Маленькая подпись над заголовком FAQ.",
+    sortOrder: 0,
+    isActive: true
+  },
+  {
+    id: "fallback-hero",
+    slug: FAQ_HERO_SLUG,
+    title: "Как заказать",
+    content: "Коротко о видах светильников, своей картинке, доставке и связи с менеджером.",
+    sortOrder: 1,
+    isActive: true
+  },
   {
     id: "fallback-about",
     slug: "about-karma-lights",
@@ -110,6 +130,14 @@ export const DEFAULT_FAQ_SECTIONS: FaqSectionDto[] = [
       "На странице заказа нажмите Связаться. Откроется support bot @karmashopsupportbot, подключённый к BlueSales, а менеджер увидит контекст по публичному номеру заказа.",
     sortOrder: 80,
     isActive: true
+  },
+  {
+    id: "fallback-contact-cta",
+    slug: FAQ_CONTACT_CTA_SLUG,
+    title: "Остались вопросы?",
+    content: "Напишите менеджеру в Telegram. Поддержка работает через отдельный bot, подключённый к BlueSales.",
+    sortOrder: 1000,
+    isActive: true
   }
 ];
 
@@ -122,11 +150,10 @@ export async function getPublicFaqSections() {
 export async function getPublicFaqSectionsWithServices(services: Pick<FaqServices, "faqSection">) {
   try {
     const sections = await services.faqSection.findMany({
-      where: { isActive: true },
       orderBy: [{ sortOrder: "asc" }, { title: "asc" }]
     });
 
-    return sections.length > 0 ? sections.map(mapFaqSection) : DEFAULT_FAQ_SECTIONS;
+    return mergeFaqSectionsWithDefaults(sections.map(mapFaqSection)).filter((section) => section.isActive);
   } catch {
     return DEFAULT_FAQ_SECTIONS;
   }
@@ -142,10 +169,18 @@ export async function getAdminFaqSectionsWithServices(services: Pick<FaqServices
       orderBy: [{ sortOrder: "asc" }, { title: "asc" }]
     });
 
-    return sections.length > 0 ? sections.map(mapFaqSection) : DEFAULT_FAQ_SECTIONS;
+    return mergeFaqSectionsWithDefaults(sections.map(mapFaqSection));
   } catch {
     return DEFAULT_FAQ_SECTIONS;
   }
+}
+
+export function getOrdinaryFaqSections(sections: FaqSectionDto[]) {
+  return sections.filter((section) => !SYSTEM_FAQ_SLUGS.has(section.slug) && section.isActive);
+}
+
+export function getFaqSectionBySlug(sections: FaqSectionDto[], slug: string) {
+  return sections.find((section) => section.slug === slug && section.isActive) ?? DEFAULT_FAQ_SECTIONS.find((section) => section.slug === slug)!;
 }
 
 export async function updateAdminFaqSections(input: unknown) {
@@ -222,6 +257,20 @@ function mapFaqSection(section: FaqSectionDto): FaqSectionDto {
     sortOrder: section.sortOrder,
     isActive: section.isActive
   };
+}
+
+function mergeFaqSectionsWithDefaults(sections: FaqSectionDto[]) {
+  const bySlug = new Map<string, FaqSectionDto>();
+
+  for (const section of DEFAULT_FAQ_SECTIONS) {
+    bySlug.set(section.slug, section);
+  }
+
+  for (const section of sections) {
+    bySlug.set(section.slug, section);
+  }
+
+  return Array.from(bySlug.values()).sort((left, right) => left.sortOrder - right.sortOrder || left.title.localeCompare(right.title));
 }
 
 function readSlug(value: unknown) {

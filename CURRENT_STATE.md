@@ -144,3 +144,7 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Admin FAQ should show default sections as editable draft and create/update them through protected PATCH/upsert without seed/bootstrap.
 - Support communication remains through `@karmashopsupportbot` connected to BlueSales.
 - Next live test: production `/faq` fallback plus admin FAQ save/edit through Telegram Mini App.
+- Live FAQ check confirmed public/admin flow, but UX/content needed refinement.
+- FAQ hero/intro and bottom CTA are being made editable through reserved slugs: `faq-hero-eyebrow`, `faq-hero`, `faq-contact-cta`.
+- FAQ cards are being adjusted with clearer open/hover/focus feedback so sections do not visually blend together.
+- No new migration is expected for this refinement.
