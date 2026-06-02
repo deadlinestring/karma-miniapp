@@ -61,6 +61,12 @@ export function CartPage() {
                       </p>
                     ) : null}
                     <p className="mt-2 text-lg font-black text-white">{formatKopecks(item.unitPriceKopecks)} ₽</p>
+                    {item.customDrawingStyle ? (
+                      <p className="mt-2 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 px-3 py-2 text-xs font-semibold text-neon-cyan">
+                        Свой дизайн: {item.customImageFileName ?? "изображение загружено"}.
+                        Проверка макета перед подтверждением заказа.
+                      </p>
+                    ) : null}
                     <div className="mt-3 flex items-center justify-between gap-2">
                       <div className="flex items-center rounded-2xl border border-white/10 bg-white/7">
                         <button

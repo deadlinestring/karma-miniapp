@@ -158,21 +158,41 @@ describe("quoteOrderWithServices", () => {
   });
 
   it("calculates discount, wall-panel delivery and custom drawing surcharge", async () => {
-    const { services } = makeServices();
+    const { services } = makeServices([makeProduct({ productType: "CUSTOM", images: [] })]);
 
     const quote = await quoteOrderWithServices(
       {
         deliveryMethod: "RUSSIAN_POST",
         items: [
-          { productId: "product-1", priceListItemId: "standard-20", quantity: 1 },
-          { productId: "product-1", priceListItemId: "premium-30", quantity: 1 },
+          {
+            productId: "product-1",
+            priceListItemId: "standard-20",
+            quantity: 1,
+            custom: {
+              drawingStyle: "CUSTOM_DRAWING_STYLE_1",
+              customDesignKey: "custom-orders/12345/design-1.png",
+              customImageStoragePath: "custom-orders/12345/design-1.png"
+            }
+          },
+          {
+            productId: "product-1",
+            priceListItemId: "premium-30",
+            quantity: 1,
+            custom: {
+              drawingStyle: "CUSTOM_DRAWING_STYLE_1",
+              customDesignKey: "custom-orders/12345/design-1.png",
+              customImageStoragePath: "custom-orders/12345/design-1.png"
+            }
+          },
           {
             productId: "product-1",
             priceListItemId: "wall-55",
             quantity: 1,
             custom: {
               drawingStyle: "CUSTOM_DRAWING_STYLE_1",
-              customDesignKey: "design-1"
+              customDesignKey: "custom-orders/12345/design-1.png",
+              customImageStoragePath: "custom-orders/12345/design-1.png",
+              customImageFileName: "design-1.png"
             }
           }
         ]
@@ -213,20 +233,73 @@ describe("quoteOrderWithServices", () => {
             productId: "product-1",
             priceListItemId: "standard-20",
             quantity: 1,
-            custom: { drawingStyle: "CUSTOM_DRAWING_STYLE_2", customDesignKey: "same-design" }
+            custom: {
+              drawingStyle: "CUSTOM_DRAWING_STYLE_2",
+              customDesignKey: "custom-orders/12345/same-design.png",
+              customImageStoragePath: "custom-orders/12345/same-design.png"
+            }
           },
           {
             productId: "product-1",
             priceListItemId: "premium-30",
             quantity: 1,
-            custom: { drawingStyle: "CUSTOM_DRAWING_STYLE_2", customDesignKey: "same-design" }
+            custom: {
+              drawingStyle: "CUSTOM_DRAWING_STYLE_2",
+              customDesignKey: "custom-orders/12345/same-design.png",
+              customImageStoragePath: "custom-orders/12345/same-design.png"
+            }
           }
         ]
       },
-      makeServices().services
+      makeServices([makeProduct({ productType: "CUSTOM", images: [] })]).services
     );
 
     expect(quote.summary.customDrawingTotalKopecks).toBe(79000);
+  });
+
+  it("rejects custom product quote without uploaded image", async () => {
+    await expect(
+      quoteOrderWithServices(
+        {
+          deliveryMethod: "RUSSIAN_POST",
+          items: [
+            {
+              productId: "product-1",
+              priceListItemId: "premium-30",
+              quantity: 1,
+              custom: {
+                drawingStyle: "CUSTOM_DRAWING_STYLE_1",
+                customDesignKey: "design-1"
+              }
+            }
+          ]
+        },
+        makeServices([makeProduct({ productType: "CUSTOM", images: [] })]).services
+      )
+    ).rejects.toThrow("изображение");
+  });
+
+  it("rejects custom drawing payload for a regular product", async () => {
+    await expect(
+      quoteOrderWithServices(
+        {
+          deliveryMethod: "RUSSIAN_POST",
+          items: [
+            {
+              productId: "product-1",
+              priceListItemId: "premium-30",
+              quantity: 1,
+              custom: {
+                drawingStyle: "CUSTOM_DRAWING_STYLE_1",
+                customDesignKey: "custom-orders/12345/design-1.png",
+                customImageStoragePath: "custom-orders/12345/design-1.png"
+              }
+            }
+          ]
+        },
+        makeServices().services
+      )
+    ).rejects.toThrow("Свой дизайн");
   });
 
   it("does not call write methods", async () => {

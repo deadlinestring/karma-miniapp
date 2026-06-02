@@ -406,3 +406,14 @@ Prisma migrations и другие CLI-операции используют Supa
 - Для live UX после проверки `/faq` добавлен явный open/hover/focus feedback FAQ-карточек без новых UI-библиотек и без migration.
 - Production live-проверка FAQ chrome подтвердила: hero/intro и CTA редактируются через Telegram-админку, публичный `/faq` отображает изменения, а FAQ-карточки имеют понятный hover/open/active feedback.
 - Следующий крупный блок после FAQ checkpoint — custom design flow.
+
+## Custom design flow first layer
+
+- Custom design flow использует существующий `Product.productType = CUSTOM`; отдельная migration для первого слоя не нужна.
+- Покупатель обязан выбрать `CustomDrawingStyle` и загрузить изображение до добавления custom-товара в корзину.
+- Customer upload выполняется через `POST /api/orders/custom-upload` с обычной Telegram Mini App auth; raw initData хранится только в памяти клиента и передается только в header.
+- Custom images хранятся в private Supabase Storage bucket из `SUPABASE_CUSTOM_ORDER_BUCKET`; клиент получает только `customDesignKey`, private `storagePath`, имя файла, MIME и размер, без public URL.
+- Server quote принимает custom metadata только для `CUSTOM` товара, требует `customImageStoragePath` из `custom-orders/` и считает surcharge один раз на уникальный design key.
+- Order creation повторно пересчитывает quote и дополнительно проверяет, что `customImageStoragePath` принадлежит текущему Telegram user path `custom-orders/<telegramId>/`.
+- Custom order item сохраняет `customDrawingStyle`, surcharge snapshot, `customDesignKey`, `customImageStoragePath` и `customImageReviewStatus = PENDING_REVIEW`.
+- Payment provider не подключается: custom design сначала проходит review и ручной контакт менеджера; admin review UI проектируется отдельным этапом.

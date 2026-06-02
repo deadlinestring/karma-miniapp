@@ -66,6 +66,8 @@ type QuoteItem = {
   unitPriceKopecks: number;
   lineSubtotalKopecks: number;
   note: string | null;
+  customDrawingStyle?: string | null;
+  customImageFileName?: string | null;
   customDrawingSurchargeKopecks: number;
   discountKopecks: number;
   lineTotalKopecks: number;
@@ -364,6 +366,12 @@ export function CheckoutPage() {
                       <span>{formatKopecks(item.customDrawingSurchargeKopecks)} ₽</span>
                     </div>
                   ) : null}
+                  {item.customDrawingSurchargeKopecks > 0 ? (
+                    <p className="mt-1 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 px-3 py-2 text-xs font-semibold text-neon-cyan">
+                      Свой дизайн: изображение будет проверено администратором перед подтверждением заказа.
+                      {item.customImageFileName ? ` Файл: ${item.customImageFileName}.` : ""}
+                    </p>
+                  ) : null}
                   {item.discountKopecks > 0 ? (
                     <div className="mt-2 flex justify-between text-xs text-emerald-200">
                       <span>Скидка на второе изделие</span>
@@ -436,10 +444,12 @@ function buildQuotePayload(items: CartItem[]) {
       productId: item.productId,
       priceListItemId: item.priceListItemId,
       quantity: item.quantity,
-      custom: item.customDrawingStyle
+          custom: item.customDrawingStyle
         ? {
             drawingStyle: item.customDrawingStyle,
-            customDesignKey: item.customDesignKey ?? null
+            customDesignKey: item.customDesignKey ?? null,
+            customImageStoragePath: item.customImageStoragePath ?? null,
+            customImageFileName: item.customImageFileName ?? null
           }
         : null
     }))
@@ -456,6 +466,8 @@ function fallbackQuoteItems(items: CartItem[]): QuoteItem[] {
     unitPriceKopecks: item.unitPriceKopecks,
     lineSubtotalKopecks: item.unitPriceKopecks * item.quantity,
     note: item.note,
+    customDrawingStyle: item.customDrawingStyle ?? null,
+    customImageFileName: item.customImageFileName ?? null,
     customDrawingSurchargeKopecks: 0,
     discountKopecks: 0,
     lineTotalKopecks: item.unitPriceKopecks * item.quantity

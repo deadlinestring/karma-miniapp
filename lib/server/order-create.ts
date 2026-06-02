@@ -10,6 +10,7 @@ import {
 } from "@/lib/server/order-quote";
 import { sendOrderCreatedAdminNotifications } from "@/lib/server/order-notifications";
 import { prisma } from "@/lib/server/prisma";
+import { isManagedCustomOrderImagePath } from "@/lib/server/supabase-storage";
 
 type PrismaLike = typeof prisma;
 
@@ -92,6 +93,7 @@ export async function createOrderWithServices(
     const quote = await quoteOrderWithServices(payload.quotePayload, {
       db: tx as OrderQuoteServices["db"]
     });
+    validateCustomImageOwnership(quote, telegramUser);
     const user = await tx.telegramUser.upsert({
       where: { telegramId: BigInt(telegramUser.id) },
       create: {
@@ -162,6 +164,7 @@ export async function createOrderWithServices(
             customDrawingStyle: item.customDrawingStyle,
             customDrawingSurchargeKopecks: item.customDrawingSurchargeKopecks,
             customDesignKey: item.customDesignKey,
+            customImageStoragePath: item.customImageStoragePath,
             customImageReviewStatus: getCustomImageReviewStatus(item.customDrawingStyle),
             discountKopecks: item.discountKopecks,
             quantity: item.quantity,
@@ -306,6 +309,18 @@ function buildAddressLine(address: ParsedDeliveryAddress) {
   ]
     .filter(Boolean)
     .join(", ");
+}
+
+function validateCustomImageOwnership(quote: OrderQuoteResult, telegramUser: TelegramAuthUser) {
+  for (const item of quote.items) {
+    if (!item.customDrawingStyle) {
+      continue;
+    }
+
+    if (!isManagedCustomOrderImagePath(telegramUser.id, item.customImageStoragePath)) {
+      throw new OrderCreateError("Изображение своего дизайна нужно загрузить заново.");
+    }
+  }
 }
 
 function getCustomImageReviewStatus(

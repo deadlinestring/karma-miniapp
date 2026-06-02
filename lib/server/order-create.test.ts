@@ -172,6 +172,7 @@ describe("createOrderWithServices", () => {
 
   it("marks custom drawing items as pending review", async () => {
     const { tx, services } = makeServices();
+    tx.product.findMany.mockResolvedValue([makeProduct({ productType: "CUSTOM", images: [] })]);
 
     await createOrderWithServices(
       {
@@ -181,7 +182,11 @@ describe("createOrderWithServices", () => {
             productId: "product-1",
             priceListItemId: "premium-30",
             quantity: 1,
-            custom: { drawingStyle: "CUSTOM_DRAWING_STYLE_1", customDesignKey: "design-1" }
+            custom: {
+              drawingStyle: "CUSTOM_DRAWING_STYLE_1",
+              customDesignKey: "custom-orders/12345/design-1.png",
+              customImageStoragePath: "custom-orders/12345/design-1.png"
+            }
           }
         ]
       },
@@ -197,6 +202,7 @@ describe("createOrderWithServices", () => {
               expect.objectContaining({
                 customDrawingStyle: "CUSTOM_DRAWING_STYLE_1",
                 customDrawingSurchargeKopecks: 69000,
+                customImageStoragePath: "custom-orders/12345/design-1.png",
                 customImageReviewStatus: "PENDING_REVIEW"
               })
             ]
@@ -204,6 +210,35 @@ describe("createOrderWithServices", () => {
         })
       })
     );
+  });
+
+  it("rejects custom order creation when uploaded image belongs to another Telegram user", async () => {
+    const { tx, services } = makeServices();
+    tx.product.findMany.mockResolvedValue([makeProduct({ productType: "CUSTOM", images: [] })]);
+
+    await expect(
+      createOrderWithServices(
+        {
+          ...validPayload,
+          items: [
+            {
+              productId: "product-1",
+              priceListItemId: "premium-30",
+              quantity: 1,
+              custom: {
+                drawingStyle: "CUSTOM_DRAWING_STYLE_1",
+                customDesignKey: "custom-orders/999/design-1.png",
+                customImageStoragePath: "custom-orders/999/design-1.png"
+              }
+            }
+          ]
+        },
+        telegramUser,
+        services
+      )
+    ).rejects.toThrow("Изображение");
+
+    expect(tx.order.create).not.toHaveBeenCalled();
   });
 
   it("notifies admins after successful order transaction", async () => {

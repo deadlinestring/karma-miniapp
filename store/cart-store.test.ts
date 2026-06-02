@@ -45,7 +45,9 @@ describe("cart snapshot compatibility", () => {
         quantity: 1,
         accent: "cyan",
         customDrawingStyle: "CUSTOM_DRAWING_STYLE_1",
-        customDesignKey: "design-1"
+        customDesignKey: "custom-orders/12345/design-1.png",
+        customImageStoragePath: "custom-orders/12345/design-1.png",
+        customImageFileName: "design-1.png"
       })
     ).toBe(true);
   });

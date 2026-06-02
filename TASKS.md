@@ -403,3 +403,13 @@
 - Верхний FAQ-блок hero/intro и нижний CTA `Остались вопросы?` редактируются из Telegram-админки и корректно отображаются публично.
 - FAQ-карточки дают понятный hover/open/active feedback.
 - Следующий рекомендуемый крупный этап: custom design flow.
+
+## Custom design flow checkpoint
+
+- Первый рабочий слой custom design flow подготовлен локально: товар `CUSTOM` требует выбор стиля отрисовки и загрузку изображения перед добавлением в корзину.
+- Добавлен customer upload endpoint `POST /api/orders/custom-upload` с обычной Telegram Mini App auth через `X-Telegram-Init-Data`.
+- Изображения своего дизайна загружаются сервером в private Supabase Storage bucket из `SUPABASE_CUSTOM_ORDER_BUCKET`; публичный URL не возвращается клиенту.
+- Quote учитывает доплату за стиль: стиль 1 `+690 ₽`, стиль 2 `+790 ₽`, стиль 3 `+990 ₽`; доплата берется один раз на уникальный `customDesignKey`.
+- Order creation сохраняет snapshot custom style, surcharge, `customDesignKey`, private `customImageStoragePath` и review status `PENDING_REVIEW`.
+- Checkout сообщает, что свой дизайн сначала проверяется администратором; онлайн-оплата по-прежнему не подключена.
+- Admin review UI для custom image пока не реализован и остается следующим отдельным этапом после live-проверки upload/order flow.

@@ -22,18 +22,50 @@ type UploadPublicProductImageInput = {
   extension: string;
 };
 
+type UploadPrivateCustomOrderImageInput = {
+  telegramUserId: string;
+  buffer: Buffer;
+  contentType: string;
+  extension: string;
+};
+
+type UploadedPrivateCustomOrderImage = {
+  storagePath: string;
+};
+
 let storageClient: SupabaseClient | null = null;
 
-function getStorageConfig() {
+function getStorageBaseConfig() {
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SECRET_KEY;
-  const bucket = process.env.SUPABASE_CATALOG_BUCKET;
 
-  if (!supabaseUrl || !supabaseKey || !bucket) {
+  if (!supabaseUrl || !supabaseKey) {
     throw new Error("supabase_storage_env_missing");
   }
 
-  return { supabaseUrl, supabaseKey, bucket };
+  return { supabaseUrl, supabaseKey };
+}
+
+function getStorageConfig() {
+  const baseConfig = getStorageBaseConfig();
+  const bucket = process.env.SUPABASE_CATALOG_BUCKET;
+
+  if (!bucket) {
+    throw new Error("supabase_storage_env_missing");
+  }
+
+  return { ...baseConfig, bucket };
+}
+
+function getCustomOrderStorageConfig() {
+  const baseConfig = getStorageBaseConfig();
+  const bucket = process.env.SUPABASE_CUSTOM_ORDER_BUCKET;
+
+  if (!bucket) {
+    throw new Error("supabase_custom_order_storage_env_missing");
+  }
+
+  return { ...baseConfig, bucket };
 }
 
 function getSupabaseStorageClient() {
@@ -41,7 +73,7 @@ function getSupabaseStorageClient() {
     return storageClient;
   }
 
-  const { supabaseUrl, supabaseKey } = getStorageConfig();
+  const { supabaseUrl, supabaseKey } = getStorageBaseConfig();
 
   storageClient = createClient(supabaseUrl, supabaseKey, {
     auth: {
@@ -119,6 +151,34 @@ export async function deletePublicProductImage(productId: string, storagePath: s
   }
 }
 
+export async function uploadPrivateCustomOrderImage(
+  input: UploadPrivateCustomOrderImageInput
+): Promise<UploadedPrivateCustomOrderImage> {
+  const { bucket } = getCustomOrderStorageConfig();
+  const storagePath = `custom-orders/${input.telegramUserId}/${randomUUID()}.${input.extension}`;
+  const client = getSupabaseStorageClient();
+  const { error } = await client.storage.from(bucket).upload(storagePath, input.buffer, {
+    contentType: input.contentType,
+    cacheControl: "3600",
+    upsert: false
+  });
+
+  if (error) {
+    throw new Error("supabase_custom_order_upload_failed");
+  }
+
+  return { storagePath };
+}
+
 export function isManagedProductImagePath(productId: string, storagePath: string | null | undefined) {
   return typeof storagePath === "string" && storagePath.startsWith(`products/${productId}/`);
+}
+
+export function isManagedCustomOrderImagePath(
+  telegramUserId: string,
+  storagePath: string | null | undefined
+) {
+  return (
+    typeof storagePath === "string" && storagePath.startsWith(`custom-orders/${telegramUserId}/`)
+  );
 }

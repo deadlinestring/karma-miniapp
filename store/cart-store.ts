@@ -29,6 +29,8 @@ export type CartItem = {
   isCustom?: boolean;
   customDrawingStyle?: CartCustomDrawingStyle | null;
   customDesignKey?: string | null;
+  customImageStoragePath?: string | null;
+  customImageFileName?: string | null;
 };
 
 type CartState = {
@@ -73,7 +75,13 @@ export const isCartItem = (item: unknown): item is CartItem => {
       typeof candidate.customDrawingStyle === "string") &&
     (candidate.customDesignKey === undefined ||
       candidate.customDesignKey === null ||
-      typeof candidate.customDesignKey === "string")
+      typeof candidate.customDesignKey === "string") &&
+    (candidate.customImageStoragePath === undefined ||
+      candidate.customImageStoragePath === null ||
+      typeof candidate.customImageStoragePath === "string") &&
+    (candidate.customImageFileName === undefined ||
+      candidate.customImageFileName === null ||
+      typeof candidate.customImageFileName === "string")
   );
 };
 
@@ -122,7 +130,7 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: "karma-cart",
-      version: 3,
+      version: 4,
       migrate: (persistedState) => {
         if (
           persistedState &&

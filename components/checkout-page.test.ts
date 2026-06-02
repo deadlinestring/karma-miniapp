@@ -33,6 +33,8 @@ describe("checkout page order flow integration", () => {
     expect(source).toContain('label="Скидка"');
     expect(source).toContain('label="Отрисовка"');
     expect(source).toContain("customDrawingTotalKopecks");
+    expect(source).toContain("customImageStoragePath: item.customImageStoragePath");
+    expect(source).toContain("customImageFileName: item.customImageFileName");
   });
 
   it("shows successful order public number and link without payment UI", () => {

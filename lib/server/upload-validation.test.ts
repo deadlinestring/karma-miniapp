@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { MAX_ADMIN_IMAGE_SIZE_BYTES, validateAdminImageFile } from "./upload-validation";
+import {
+  MAX_ADMIN_IMAGE_SIZE_BYTES,
+  MAX_CUSTOM_ORDER_IMAGE_SIZE_BYTES,
+  validateAdminImageFile,
+  validateCustomOrderImageFile
+} from "./upload-validation";
 
 const jpegBytes = Uint8Array.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01]);
 const pngBytes = Uint8Array.from([
@@ -70,5 +75,23 @@ describe("admin image upload validation", () => {
 
   it("rejects files where declared MIME does not match actual signature", async () => {
     await expect(validateAdminImageFile(makeFile("image/png", jpegBytes))).rejects.toThrow("image_type_mismatch");
+  });
+});
+
+describe("custom order image upload validation", () => {
+  it("uses a separate 8 MB limit for customer custom design images", async () => {
+    expect(MAX_CUSTOM_ORDER_IMAGE_SIZE_BYTES).toBe(8 * 1024 * 1024);
+    await expect(validateCustomOrderImageFile(makeFile("image/png", pngBytes))).resolves.toMatchObject({
+      contentType: "image/png",
+      extension: "png"
+    });
+  });
+
+  it("rejects customer files larger than 8 MB", async () => {
+    await expect(
+      validateCustomOrderImageFile(
+        makeFile("image/png", new Uint8Array(MAX_CUSTOM_ORDER_IMAGE_SIZE_BYTES + 1))
+      )
+    ).rejects.toThrow("invalid_image_size");
   });
 });

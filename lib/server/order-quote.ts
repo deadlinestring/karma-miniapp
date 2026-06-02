@@ -22,6 +22,8 @@ export type OrderQuoteInput = {
     custom?: {
       drawingStyle?: CustomDrawingStyle | null;
       customDesignKey?: string | null;
+      customImageStoragePath?: string | null;
+      customImageFileName?: string | null;
     } | null;
   }>;
   deliveryMethod: "RUSSIAN_POST";
@@ -41,6 +43,8 @@ export type OrderQuoteItem = {
   note: string | null;
   customDrawingStyle: CustomDrawingStyle | null;
   customDesignKey: string | null;
+  customImageStoragePath: string | null;
+  customImageFileName: string | null;
   customDrawingSurchargeKopecks: number;
   discountKopecks: number;
   lineTotalKopecks: number;
@@ -66,6 +70,8 @@ const MAX_ITEMS = 50;
 const MIN_QUANTITY = 1;
 const MAX_QUANTITY = 99;
 const MAX_CUSTOM_DESIGN_KEY_LENGTH = 120;
+const MAX_CUSTOM_IMAGE_STORAGE_PATH_LENGTH = 240;
+const MAX_CUSTOM_IMAGE_FILE_NAME_LENGTH = 120;
 const deliveryMethods = new Set(["RUSSIAN_POST"]);
 const customDrawingStyles = new Set<CustomDrawingStyle>([
   "CUSTOM_DRAWING_STYLE_1",
@@ -118,6 +124,14 @@ export async function quoteOrderWithServices(
 
     const customDrawingStyle = item.custom?.drawingStyle ?? null;
     const customDesignKey = item.custom?.customDesignKey?.trim() ?? null;
+    const customImageStoragePath = item.custom?.customImageStoragePath?.trim() ?? null;
+    const customImageFileName = item.custom?.customImageFileName?.trim() ?? null;
+
+    validateCustomQuoteState(product.productType, {
+      customDrawingStyle,
+      customDesignKey,
+      customImageStoragePath
+    });
 
     return {
       lineId: `${item.productId}:${item.priceListItemId}:${index}`,
@@ -125,7 +139,9 @@ export async function quoteOrderWithServices(
       priceListItem,
       quantity: item.quantity,
       customDrawingStyle,
-      customDesignKey
+      customDesignKey,
+      customImageStoragePath,
+      customImageFileName
     };
   });
 
@@ -157,6 +173,8 @@ export async function quoteOrderWithServices(
       note: item.priceListItem.note,
       customDrawingStyle: item.customDrawingStyle,
       customDesignKey: item.customDesignKey,
+      customImageStoragePath: item.customImageStoragePath,
+      customImageFileName: item.customImageFileName,
       customDrawingSurchargeKopecks: line.customDrawingSurchargeKopecks,
       discountKopecks: line.discountKopecks,
       lineTotalKopecks: line.lineTotalKopecks
@@ -294,12 +312,25 @@ function parseCustomQuoteInput(input: unknown): OrderQuoteInput["items"][number]
     throw new OrderQuoteError("Параметры своего дизайна заполнены неверно.");
   }
 
-  const custom = input as { drawingStyle?: unknown; customDesignKey?: unknown };
+  const custom = input as {
+    drawingStyle?: unknown;
+    customDesignKey?: unknown;
+    customImageStoragePath?: unknown;
+    customImageFileName?: unknown;
+  };
   const drawingStyle = custom.drawingStyle;
   const customDesignKey =
     typeof custom.customDesignKey === "string" ? custom.customDesignKey.trim() : null;
+  const customImageStoragePath =
+    typeof custom.customImageStoragePath === "string" ? custom.customImageStoragePath.trim() : null;
+  const customImageFileName =
+    typeof custom.customImageFileName === "string" ? custom.customImageFileName.trim() : null;
 
   if (drawingStyle === undefined || drawingStyle === null || drawingStyle === "") {
+    if (customDesignKey || customImageStoragePath || customImageFileName) {
+      throw new OrderQuoteError("Для своего дизайна выберите стиль отрисовки.");
+    }
+
     return null;
   }
 
@@ -315,10 +346,53 @@ function parseCustomQuoteInput(input: unknown): OrderQuoteInput["items"][number]
     throw new OrderQuoteError("Идентификатор своего дизайна слишком длинный.");
   }
 
+  if (!customImageStoragePath) {
+    throw new OrderQuoteError("Загрузите изображение для своего дизайна.");
+  }
+
+  if (
+    customImageStoragePath.length > MAX_CUSTOM_IMAGE_STORAGE_PATH_LENGTH ||
+    !customImageStoragePath.startsWith("custom-orders/")
+  ) {
+    throw new OrderQuoteError("Изображение своего дизайна нужно загрузить заново.");
+  }
+
+  if (customImageFileName && customImageFileName.length > MAX_CUSTOM_IMAGE_FILE_NAME_LENGTH) {
+    throw new OrderQuoteError("Название файла своего дизайна слишком длинное.");
+  }
+
   return {
     drawingStyle: drawingStyle as CustomDrawingStyle,
-    customDesignKey
+    customDesignKey,
+    customImageStoragePath,
+    customImageFileName
   };
+}
+
+function validateCustomQuoteState(
+  productType: ProductType,
+  custom: {
+    customDrawingStyle: CustomDrawingStyle | null;
+    customDesignKey: string | null;
+    customImageStoragePath: string | null;
+  }
+) {
+  const hasCustomPayload =
+    Boolean(custom.customDrawingStyle) ||
+    Boolean(custom.customDesignKey) ||
+    Boolean(custom.customImageStoragePath);
+
+  if (productType === "CUSTOM") {
+    if (!custom.customDrawingStyle || !custom.customDesignKey || !custom.customImageStoragePath) {
+      throw new OrderQuoteError("Для своего дизайна выберите стиль отрисовки и загрузите изображение.");
+    }
+
+    return;
+  }
+
+  if (hasCustomPayload) {
+    throw new OrderQuoteError("Параметры своего дизайна доступны только для товара «Свой дизайн».");
+  }
 }
 
 function validateProductForQuote(product: ProductRecord) {

@@ -151,3 +151,15 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - FAQ cards now have clearer open/hover/focus feedback so sections do not visually blend together.
 - No new migration was required for this refinement.
 - Recommended next major stage: custom design flow.
+
+## Custom design flow checkpoint
+
+- First working custom design layer is prepared locally.
+- Existing schema is enough: `OrderItem` already has custom drawing, private image path and review status fields.
+- New customer endpoint: `POST /api/orders/custom-upload`.
+- Upload requires Telegram Mini App initData and stores JPEG/PNG/WEBP images up to 8 MB in the private custom order bucket configured by `SUPABASE_CUSTOM_ORDER_BUCKET`.
+- Product modal requires style + uploaded image before adding a `CUSTOM` product to cart.
+- Quote/order payload now carries `customDrawingStyle`, `customDesignKey`, `customImageStoragePath` and file name snapshot.
+- Order creation saves custom items as `PENDING_REVIEW` and does not create `Payment`.
+- No migration was needed or applied for this stage.
+- Production data must remain unchanged until a separate live custom order test.
