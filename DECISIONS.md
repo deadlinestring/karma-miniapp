@@ -367,3 +367,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - `COMPLETED` и `CANCELLED` считаются финальными до отдельного этапа возврата/исправления статусов.
 - Удаление заказов не реализуется: заказы являются историей покупательского действия и нужны для аудита.
 - Изменение статуса заказа на этом этапе не отправляет покупателю или администратору дополнительные Telegram notifications.
+## Live admin order status management
+
+- Fulfillment status управляется через защищённую Telegram-админку и server-side admin endpoints.
+- Production live-test подтвердил переход заказа `KRM-20260601-805754` из `NEW` в `IN_WORK`.
+- `paymentStatus` не меняется вручную на этом этапе и остался `PENDING`.
+- Status update текущей версии не отправляет Telegram notification клиенту или администратору.
+- Totals, item snapshots, delivery address, customer snapshot и payment rows не меняются при смене fulfillment status.
+- Заказ `KRM-20260601-128352` остался `NEW / PENDING`, что подтверждает точечное изменение только выбранного заказа.

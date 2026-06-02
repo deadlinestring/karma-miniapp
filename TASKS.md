@@ -364,3 +364,12 @@
 - Live status update через Telegram ещё не выполнялся.
 - Удаление заказов и создание `Payment` не реализуются.
 - Payment provider planning остаётся отдельным будущим этапом.
+## Live admin order status verification
+
+- Orders admin panel live-проверен в production после deployment commit `96b5ed0`.
+- Раздел `Заказы` открылся в Telegram Mini App и показал оба существующих заказа.
+- Заказ `KRM-20260601-805754` открыт в админке; fulfillment status успешно изменён `NEW -> IN_WORK`.
+- `paymentStatus` остался read-only и сохранился как `PENDING`; `Payment` не создавался.
+- Заказ `KRM-20260601-128352` остался в прежнем состоянии `NEW / PENDING`.
+- Status update текущей версии не отправляет Telegram notification клиенту или администратору.
+- Следующий этап требует выбора направления: payment provider planning, order status notifications или customer order page.

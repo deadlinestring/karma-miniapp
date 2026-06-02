@@ -511,3 +511,10 @@ Production live-test Telegram admin notification пройден успешно �
 - изменить fulfillment status заказа по ограниченным переходам.
 
 На этом этапе нельзя менять payment status, суммы, товары, адрес, удалять заказ или создавать `Payment`. Онлайн-оплата и payment-provider integration остаются отдельным будущим этапом.
+### Production check: admin order status
+
+Раздел `Заказы` работает в production внутри защищённой Telegram-админки.
+
+Администратор может открыть заказ и сменить fulfillment status по разрешённой state machine. Production-сценарий подтверждён на заказе `KRM-20260601-805754`: статус изменён `NEW -> IN_WORK`, при этом `paymentStatus` остался `PENDING`.
+
+Смена fulfillment status не меняет суммы, состав заказа, адрес доставки, payment status и не создаёт `Payment`. В текущей версии она также не отправляет Telegram notification клиенту или администратору; уведомления о смене статуса проектируются отдельным этапом.

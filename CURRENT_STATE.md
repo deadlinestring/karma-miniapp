@@ -100,3 +100,16 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 ## Known payment risk
 
 ЮKassa access may be difficult because the user may not own the account. The payment provider should be agreed before payment integration starts.
+## Live admin order status checkpoint
+
+- Orders admin panel is live in production after deployment commit `96b5ed0`.
+- `Order = 2`
+- `Payment = 0`
+- `NotificationLog = 1`
+- `KRM-20260601-805754 = IN_WORK / PENDING`
+- `KRM-20260601-128352 = NEW / PENDING`
+- The live status update changed only fulfillment status for `KRM-20260601-805754`.
+- Payment status remains read-only in the admin UI.
+- No `Payment` rows were created.
+- Current status update flow does not send Telegram notifications to customer or admin.
+- Recommended next step: choose the next Order flow layer: payment provider planning, order status notifications, or customer order page.
