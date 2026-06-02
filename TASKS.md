@@ -399,3 +399,7 @@
 - Live-проверка FAQ выявила UX/content доработки: верхний intro и нижний CTA должны редактироваться из FAQ-админки.
 - Для верхнего intro и нижнего CTA подготовлены reserved FAQ slugs без новой migration: `faq-hero-eyebrow`, `faq-hero`, `faq-contact-cta`.
 - FAQ-карточки получили более явный hover/focus/open feedback, чтобы раскрытые разделы визуально не сливались.
+- FAQ chrome live-проверен в production после Vercel Ready.
+- Верхний FAQ-блок hero/intro и нижний CTA `Остались вопросы?` редактируются из Telegram-админки и корректно отображаются публично.
+- FAQ-карточки дают понятный hover/open/active feedback.
+- Следующий рекомендуемый крупный этап: custom design flow.

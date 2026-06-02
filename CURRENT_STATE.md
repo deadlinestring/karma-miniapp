@@ -145,6 +145,9 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Support communication remains through `@karmashopsupportbot` connected to BlueSales.
 - Next live test: production `/faq` fallback plus admin FAQ save/edit through Telegram Mini App.
 - Live FAQ check confirmed public/admin flow, but UX/content needed refinement.
-- FAQ hero/intro and bottom CTA are being made editable through reserved slugs: `faq-hero-eyebrow`, `faq-hero`, `faq-contact-cta`.
-- FAQ cards are being adjusted with clearer open/hover/focus feedback so sections do not visually blend together.
-- No new migration is expected for this refinement.
+- FAQ chrome live-check passed after Vercel Ready.
+- Current `FaqSection = 11`.
+- FAQ hero/intro and bottom CTA are editable through reserved slugs: `faq-hero-eyebrow`, `faq-hero`, `faq-contact-cta`.
+- FAQ cards now have clearer open/hover/focus feedback so sections do not visually blend together.
+- No new migration was required for this refinement.
+- Recommended next major stage: custom design flow.
