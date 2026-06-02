@@ -134,10 +134,13 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 
 ## FAQ / How to order checkpoint
 
-- FAQ / `Как заказать` is being prepared before deeper custom design/payment work.
-- Planned public page: `/faq`.
-- Planned admin section: `FAQ / Как заказать`.
+- FAQ / `Как заказать` is prepared before deeper custom design/payment work.
+- Public page: `/faq`.
+- Admin section: `FAQ / Как заказать`.
 - FAQ texts should be stored in DB as editable `FaqSection` rows and rendered safely as plain text.
-- Prepared migration: `00000000000004_add_faq_sections`; it must not be applied without a separate explicit migration step.
+- Migration `00000000000004_add_faq_sections` was applied successfully to production Supabase.
+- Current FAQ DB state after migration: `FaqSection = 0`.
 - Until FAQ DB rows exist, public UI should show fallback content about product types, custom drawing styles, image requirements, delivery and support bot.
+- Admin FAQ should show default sections as editable draft and create/update them through protected PATCH/upsert without seed/bootstrap.
 - Support communication remains through `@karmashopsupportbot` connected to BlueSales.
+- Next live test: production `/faq` fallback plus admin FAQ save/edit through Telegram Mini App.

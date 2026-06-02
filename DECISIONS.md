@@ -400,4 +400,5 @@ Prisma migrations и другие CLI-операции используют Supa
 - Public `/faq` показывает только active sections, отсортированные по `sortOrder`; если FAQ-таблица пустая или migration ещё не применена, используется безопасный fallback content.
 - Admin endpoint `PATCH /api/admin/faq` защищён Telegram admin auth и позволяет менять только `title`, `content`, `sortOrder`, `isActive` для известных FAQ slug.
 - Если после migration `FaqSection` пустая, admin GET возвращает default sections как редактируемый draft, а PATCH создаёт/обновляет их через upsert по slug. Production seed/bootstrap для FAQ не требуется на первом шаге.
-- Migration `00000000000004_add_faq_sections` подготовлена, но не применяется без отдельного подтверждения.
+- Migration `00000000000004_add_faq_sections` применена к production Supabase. После применения `FaqSection = 0`, поэтому public fallback остаётся ожидаемым состоянием до первого admin save.
+- Следующая проверка должна подтвердить production `/faq` fallback и инициализацию default sections через защищённую Telegram-админку без seed/bootstrap.
