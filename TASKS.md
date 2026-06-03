@@ -449,3 +449,13 @@
 - Review action `PENDING_REVIEW -> APPROVED` completed successfully.
 - Read-only checkpoint after the user action: `Order = 3`, `Payment = 0`; totals, item price snapshots, fulfillment status and payment status stayed unchanged.
 - Payment integration remains future work.
+
+## YooKassa payment planning foundation
+
+- YooKassa payment foundation is prepared locally without live provider calls.
+- New customer prepare endpoint validates Telegram ownership and payment eligibility, then returns a safe disabled-provider response.
+- No `Payment` row is created by the foundation endpoint.
+- Regular pending orders are eligible for future payment immediately.
+- Custom orders are eligible only after all custom images are `APPROVED`; `PENDING_REVIEW` and `REJECTED` custom items block payment.
+- `.env.example` documents `YOOKASSA_SHOP_ID`, `YOOKASSA_SECRET_KEY`, `YOOKASSA_RETURN_URL`, and `YOOKASSA_WEBHOOK_SECRET` without values.
+- Live YooKassa payment creation, webhook handling and idempotency execution remain future work.

@@ -602,3 +602,19 @@ Production live-test confirmed the custom image review scenario on order `KRM-20
 The admin opened the private image through the signed URL flow, saw no private storage path in the UI, and approved the image. The item review status is now `APPROVED`.
 
 The order remains unpaid: `Payment = 0`. Totals, item price snapshots, fulfillment status and payment status remain unchanged by review.
+
+### YooKassa payment foundation
+
+The first payment layer prepares the rules for YooKassa but does not create real payments yet.
+
+Customer payment preparation is available only inside Telegram Mini App and only for the current user's own order. Foreign orders return the same safe not-found response.
+
+Payment eligibility rules:
+
+- regular pending orders can be paid in the future;
+- custom orders can be paid only after all uploaded custom images are `APPROVED`;
+- `PENDING_REVIEW` custom images show: `Изображение проверяется администратором. Оплата будет доступна после проверки.`;
+- `REJECTED` custom images tell the customer to contact the manager;
+- cancelled, completed, paid, failed or zero-total orders cannot proceed to payment.
+
+The customer order page currently shows disabled payment guidance only. There is no working YooKassa confirmation button yet, no live provider call, and no `Payment` row creation.

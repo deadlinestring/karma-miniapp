@@ -9,7 +9,9 @@ const SUPPORT_BOT_USERNAME = "karmashopsupportbot";
 
 type CustomerOrderDetail = {
   publicNumber: string;
+  fulfillmentStatus: string;
   fulfillmentStatusLabel: string;
+  paymentStatus: string;
   paymentStatusLabel: string;
   itemsSubtotalKopecks: number;
   customDrawingKopecks: number;
@@ -107,6 +109,7 @@ export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string
   }, [initData, publicNumber]);
 
   const supportUrl = order ? buildSupportTelegramUrl(order.publicNumber) : null;
+  const paymentNotice = order ? getPaymentNotice(order) : null;
 
   function handleSupportClick(event: MouseEvent<HTMLAnchorElement>) {
     if (!supportUrl) {
@@ -156,6 +159,20 @@ export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string
 
       {order ? (
         <div className="mt-6 grid gap-5">
+          {paymentNotice ? (
+            <section className="rounded-[24px] border border-neon-cyan/20 bg-neon-cyan/8 p-4">
+              <h2 className="text-lg font-black text-white">Оплата заказа</h2>
+              <p className="mt-2 text-sm leading-6 text-white/66">{paymentNotice}</p>
+              <button
+                type="button"
+                disabled
+                className="mt-3 inline-flex min-h-11 items-center rounded-2xl border border-white/10 bg-white/8 px-4 text-sm font-bold text-white/45"
+              >
+                Оплата скоро
+              </button>
+            </section>
+          ) : null}
+
           <section className="rounded-[24px] border border-white/10 bg-white/7 p-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <StatusBlock label="Статус" value={order.fulfillmentStatusLabel} />
@@ -300,4 +317,32 @@ function formatDate(value: string) {
     hour: "2-digit",
     minute: "2-digit"
   }).format(new Date(value));
+}
+
+function getPaymentNotice(order: CustomerOrderDetail) {
+  if (order.paymentStatus !== "PENDING") {
+    return null;
+  }
+
+  if (order.fulfillmentStatus === "CANCELLED" || order.fulfillmentStatus === "COMPLETED") {
+    return null;
+  }
+
+  const customStatuses = order.items
+    .map((item) => item.customImageReviewStatus)
+    .filter((status) => status !== "NOT_REQUIRED");
+
+  if (customStatuses.includes("PENDING_REVIEW")) {
+    return "Изображение проверяется администратором. Оплата будет доступна после проверки.";
+  }
+
+  if (customStatuses.includes("REJECTED")) {
+    return "Изображение отклонено. Свяжитесь с менеджером, чтобы согласовать заказ.";
+  }
+
+  if (customStatuses.includes("APPROVED")) {
+    return "Изображение одобрено. Онлайн-оплата будет подключена следующим этапом.";
+  }
+
+  return "Онлайн-оплата скоро появится. Сейчас менеджер подтвердит заказ и подскажет способ оплаты.";
 }

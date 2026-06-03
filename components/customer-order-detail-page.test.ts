@@ -45,4 +45,15 @@ describe("customer order detail page", () => {
     expect(source).not.toContain("DATABASE_URL");
     expect(source).not.toContain("SUPABASE_SERVICE_ROLE");
   });
+
+  it("shows payment foundation messages without an active YooKassa button", () => {
+    expect(source).toContain("getPaymentNotice(order)");
+    expect(source).toContain("Оплата заказа");
+    expect(source).toContain("Оплата скоро");
+    expect(source).toContain("Изображение проверяется администратором. Оплата будет доступна после проверки.");
+    expect(source).toContain("Изображение одобрено. Онлайн-оплата будет подключена следующим этапом.");
+    expect(source).toContain("Онлайн-оплата скоро появится. Сейчас менеджер подтвердит заказ");
+    expect(source).not.toContain("confirmationUrl");
+    expect(source).not.toContain("yookassa");
+  });
 });

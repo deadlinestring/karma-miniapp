@@ -452,3 +452,14 @@ Prisma migrations и другие CLI-операции используют Supa
 - The approve action changed only custom image review fields on the order item.
 - Payment remains disconnected; no `Payment` rows are created by image review.
 - Future work can choose between custom review notifications, payment planning, or rollback/re-review tooling.
+
+## YooKassa payment foundation
+
+- First YooKassa layer is planning/foundation only: no live HTTP calls to YooKassa and no production `Payment` creation.
+- Customer payment preparation must be scoped by Telegram user ownership of the order.
+- A regular pending order may proceed to future payment immediately.
+- A custom order may proceed only when every custom image review status is `APPROVED`.
+- `PENDING_REVIEW` blocks payment until admin review; `REJECTED` blocks payment and tells the customer to contact the manager.
+- Cancelled, completed, already paid, and non-positive-total orders are not payment eligible.
+- Provider env names are server-only: `YOOKASSA_SHOP_ID`, `YOOKASSA_SECRET_KEY`, `YOOKASSA_RETURN_URL`, `YOOKASSA_WEBHOOK_SECRET`.
+- Before live payment, implement real idempotent provider creation and webhook status mapping deliberately.

@@ -200,3 +200,16 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Current read-only baseline: `Order = 3`, `Payment = 0`.
 - Order totals, item price snapshots, fulfillment status and payment status stayed unchanged.
 - Payment provider integration remains future work.
+
+## YooKassa payment foundation checkpoint
+
+- YooKassa payment planning/foundation is prepared locally.
+- Schema is sufficient for the foundation; no migration is needed.
+- `POST /api/orders/[publicNumber]/payment/prepare` validates Telegram customer ownership and payment eligibility, but does not call YooKassa and does not create `Payment`.
+- Customer order page shows disabled payment guidance:
+  - regular pending order: manager/payment soon message;
+  - custom `PENDING_REVIEW`: wait for admin review;
+  - custom `APPROVED`: payment will be connected next;
+  - custom `REJECTED`: contact manager.
+- Server-only env names are documented in `.env.example`; `YOOKASSA_SECRET_KEY` is not available/used in this stage.
+- Production data must remain unchanged until a separately approved live payment stage.
