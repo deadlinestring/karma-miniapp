@@ -444,3 +444,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - Rejection reason is stored in existing `OrderItem.customImageReviewComment`; no migration is needed.
 - Review actions must not change order totals, item price snapshots, fulfillment status, payment status, or create `Payment`.
 - Telegram notifications for custom review results remain a separate future stage.
+
+## Live admin custom image review verification
+
+- Production live-test confirmed that admin-only signed URL preview works for private custom images without exposing the raw storage path.
+- Order `KRM-20260602-8E3EBA` moved from `PENDING_REVIEW` to `APPROVED` through the protected admin review UI.
+- The approve action changed only custom image review fields on the order item.
+- Payment remains disconnected; no `Payment` rows are created by image review.
+- Future work can choose between custom review notifications, payment planning, or rollback/re-review tooling.

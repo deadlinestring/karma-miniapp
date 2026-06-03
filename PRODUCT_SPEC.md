@@ -594,3 +594,11 @@ The admin can open the uploaded image through a short-lived signed URL. The raw 
 The admin can approve the image or reject it with a reason. On the first layer, only pending images can be reviewed: `PENDING_REVIEW -> APPROVED` or `PENDING_REVIEW -> REJECTED`.
 
 Review changes only the custom image review fields. It does not change payment status, fulfillment status, order totals, item price snapshots, or create payments. Notifications about review results remain future work.
+
+### Production check: admin custom image review
+
+Production live-test confirmed the custom image review scenario on order `KRM-20260602-8E3EBA`.
+
+The admin opened the private image through the signed URL flow, saw no private storage path in the UI, and approved the image. The item review status is now `APPROVED`.
+
+The order remains unpaid: `Payment = 0`. Totals, item price snapshots, fulfillment status and payment status remain unchanged by review.

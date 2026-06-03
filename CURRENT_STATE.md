@@ -191,3 +191,12 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Reject reason is stored in `OrderItem.customImageReviewComment`.
 - Review updates only custom image review fields and does not create `Payment`.
 - Production data remains unchanged until a separate live review test.
+
+## Live admin custom image review checkpoint
+
+- Admin custom image review was live-tested in production after commit `84977b0`.
+- Order `KRM-20260602-8E3EBA` custom image moved `PENDING_REVIEW -> APPROVED`.
+- Private image opened through signed URL; raw private storage path was not displayed.
+- Current read-only baseline: `Order = 3`, `Payment = 0`.
+- Order totals, item price snapshots, fulfillment status and payment status stayed unchanged.
+- Payment provider integration remains future work.

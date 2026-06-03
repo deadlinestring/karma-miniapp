@@ -440,3 +440,12 @@
 - Review update changes only `OrderItem.customImageReviewStatus` and `OrderItem.customImageReviewComment`.
 - Order totals, item price snapshots, fulfillment status, payment status and `Payment` rows are not changed by review.
 - Live review action has not been performed yet; next live test should approve or reject the existing custom order image.
+
+## Live admin custom image review verification
+
+- Production live-test after commit `84977b0` confirmed the admin custom image review UI.
+- In order `KRM-20260602-8E3EBA`, the `Изображение на проверку` block rendered correctly.
+- Admin opened the private uploaded image through a short-lived signed URL; the raw private storage path was not shown in UI.
+- Review action `PENDING_REVIEW -> APPROVED` completed successfully.
+- Read-only checkpoint after the user action: `Order = 3`, `Payment = 0`; totals, item price snapshots, fulfillment status and payment status stayed unchanged.
+- Payment integration remains future work.
