@@ -33,6 +33,11 @@ type UploadedPrivateCustomOrderImage = {
   storagePath: string;
 };
 
+type SignedPrivateCustomOrderImage = {
+  signedUrl: string;
+  expiresInSeconds: number;
+};
+
 let storageClient: SupabaseClient | null = null;
 
 function getStorageBaseConfig() {
@@ -170,6 +175,28 @@ export async function uploadPrivateCustomOrderImage(
   return { storagePath };
 }
 
+export async function createPrivateCustomOrderImageSignedUrl(
+  storagePath: string,
+  expiresInSeconds = 120
+): Promise<SignedPrivateCustomOrderImage> {
+  if (!isManagedCustomOrderImageStoragePath(storagePath)) {
+    throw new Error("invalid_custom_order_storage_path");
+  }
+
+  const { bucket } = getCustomOrderStorageConfig();
+  const client = getSupabaseStorageClient();
+  const { data, error } = await client.storage.from(bucket).createSignedUrl(storagePath, expiresInSeconds);
+
+  if (error || !data?.signedUrl) {
+    throw new Error("supabase_custom_order_signed_url_failed");
+  }
+
+  return {
+    signedUrl: data.signedUrl,
+    expiresInSeconds
+  };
+}
+
 export function isManagedProductImagePath(productId: string, storagePath: string | null | undefined) {
   return typeof storagePath === "string" && storagePath.startsWith(`products/${productId}/`);
 }
@@ -181,4 +208,8 @@ export function isManagedCustomOrderImagePath(
   return (
     typeof storagePath === "string" && storagePath.startsWith(`custom-orders/${telegramUserId}/`)
   );
+}
+
+export function isManagedCustomOrderImageStoragePath(storagePath: string | null | undefined) {
+  return typeof storagePath === "string" && /^custom-orders\/[^/]+\/[^/]+$/.test(storagePath);
 }

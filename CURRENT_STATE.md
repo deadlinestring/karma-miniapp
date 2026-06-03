@@ -182,3 +182,12 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Delivery address and Telegram user relation exist; an admin notification log exists for the order.
 - The private storage path was confirmed but not printed or recorded.
 - Next recommended step: admin review UI for custom images or payment planning.
+
+## Admin custom image review checkpoint
+
+- Admin custom image review UI is prepared locally for order detail.
+- Signed image preview is served by protected admin endpoint with a short-lived URL; raw private storage path is not returned.
+- Review action endpoint supports approving or rejecting a pending custom image.
+- Reject reason is stored in `OrderItem.customImageReviewComment`.
+- Review updates only custom image review fields and does not create `Payment`.
+- Production data remains unchanged until a separate live review test.

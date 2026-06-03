@@ -1,9 +1,14 @@
 import "server-only";
 
-import type { FulfillmentStatus, PaymentStatus } from "@prisma/client";
+import type { CustomImageReviewStatus, FulfillmentStatus, PaymentStatus } from "@prisma/client";
 import { prisma } from "@/lib/server/prisma";
+import { createPrivateCustomOrderImageSignedUrl } from "@/lib/server/supabase-storage";
 
 type PrismaLike = typeof prisma;
+type CustomImageSignedUrlResult = {
+  signedUrl: string;
+  expiresInSeconds: number;
+};
 
 export type AdminOrderStatusFilter = "all" | FulfillmentStatus;
 
@@ -67,6 +72,10 @@ export type AdminOrderDetail = AdminOrderListItem & {
     lineTotalKopecks: number;
     note: string | null;
     customDrawingSurchargeKopecks: number;
+    customDrawingStyle: string | null;
+    hasCustomImage: boolean;
+    customImageReviewStatus: CustomImageReviewStatus;
+    customImageReviewComment: string | null;
   }>;
   notificationSummary: {
     successCount: number;
@@ -89,9 +98,13 @@ export type AdminOrderListResult = {
 
 export type AdminOrderServices = {
   db: PrismaLike;
+  createCustomImageSignedUrl: (storagePath: string) => Promise<CustomImageSignedUrlResult>;
 };
 
-const defaultServices: AdminOrderServices = { db: prisma };
+const defaultServices: AdminOrderServices = {
+  db: prisma,
+  createCustomImageSignedUrl: (storagePath) => createPrivateCustomOrderImageSignedUrl(storagePath)
+};
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 50;
 
@@ -138,6 +151,14 @@ export async function getAdminOrder(publicNumber: string) {
 
 export async function updateAdminOrderFulfillmentStatus(publicNumber: string, input: unknown) {
   return updateAdminOrderFulfillmentStatusWithServices(publicNumber, input, defaultServices);
+}
+
+export async function getAdminOrderCustomImageSignedUrl(publicNumber: string) {
+  return getAdminOrderCustomImageSignedUrlWithServices(publicNumber, defaultServices);
+}
+
+export async function updateAdminOrderCustomImageReview(publicNumber: string, input: unknown) {
+  return updateAdminOrderCustomImageReviewWithServices(publicNumber, input, defaultServices);
 }
 
 export async function getAdminOrdersWithServices(
@@ -208,6 +229,44 @@ export async function updateAdminOrderFulfillmentStatusWithServices(
     where: { publicNumber: orderPublicNumber },
     data: { fulfillmentStatus: payload.fulfillmentStatus },
     select: { publicNumber: true }
+  });
+
+  return getAdminOrderWithServices(orderPublicNumber, services);
+}
+
+export async function getAdminOrderCustomImageSignedUrlWithServices(
+  publicNumber: string,
+  services: AdminOrderServices
+) {
+  const customItem = await findCustomOrderItem(readPublicNumber(publicNumber), services);
+  const signed = await services.createCustomImageSignedUrl(customItem.customImageStoragePath);
+
+  return {
+    signedUrl: signed.signedUrl,
+    expiresInSeconds: signed.expiresInSeconds
+  };
+}
+
+export async function updateAdminOrderCustomImageReviewWithServices(
+  publicNumber: string,
+  input: unknown,
+  services: AdminOrderServices
+) {
+  const payload = readCustomImageReviewInput(input);
+  const orderPublicNumber = readPublicNumber(publicNumber);
+  const customItem = await findCustomOrderItem(orderPublicNumber, services);
+
+  if (customItem.customImageReviewStatus !== "PENDING_REVIEW") {
+    throw new Error("forbidden_custom_image_review_transition");
+  }
+
+  await services.db.orderItem.update({
+    where: { id: customItem.id },
+    data: {
+      customImageReviewStatus: payload.status,
+      customImageReviewComment: payload.reason
+    },
+    select: { id: true }
   });
 
   return getAdminOrderWithServices(orderPublicNumber, services);
@@ -291,6 +350,10 @@ function adminOrderDetailSelect() {
         unitPriceKopecks: true,
         baseSubtotalKopecks: true,
         customDrawingSurchargeKopecks: true,
+        customDrawingStyle: true,
+        customImageStoragePath: true,
+        customImageReviewStatus: true,
+        customImageReviewComment: true,
         discountKopecks: true,
         quantity: true,
         subtotalKopecks: true,
@@ -341,6 +404,10 @@ type AdminOrderDetailRecord = AdminOrderListRecord & {
     unitPriceKopecks: number;
     baseSubtotalKopecks: number;
     customDrawingSurchargeKopecks: number;
+    customDrawingStyle: string | null;
+    customImageStoragePath: string | null;
+    customImageReviewStatus: CustomImageReviewStatus;
+    customImageReviewComment: string | null;
     discountKopecks: number;
     quantity: number;
     subtotalKopecks: number;
@@ -408,7 +475,11 @@ function mapAdminOrderDetail(order: AdminOrderDetailRecord): AdminOrderDetail {
       discountKopecks: item.discountKopecks,
       lineTotalKopecks: item.subtotalKopecks,
       note: item.noteSnapshot,
-      customDrawingSurchargeKopecks: item.customDrawingSurchargeKopecks
+      customDrawingSurchargeKopecks: item.customDrawingSurchargeKopecks,
+      customDrawingStyle: item.customDrawingStyle,
+      hasCustomImage: Boolean(item.customImageStoragePath),
+      customImageReviewStatus: item.customImageReviewStatus,
+      customImageReviewComment: item.customImageReviewComment
     })),
     notificationSummary: {
       successCount: successLogs.length,
@@ -419,6 +490,74 @@ function mapAdminOrderDetail(order: AdminOrderDetailRecord): AdminOrderDetail {
       value,
       label: fulfillmentStatusLabel(value)
     }))
+  };
+}
+
+async function findCustomOrderItem(publicNumber: string, services: AdminOrderServices) {
+  const order = await services.db.order.findUnique({
+    where: { publicNumber },
+    select: {
+      publicNumber: true,
+      items: {
+        where: {
+          customImageStoragePath: { not: null }
+        },
+        orderBy: { createdAt: "asc" },
+        select: {
+          id: true,
+          customImageStoragePath: true,
+          customImageReviewStatus: true
+        }
+      }
+    }
+  });
+
+  if (!order) {
+    throw new Error("order_not_found");
+  }
+
+  const item = order.items[0];
+
+  if (!item?.customImageStoragePath) {
+    throw new Error("custom_image_not_found");
+  }
+
+  return {
+    id: item.id,
+    customImageStoragePath: item.customImageStoragePath,
+    customImageReviewStatus: item.customImageReviewStatus
+  };
+}
+
+function readCustomImageReviewInput(input: unknown) {
+  if (!input || typeof input !== "object") {
+    throw new Error("invalid_custom_image_review_payload");
+  }
+
+  const payload = input as Record<string, unknown>;
+  const allowedKeys = new Set(["status", "reason"]);
+
+  if (Object.keys(payload).some((key) => !allowedKeys.has(key))) {
+    throw new Error("forbidden_custom_image_review_field");
+  }
+
+  if (payload.status !== "APPROVED" && payload.status !== "REJECTED") {
+    throw new Error("invalid_custom_image_review_status");
+  }
+
+  const reason = typeof payload.reason === "string" ? payload.reason.trim() : "";
+
+  if (payload.status === "REJECTED" && reason.length < 2) {
+    throw new Error("custom_image_reject_reason_required");
+  }
+
+  if (reason.length > 300) {
+    throw new Error("custom_image_reject_reason_too_long");
+  }
+
+  return {
+    status: payload.status as Extract<CustomImageReviewStatus, "APPROVED" | "REJECTED">,
+    reason: reason || null
   };
 }
 

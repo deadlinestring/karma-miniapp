@@ -434,3 +434,13 @@ Prisma migrations и другие CLI-операции используют Supa
 - Private storage paths must remain server/internal data and should not be printed in reports or docs.
 - Payment remains disconnected for custom orders: `Payment = 0`.
 - The next product decision is whether to build admin review UI for custom images first or move into payment-provider planning.
+
+## Admin custom image review
+
+- Private custom images are shown to admins only through short-lived Supabase signed URLs created by a protected Telegram admin endpoint.
+- The client receives a signed URL and TTL, but never receives or renders the raw private storage path.
+- The first review state machine is intentionally one-way: `PENDING_REVIEW -> APPROVED` or `PENDING_REVIEW -> REJECTED`.
+- `APPROVED` and `REJECTED` are final on this layer; rollback/re-review can be designed later if needed.
+- Rejection reason is stored in existing `OrderItem.customImageReviewComment`; no migration is needed.
+- Review actions must not change order totals, item price snapshots, fulfillment status, payment status, or create `Payment`.
+- Telegram notifications for custom review results remain a separate future stage.

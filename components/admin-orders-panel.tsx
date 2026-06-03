@@ -16,6 +16,7 @@ type FulfillmentStatus =
   | "CANCELLED";
 
 type PaymentStatus = "PENDING" | "PAID" | "CANCELLED" | "FAILED";
+type CustomImageReviewStatus = "NOT_REQUIRED" | "PENDING_REVIEW" | "APPROVED" | "REJECTED";
 
 type AdminOrderListItem = {
   publicNumber: string;
@@ -69,6 +70,10 @@ type AdminOrderDetail = AdminOrderListItem & {
     lineTotalKopecks: number;
     note: string | null;
     customDrawingSurchargeKopecks: number;
+    customDrawingStyle: string | null;
+    hasCustomImage: boolean;
+    customImageReviewStatus: CustomImageReviewStatus;
+    customImageReviewComment: string | null;
   }>;
   notificationSummary: {
     successCount: number;
@@ -231,7 +236,17 @@ export function AdminOrdersPanel({ initData }: { initData: string }) {
       ) : null}
 
       {view.mode === "detail" && order ? (
-        <OrderDetailView order={order} isBusy={isBusy} onBack={openList} onUpdateStatus={updateStatus} />
+        <OrderDetailView
+          initData={initData}
+          order={order}
+          isBusy={isBusy}
+          onBack={openList}
+          onUpdateStatus={updateStatus}
+          onOrderUpdated={setOrder}
+          onBusyChange={setIsBusy}
+          onMessage={setMessage}
+          onError={setError}
+        />
       ) : null}
     </section>
   );
@@ -320,17 +335,30 @@ function OrderListView({
 }
 
 function OrderDetailView({
+  initData,
   order,
   isBusy,
   onBack,
-  onUpdateStatus
+  onUpdateStatus,
+  onOrderUpdated,
+  onBusyChange,
+  onMessage,
+  onError
 }: {
+  initData: string;
   order: AdminOrderDetail;
   isBusy: boolean;
   onBack: () => void;
   onUpdateStatus: (status: FulfillmentStatus) => void;
+  onOrderUpdated: (order: AdminOrderDetail) => void;
+  onBusyChange: (isBusy: boolean) => void;
+  onMessage: (message: string | null) => void;
+  onError: (message: string | null) => void;
 }) {
   const [nextStatus, setNextStatus] = useState<FulfillmentStatus>(order.allowedNextStatuses[0]?.value ?? order.fulfillmentStatus);
+  const [customImageUrl, setCustomImageUrl] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const customImageItem = order.items.find((item) => item.hasCustomImage) ?? null;
 
   useEffect(() => {
     setNextStatus(order.allowedNextStatuses[0]?.value ?? order.fulfillmentStatus);
@@ -339,6 +367,40 @@ function OrderDetailView({
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     onUpdateStatus(nextStatus);
+  }
+
+  async function openCustomImage() {
+    onBusyChange(true);
+    onMessage(null);
+    onError(null);
+    try {
+      const image = await loadCustomImageSignedUrl(initData, order.publicNumber);
+      setCustomImageUrl(image.signedUrl);
+      onMessage(`Ссылка на изображение создана на ${image.expiresInSeconds} сек.`);
+    } catch (requestError) {
+      onError(requestError instanceof Error ? requestError.message : "Не удалось открыть изображение.");
+    } finally {
+      onBusyChange(false);
+    }
+  }
+
+  async function reviewCustomImage(status: Extract<CustomImageReviewStatus, "APPROVED" | "REJECTED">) {
+    onBusyChange(true);
+    onMessage(null);
+    onError(null);
+    try {
+      const updated = await patchCustomImageReview(initData, order.publicNumber, {
+        status,
+        reason: status === "REJECTED" ? rejectReason : null
+      });
+      onOrderUpdated(updated);
+      setRejectReason("");
+      onMessage(status === "APPROVED" ? "Изображение одобрено." : "Изображение отклонено.");
+    } catch (requestError) {
+      onError(requestError instanceof Error ? requestError.message : "Не удалось сохранить проверку изображения.");
+    } finally {
+      onBusyChange(false);
+    }
   }
 
   return (
@@ -382,6 +444,57 @@ function OrderDetailView({
             </div>
           ))}
         </div>
+
+        {customImageItem ? (
+          <div className="mt-5 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/8 p-4">
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-neon-cyan">custom review</p>
+            <h4 className="mt-2 text-base font-black text-white">Изображение на проверку</h4>
+            <div className="mt-3 grid gap-2 text-sm text-white/70">
+              <p>Товар: {customImageItem.productName}</p>
+              {customImageItem.customDrawingStyle ? <p>Стиль: {customDrawingStyleLabel(customImageItem.customDrawingStyle)}</p> : null}
+              <p>Доплата: {formatKopecks(customImageItem.customDrawingSurchargeKopecks)} ₽</p>
+              <p>Статус: {customImageReviewStatusLabel(customImageItem.customImageReviewStatus)}</p>
+              {customImageItem.customImageReviewComment ? <p>Комментарий: {customImageItem.customImageReviewComment}</p> : null}
+            </div>
+            <button
+              type="button"
+              disabled={isBusy}
+              onClick={openCustomImage}
+              className="mt-4 h-10 rounded-2xl border border-neon-cyan/30 px-4 text-sm font-black text-neon-cyan disabled:opacity-50"
+            >
+              Посмотреть изображение
+            </button>
+            {customImageUrl ? (
+              <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-night/70">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={customImageUrl} alt="Загруженное изображение для проверки" className="max-h-[360px] w-full object-contain" />
+              </div>
+            ) : null}
+            {customImageItem.customImageReviewStatus === "PENDING_REVIEW" ? (
+              <div className="mt-4 grid gap-3">
+                <textarea
+                  value={rejectReason}
+                  onChange={(event) => setRejectReason(event.target.value)}
+                  rows={3}
+                  maxLength={300}
+                  placeholder="Причина отклонения, если изображение не подходит"
+                  className="w-full rounded-2xl border border-white/10 bg-night px-3 py-2 text-sm text-white outline-none placeholder:text-white/35"
+                />
+                <div className="flex flex-wrap gap-2">
+                  <button type="button" disabled={isBusy} onClick={() => reviewCustomImage("APPROVED")} className="h-10 rounded-2xl bg-neon-cyan px-4 text-sm font-black text-night disabled:opacity-50">
+                    Одобрить
+                  </button>
+                  <button type="button" disabled={isBusy} onClick={() => reviewCustomImage("REJECTED")} className="h-10 rounded-2xl border border-neon-pink/40 px-4 text-sm font-black text-neon-pink disabled:opacity-50">
+                    Отклонить
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="mt-3 text-xs text-white/45">Повторное изменение результата проверки пока недоступно.</p>
+            )}
+            <p className="mt-3 text-xs text-white/45">Приватный путь файла не показывается в интерфейсе.</p>
+          </div>
+        ) : null}
 
         <InfoBlock title="Контакт">
           <p>{order.customer.name}</p>
@@ -521,4 +634,56 @@ async function patchOrderStatus(initData: string, publicNumber: string, fulfillm
   if (!response.ok || !data.order) throw new Error(data.message ?? "Не удалось обновить статус.");
 
   return data.order;
+}
+
+async function loadCustomImageSignedUrl(initData: string, publicNumber: string) {
+  const response = await fetch(`/api/admin/orders/${publicNumber}/custom-image`, {
+    headers: { "X-Telegram-Init-Data": initData }
+  });
+  const data = (await response.json().catch(() => ({}))) as {
+    image?: { signedUrl: string; expiresInSeconds: number };
+    message?: string;
+  };
+
+  if (!response.ok || !data.image) throw new Error(data.message ?? "Не удалось открыть изображение.");
+
+  return data.image;
+}
+
+async function patchCustomImageReview(
+  initData: string,
+  publicNumber: string,
+  payload: { status: "APPROVED" | "REJECTED"; reason: string | null }
+) {
+  const response = await fetch(`/api/admin/orders/${publicNumber}/custom-image-review`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", "X-Telegram-Init-Data": initData },
+    body: JSON.stringify(payload)
+  });
+  const data = (await response.json().catch(() => ({}))) as { order?: AdminOrderDetail; message?: string };
+
+  if (!response.ok || !data.order) throw new Error(data.message ?? "Не удалось сохранить проверку изображения.");
+
+  return data.order;
+}
+
+function customImageReviewStatusLabel(status: CustomImageReviewStatus) {
+  const labels: Record<CustomImageReviewStatus, string> = {
+    NOT_REQUIRED: "Не требуется",
+    PENDING_REVIEW: "Ожидает проверки",
+    APPROVED: "Одобрено",
+    REJECTED: "Отклонено"
+  };
+
+  return labels[status];
+}
+
+function customDrawingStyleLabel(style: string) {
+  const labels: Record<string, string> = {
+    CUSTOM_DRAWING_STYLE_1: "Стиль №1",
+    CUSTOM_DRAWING_STYLE_2: "Стиль №2",
+    CUSTOM_DRAWING_STYLE_3: "Стиль №3"
+  };
+
+  return labels[style] ?? style;
 }

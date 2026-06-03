@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   getAdminOrderWithServices,
+  getAdminOrderCustomImageSignedUrlWithServices,
   getAdminOrdersWithServices,
+  updateAdminOrderCustomImageReviewWithServices,
   updateAdminOrderFulfillmentStatusWithServices,
   type AdminOrderServices
 } from "./admin-orders";
@@ -47,7 +49,11 @@ function makeOrder(overrides: Record<string, unknown> = {}) {
         sizeCmSnapshot: 30,
         unitPriceKopecks: 499000,
         baseSubtotalKopecks: 499000,
+        customDrawingStyle: null,
         customDrawingSurchargeKopecks: 0,
+        customImageStoragePath: null,
+        customImageReviewStatus: "NOT_REQUIRED",
+        customImageReviewComment: null,
         discountKopecks: 0,
         quantity: 1,
         subtotalKopecks: 499000,
@@ -78,10 +84,49 @@ function makeServices({
         return Promise.resolve(order ? { publicNumber: order.publicNumber, fulfillmentStatus: currentStatus } : null);
       }),
       update: vi.fn().mockResolvedValue({ publicNumber: "KRM-20260601-805754" })
+    },
+    orderItem: {
+      update: vi.fn().mockResolvedValue({ id: "item-1" })
     }
   } as unknown as AdminOrderServices["db"];
 
-  return { services: { db } satisfies AdminOrderServices };
+  return {
+    services: {
+      db,
+      createCustomImageSignedUrl: vi.fn().mockResolvedValue({
+        signedUrl: "https://signed.example/image",
+        expiresInSeconds: 120
+      })
+    } satisfies AdminOrderServices
+  };
+}
+
+function makeCustomOrder(overrides: Record<string, unknown> = {}) {
+  return makeOrder({
+    items: [
+      {
+        id: "item-1",
+        productNameSnapshot: "Свой дизайн",
+        productSlugSnapshot: "custom-design",
+        priceListItemId: "premium-30",
+        itemTypeSnapshot: "PREMIUM",
+        itemTypeLabelSnapshot: "Премиум",
+        sizeCmSnapshot: 30,
+        unitPriceKopecks: 549000,
+        baseSubtotalKopecks: 549000,
+        customDrawingStyle: "CUSTOM_DRAWING_STYLE_3",
+        customDrawingSurchargeKopecks: 99000,
+        customImageStoragePath: "custom-orders/12345/design.webp",
+        customImageReviewStatus: "PENDING_REVIEW",
+        customImageReviewComment: null,
+        discountKopecks: 0,
+        quantity: 1,
+        subtotalKopecks: 648000,
+        noteSnapshot: null,
+        ...overrides
+      }
+    ]
+  });
 }
 
 describe("admin orders repository", () => {
@@ -143,6 +188,24 @@ describe("admin orders repository", () => {
     expect(detail.allowedNextStatuses.map((status) => status.value)).toEqual(["IN_WORK", "CANCELLED"]);
   });
 
+  it("returns custom image review fields without exposing the private storage path", async () => {
+    const { services } = makeServices({ order: makeCustomOrder() });
+
+    const detail = await getAdminOrderWithServices("KRM-20260601-805754", services);
+
+    expect(detail.items[0]).toEqual(
+      expect.objectContaining({
+        productName: "Свой дизайн",
+        customDrawingStyle: "CUSTOM_DRAWING_STYLE_3",
+        customDrawingSurchargeKopecks: 99000,
+        hasCustomImage: true,
+        customImageReviewStatus: "PENDING_REVIEW",
+        customImageReviewComment: null
+      })
+    );
+    expect(JSON.stringify(detail)).not.toContain("custom-orders/12345/design.webp");
+  });
+
   it("updates only fulfillment status for an allowed transition", async () => {
     const { services } = makeServices({ currentStatus: "NEW" });
 
@@ -179,5 +242,65 @@ describe("admin orders repository", () => {
 
     expect(services.db.order.update).not.toHaveBeenCalled();
   });
-});
 
+  it("creates a signed URL for a custom image without returning the storage path", async () => {
+    const { services } = makeServices({ order: makeCustomOrder() });
+
+    const result = await getAdminOrderCustomImageSignedUrlWithServices("KRM-20260601-805754", services);
+
+    expect(result).toEqual({ signedUrl: "https://signed.example/image", expiresInSeconds: 120 });
+    expect(services.createCustomImageSignedUrl).toHaveBeenCalledWith("custom-orders/12345/design.webp");
+    expect(JSON.stringify(result)).not.toContain("custom-orders/");
+  });
+
+  it("approves a pending custom image by updating only review fields", async () => {
+    const { services } = makeServices({ order: makeCustomOrder() });
+
+    await updateAdminOrderCustomImageReviewWithServices(
+      "KRM-20260601-805754",
+      { status: "APPROVED" },
+      services
+    );
+
+    expect(services.db.orderItem.update).toHaveBeenCalledWith({
+      where: { id: "item-1" },
+      data: {
+        customImageReviewStatus: "APPROVED",
+        customImageReviewComment: null
+      },
+      select: { id: true }
+    });
+    expect(services.db.order.update).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          paymentStatus: expect.anything(),
+          totalKopecks: expect.anything()
+        })
+      })
+    );
+  });
+
+  it("requires a reject reason and rejects final review transitions", async () => {
+    const { services } = makeServices({ order: makeCustomOrder() });
+
+    await expect(
+      updateAdminOrderCustomImageReviewWithServices(
+        "KRM-20260601-805754",
+        { status: "REJECTED", reason: " " },
+        services
+      )
+    ).rejects.toThrow("custom_image_reject_reason_required");
+
+    const finalServices = makeServices({
+      order: makeCustomOrder({ customImageReviewStatus: "APPROVED" })
+    }).services;
+
+    await expect(
+      updateAdminOrderCustomImageReviewWithServices(
+        "KRM-20260601-805754",
+        { status: "REJECTED", reason: "Не подходит" },
+        finalServices
+      )
+    ).rejects.toThrow("forbidden_custom_image_review_transition");
+  });
+});

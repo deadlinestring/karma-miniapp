@@ -584,3 +584,13 @@ Controlled production order `KRM-20260602-8E3EBA` confirmed custom order creatio
 The order item uses `Свой дизайн`, style №3, custom surcharge `99000`, saved `customDesignKey`, saved private image storage path, and `PENDING_REVIEW` image review status. The private path is not shown publicly or documented in full.
 
 `Payment` remains `0`. The next product step is admin review for custom images or payment planning.
+
+### Admin custom image review
+
+In the protected order detail screen, a custom order item shows an `Изображение на проверку` block.
+
+The admin can open the uploaded image through a short-lived signed URL. The raw private storage path is not displayed in the UI.
+
+The admin can approve the image or reject it with a reason. On the first layer, only pending images can be reviewed: `PENDING_REVIEW -> APPROVED` or `PENDING_REVIEW -> REJECTED`.
+
+Review changes only the custom image review fields. It does not change payment status, fulfillment status, order totals, item price snapshots, or create payments. Notifications about review results remain future work.

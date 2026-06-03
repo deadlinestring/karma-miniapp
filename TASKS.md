@@ -431,3 +431,12 @@
 - Current read-only baseline after the user action: `Order = 3`, `Payment = 0`.
 - Admin notification log exists for the custom order; no manual Telegram messages were sent during this checkpoint.
 - Next step: admin review UI for custom images or payment planning.
+
+## Admin custom image review
+
+- Admin custom image review UI is prepared locally in the protected order detail screen.
+- Admin can request a short-lived signed URL for the private custom image through an admin-only endpoint; the raw storage path is not returned to the client UI.
+- Review actions support `APPROVED` and `REJECTED` from `PENDING_REVIEW`; reject requires a reason.
+- Review update changes only `OrderItem.customImageReviewStatus` and `OrderItem.customImageReviewComment`.
+- Order totals, item price snapshots, fulfillment status, payment status and `Payment` rows are not changed by review.
+- Live review action has not been performed yet; next live test should approve or reject the existing custom order image.

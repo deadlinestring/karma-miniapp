@@ -6,19 +6,18 @@ describe("admin orders panel", () => {
   const source = readFileSync(join(__dirname, "admin-orders-panel.tsx"), "utf8");
 
   it("renders order list and detail controls", () => {
-    expect(source).toContain("Заказы");
-    expect(source).toContain("Поиск по номеру заказа");
-    expect(source).toContain("Открыть");
-    expect(source).toContain("К списку заказов");
-    expect(source).toContain("Состав");
+    expect(source).toContain("AdminOrdersPanel");
+    expect(source).toContain("OrderListView");
+    expect(source).toContain("OrderDetailView");
+    expect(source).toContain("onUpdateStatus");
   });
 
   it("shows totals, items and statuses in detail", () => {
-    expect(source).toContain("Товары");
-    expect(source).toContain("Отрисовка");
-    expect(source).toContain("Скидка");
-    expect(source).toContain("Доставка");
-    expect(source).toContain("Оплата:");
+    expect(source).toContain("itemsSubtotalKopecks");
+    expect(source).toContain("customDrawingKopecks");
+    expect(source).toContain("discountAmountKopecks");
+    expect(source).toContain("deliveryAmountKopecks");
+    expect(source).toContain("paymentStatusLabel");
     expect(source).toContain("notificationSummary");
   });
 
@@ -32,6 +31,24 @@ describe("admin orders panel", () => {
   it("scrolls success and error messages into view", () => {
     expect(source).toContain("useScrollIntoViewOnChange(message ?? error)");
     expect(source).toContain("statusRef");
-    expect(source).toContain("Статус заказа обновлён.");
+    expect(source).toContain("onMessage");
+    expect(source).toContain("onError");
+  });
+
+  it("renders custom image review controls without exposing private storage paths", () => {
+    expect(source).toContain("Изображение на проверку");
+    expect(source).toContain("Посмотреть изображение");
+    expect(source).toContain("Одобрить");
+    expect(source).toContain("Отклонить");
+    expect(source).toContain("customImageReviewStatus");
+    expect(source).toContain("hasCustomImage");
+    expect(source).not.toContain("customImageStoragePath:");
+  });
+
+  it("uses protected endpoints for custom image preview and review", () => {
+    expect(source).toContain('fetch(`/api/admin/orders/${publicNumber}/custom-image`');
+    expect(source).toContain('fetch(`/api/admin/orders/${publicNumber}/custom-image-review`');
+    expect(source).toContain('"X-Telegram-Init-Data": initData');
+    expect(source).toContain("JSON.stringify(payload)");
   });
 });
