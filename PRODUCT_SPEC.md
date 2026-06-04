@@ -768,3 +768,5 @@ Admin behavior:
 - no rich editor and no arbitrary script/HTML execution.
 
 First integration scope is deliberately small: checkout delivery/custom review guidance, customer payment-disabled guidance, support CTA and product custom-design explanation. Broader redesign and all future promo/banner placements remain separate work.
+
+Production database status: migration `00000000000005_add_content_blocks` has been applied successfully. The `ContentBlock` table exists with `ContentBlock = 0`, so the first deployment should show code-defined default drafts in admin until an administrator saves them.

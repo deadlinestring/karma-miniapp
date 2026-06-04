@@ -538,3 +538,6 @@
 - Public UI integration is intentionally small: checkout delivery/custom review guidance, customer payment-disabled guidance, support CTA and custom design explanation.
 - System copy remains in code: labels, validation/safety errors, enum labels, protected endpoint messages and diagnostics.
 - Full redesign and broader content modeling remain separate future stages.
+- ContentBlock migration `00000000000005_add_content_blocks` was applied successfully to production Supabase.
+- Current production state after migration: `ContentBlock = 0`; default blocks were not created manually.
+- Next live test: open admin `Блоки интерфейса`, verify default editable drafts, save/upsert, then check public fallback/active/inactive behavior.

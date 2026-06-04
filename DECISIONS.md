@@ -541,3 +541,5 @@ Prisma migrations и другие CLI-операции используют Supa
 - Content is rendered as plain text/markdown-lite lines; `dangerouslySetInnerHTML` is not used.
 - Initial connected blocks are limited to checkout guidance, customer order payment guidance, support CTA and custom design help.
 - Payment runtime, webhook handling, pricing, checkout submit logic and order status mutations are not changed by this foundation.
+- Production migration application was completed before deployment: the `ContentBlock` table and indexes now exist, while `ContentBlock = 0`.
+- Default draft blocks remain code-defined until an admin saves them through the protected admin UI; no seed/bootstrap/manual row creation is required.
