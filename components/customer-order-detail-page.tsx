@@ -132,6 +132,7 @@ export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string
 
   const supportUrl = order ? buildSupportTelegramUrl(order.publicNumber) : null;
   const paymentAction = order?.paymentAction ?? null;
+  const isOrderPaid = order?.paymentStatus === "PAID";
 
   function handleSupportClick(event: MouseEvent<HTMLAnchorElement>) {
     if (!supportUrl) {
@@ -215,13 +216,22 @@ export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string
           {paymentAction ? (
             <section className="rounded-[24px] border border-neon-cyan/20 bg-neon-cyan/8 p-4">
               <h2 className="text-lg font-black text-white">Оплата заказа</h2>
-              <p className="mt-2 text-sm leading-6 text-white/66">{paymentAction.message}</p>
+              {isOrderPaid ? (
+                <div className="mt-3 rounded-2xl border border-emerald-300/30 bg-emerald-400/10 p-3">
+                  <p className="text-sm font-black text-emerald-100">Заказ оплачен</p>
+                  <p className="mt-1 text-xs leading-5 text-emerald-50/75">
+                    Платёж получен. Дальше менеджер переведёт заказ в работу и будет обновлять статус выполнения.
+                  </p>
+                </div>
+              ) : (
+                <p className="mt-2 text-sm leading-6 text-white/66">{paymentAction.message}</p>
+              )}
               {paymentError ? (
                 <p className="mt-3 rounded-2xl border border-red-400/30 bg-red-500/10 p-3 text-sm font-semibold text-red-100">
                   {paymentError}
                 </p>
               ) : null}
-              {paymentAction.providerEnabled && paymentAction.eligible ? (
+              {isOrderPaid ? null : paymentAction.providerEnabled && paymentAction.eligible ? (
                 <button
                   type="button"
                   disabled={isPreparingPayment}

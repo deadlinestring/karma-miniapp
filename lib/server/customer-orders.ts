@@ -427,7 +427,7 @@ export function fulfillmentStatusLabel(status: string) {
 
 export function paymentStatusLabel(status: PaymentStatus) {
   const labels: Record<PaymentStatus, string> = {
-    PENDING: "Оплата пока не подключена",
+    PENDING: "Ожидает оплаты",
     PAID: "Оплачен",
     CANCELLED: "Отменён",
     FAILED: "Ошибка оплаты"

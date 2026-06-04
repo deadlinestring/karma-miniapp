@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   getCustomerOrderWithServices,
-  getCustomerOrdersWithServices
+  getCustomerOrdersWithServices,
+  paymentStatusLabel
 } from "./customer-orders";
 
 const baseOrder = {
@@ -164,5 +165,10 @@ describe("customer orders repository", () => {
     expect("create" in db.order).toBe(false);
     expect("update" in db.order).toBe(false);
     expect("delete" in db.order).toBe(false);
+  });
+
+  it("uses customer-friendly payment status labels after YooKassa launch", () => {
+    expect(paymentStatusLabel("PENDING")).toBe("Ожидает оплаты");
+    expect(paymentStatusLabel("PAID")).toBe("Оплачен");
   });
 });

@@ -697,3 +697,31 @@ Controlled live payment on order `KRM-20260604-28B88F` confirmed the full first 
 The payment webhook does not change fulfillment status, item snapshots, totals, customer data or images.
 
 The customer later performed a refund manually in the YooKassa cabinet. The application does not yet process refund events, so local status remains as synchronized by the successful payment webhook. Refund handling is a future feature and must define local status semantics before implementation.
+
+## UI/content management audit
+
+The public UI is stable enough to start separating editable business copy from system copy.
+
+Currently admin-managed content:
+
+- main hero/storefront basics through StoreSettings;
+- FAQ sections, FAQ intro/chrome and bottom CTA through FaqSection;
+- product/catalog/category/order data through their dedicated admin sections.
+
+Content that should become admin-managed in a future content layer:
+
+- checkout help and delivery explanations;
+- payment guidance text and payment-disabled banners;
+- custom design explanation blocks;
+- support CTA wording;
+- public order empty states and small guidance panels;
+- optional promotional/help banners that should be hideable.
+
+Content that remains code-owned:
+
+- form field labels and core buttons;
+- validation and safety errors;
+- enum/status labels;
+- auth, webhook and payment provider diagnostics.
+
+This audit pass does not add a migration or redesign the interface. It only improves paid-state visibility: paid customer orders and admin order detail now show clear payment received messaging, while payment and fulfillment logic remain unchanged.

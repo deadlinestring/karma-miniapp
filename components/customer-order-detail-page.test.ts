@@ -55,6 +55,13 @@ describe("customer order detail page", () => {
     expect(source).toContain("body.payment.confirmationUrl");
   });
 
+  it("renders a clear paid payment state instead of a disabled payment button", () => {
+    expect(source).toContain('order?.paymentStatus === "PAID"');
+    expect(source).toContain("Заказ оплачен");
+    expect(source).toContain("Платёж получен");
+    expect(source).toContain("isOrderPaid ? null : paymentAction.providerEnabled");
+  });
+
   it("opens confirmationUrl from the prepare response without hardcoding provider URLs", () => {
     expect(source).toContain("openPaymentUrl(body.payment.confirmationUrl)");
     expect(source).toContain("window.Telegram?.WebApp?.openLink");

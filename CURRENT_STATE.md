@@ -275,3 +275,13 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Manual refund was performed in the YooKassa cabinet after the successful payment.
 - Local refund handling is not implemented yet, so refund did not change local `Payment`/`Order` status.
 - Next safe step: design `refund.succeeded` handling and local refunded state semantics.
+
+## UI/content audit checkpoint
+
+- UI/content audit is in progress without production data changes.
+- Current editable content models are StoreSettings and FaqSection; they cover hero/contact/delivery basics and FAQ/CTA content.
+- Hardcoded business copy still found in checkout guidance, payment guidance, custom design explanations, support CTA wording and empty/help states.
+- Technical/system copy remains code-owned: labels, validation errors, status enum labels and provider/auth diagnostics.
+- No migration is needed for the small UI fix in this checkpoint.
+- Customer order detail and admin order detail now make paid orders visually clear.
+- Payment runtime, webhook runtime, checkout, custom design and admin status updates remain stable and untouched.

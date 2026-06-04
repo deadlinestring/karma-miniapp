@@ -416,6 +416,14 @@ function OrderDetailView({
           <StatusBadge>{order.fulfillmentStatusLabel}</StatusBadge>
           <StatusBadge>Оплата: {order.paymentStatusLabel}</StatusBadge>
         </div>
+        {order.paymentStatus === "PAID" ? (
+          <div className="mt-4 rounded-2xl border border-emerald-300/30 bg-emerald-400/10 p-3">
+            <p className="text-sm font-black text-emerald-100">Оплата получена</p>
+            <p className="mt-1 text-xs leading-5 text-emerald-50/75">
+              Платёж синхронизирован webhook. Статус выполнения меняется отдельно вручную.
+            </p>
+          </div>
+        ) : null}
         <p className="mt-2 text-xs text-white/42">Создан: {formatDate(order.createdAt)}</p>
 
         <div className="mt-5 grid gap-2 rounded-2xl border border-white/10 bg-white/7 p-3 text-sm">

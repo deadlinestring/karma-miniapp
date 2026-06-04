@@ -518,3 +518,13 @@
 - Manual refund was performed in the YooKassa cabinet after the payment test.
 - Local status did not change after refund, which is expected for the current scope: refund webhook/status handling is not implemented yet.
 - Next safe task: design `refund.succeeded` handling and local refunded/cancelled payment state semantics.
+
+## UI/content audit foundation
+
+- UI/content audit started after stable checkout, admin, custom design and YooKassa webhook flow.
+- Existing admin-managed content: StoreSettings covers main hero/contact/delivery basics; FaqSection covers `/faq`, FAQ chrome and bottom CTA with active/default draft behavior.
+- Hardcoded business/content copy found outside current admin editing: checkout help text, custom design explanation, payment guidance text, support CTA wording, order empty states and some delivery explanations.
+- System copy stays in code: validation errors, form labels, enum status labels, technical diagnostics, protected admin endpoint messages and webhook/payment safety errors.
+- No migration is added in this pass. A future editable content layer such as `ContentBlock` is recommended for hideable banners/help blocks that do not fit StoreSettings or FAQ.
+- Small UI fix prepared: paid orders now show clear paid-state messaging in customer order detail and admin order detail; pending payment label is neutral `Ожидает оплаты`.
+- Payment, checkout, custom design and admin order flows remain otherwise untouched.

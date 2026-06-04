@@ -521,3 +521,12 @@ Prisma migrations и другие CLI-операции используют Supa
 - The webhook sync must not create duplicate local payments.
 - Manual refund in the YooKassa cabinet is not reflected locally yet because refund handling is outside the current webhook foundation.
 - Future refund support needs explicit semantics for local payment/order states before adding `refund.succeeded`.
+
+## UI/content audit foundation
+
+- StoreSettings and FaqSection are enough for the current editable hero/contact/delivery/FAQ surface, but not enough for all hideable explanatory blocks across checkout, orders, payment guidance and custom design flow.
+- Business/content copy should be admin-managed when it is promotional, explanatory, support-related, delivery/payment guidance or hideable.
+- Technical/system copy remains code-owned: validation messages, form labels, enum labels, diagnostics, auth errors and provider safety errors.
+- Do not add a broad redesign or new content schema until the exact editable blocks are grouped and approved.
+- A future additive `ContentBlock`-style model is the likely fit for reusable hideable banners/help blocks with `slug`, text fields, CTA fields, `isActive` and `sortOrder`.
+- Immediate safe UX fix: paid orders must be visually obvious to customers and admins without changing payment/fulfillment logic.

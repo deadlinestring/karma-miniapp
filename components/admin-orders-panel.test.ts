@@ -21,6 +21,13 @@ describe("admin orders panel", () => {
     expect(source).toContain("notificationSummary");
   });
 
+  it("highlights paid orders without changing payment status manually", () => {
+    expect(source).toContain('order.paymentStatus === "PAID"');
+    expect(source).toContain("Оплата получена");
+    expect(source).toContain("Платёж синхронизирован webhook");
+    expect(source).toContain("Статус выполнения меняется отдельно вручную");
+  });
+
   it("updates only fulfillment status through authenticated endpoint", () => {
     expect(source).toContain('fetch(`/api/admin/orders/${publicNumber}/status`');
     expect(source).toContain('"X-Telegram-Init-Data": initData');
