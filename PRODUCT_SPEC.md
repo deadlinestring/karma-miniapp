@@ -657,3 +657,20 @@ The customer pressed `Перейти к оплате`, the server created a YooK
 The order remains `paymentStatus = PENDING`; webhook handling is not implemented, so redirect creation must not mark the order as paid. Full confirmation URL, provider payment id, idempotency key and personal data are not exposed in documentation.
 
 The earlier `KRM-20260602-8E3EBA` idempotence-key issue remains a known test-order artifact from the pre-receipt payload. The next safe product step is YooKassa webhook/status finalization or idempotence key version cleanup.
+
+### YooKassa webhook foundation
+
+The payment finalization layer is prepared as `POST /api/yookassa/webhook`.
+
+The endpoint is server-to-server and does not use Telegram initData. It is protected by `YOOKASSA_WEBHOOK_SECRET`, passed as a query token or internal header. The production URL pattern for the YooKassa cabinet is:
+
+`https://karma-miniapp.vercel.app/api/yookassa/webhook?token=<secret>`
+
+Supported events:
+
+- `payment.succeeded`: finds an existing YooKassa `Payment`, validates amount and order metadata, updates `Payment.status = PAID`, then updates `Order.paymentStatus = PAID`;
+- `payment.canceled`: finds an existing YooKassa `Payment`, validates amount and order metadata, updates `Payment.status = CANCELLED`, and does not mark the order paid.
+
+The webhook does not create orders, does not create payment rows, does not change fulfillment status, totals, items, customer data or images. Unknown events and validation mismatches are ignored safely so provider retries do not corrupt the order state.
+
+Webhook registration in YooKassa and live webhook testing remain separate future steps.

@@ -488,3 +488,14 @@
 - `Order.paymentStatus` remains `PENDING` because webhook/provider status finalization is not implemented yet.
 - Previous `KRM-20260602-8E3EBA` idempotence-key issue is a known test-order artifact from the old payload without receipt.
 - Next safe step: YooKassa webhook implementation or a small idempotence key version cleanup before further payment retries.
+
+## YooKassa webhook foundation
+
+- Webhook foundation is prepared locally; webhook is not registered in the YooKassa cabinet yet.
+- Endpoint planned for YooKassa cabinet: `https://karma-miniapp.vercel.app/api/yookassa/webhook?token=<secret>`.
+- Webhook requires `YOOKASSA_WEBHOOK_SECRET`; missing or wrong secret blocks processing before database updates.
+- Supported events: `payment.succeeded` and `payment.canceled`.
+- `payment.succeeded` updates local `Payment.status` and `Order.paymentStatus = PAID`.
+- `payment.canceled` updates local `Payment.status` but does not mark the order paid.
+- Unknown events, missing payments and validation mismatches are ignored safely for retry semantics and logged without secrets/full payload.
+- No live webhook test, provider API call, migration, seed or bootstrap is part of this stage.

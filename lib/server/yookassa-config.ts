@@ -35,6 +35,10 @@ export function isYooKassaPaymentsEnabled(env: NodeJS.ProcessEnv = process.env) 
   );
 }
 
+export function getYooKassaWebhookSecret(env: NodeJS.ProcessEnv = process.env) {
+  return readRequiredEnv(env.YOOKASSA_WEBHOOK_SECRET, "yookassa_webhook_secret_missing");
+}
+
 function readRequiredEnv(value: string | undefined, errorCode: string) {
   const trimmed = readOptionalEnv(value);
 

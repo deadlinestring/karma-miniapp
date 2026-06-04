@@ -242,3 +242,14 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - `Order.paymentStatus = PENDING`; webhook/status finalization is still not implemented and the order is not marked paid by redirect creation.
 - Old order `KRM-20260602-8E3EBA` has a known idempotence-key artifact from the old pre-receipt payload.
 - Recommended next step: implement YooKassa webhook/status finalization or idempotence key version cleanup. Keep `YOOKASSA_PAYMENTS_ENABLED=false` outside explicit controlled payment tests.
+
+## YooKassa webhook foundation checkpoint
+
+- YooKassa webhook foundation is prepared locally without provider API calls or cabinet registration.
+- New endpoint: `POST /api/yookassa/webhook`.
+- Webhook requires `YOOKASSA_WEBHOOK_SECRET`; suggested cabinet URL pattern is `/api/yookassa/webhook?token=<secret>`.
+- Supported events: `payment.succeeded` and `payment.canceled`.
+- `payment.succeeded` updates existing `Payment` and sets `Order.paymentStatus = PAID`.
+- `payment.canceled` updates existing `Payment` to cancelled and leaves the order not paid.
+- The handler validates existing provider payment id, amount and metadata order public number, never creates a `Payment`, and logs only masked provider ids.
+- No live webhook test, YooKassa API call, production data change, migration, seed or bootstrap is part of this checkpoint.

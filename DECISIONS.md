@@ -493,3 +493,14 @@ Prisma migrations и другие CLI-операции используют Supa
 - Full confirmation URLs, provider payment IDs, idempotency keys and personal data must not be recorded in docs or UI logs.
 - The old `KRM-20260602-8E3EBA` failure is treated as a test-order artifact caused by the deterministic idempotence key being tied to the pre-receipt payload.
 - After the test window, `YOOKASSA_PAYMENTS_ENABLED` should be switched back to false until the next controlled payment stage.
+
+## YooKassa webhook foundation
+
+- YooKassa webhook endpoint is prepared but not registered in the provider cabinet during this stage.
+- Webhook URL uses a shared secret token: `/api/yookassa/webhook?token=<secret>`; the secret is read from `YOOKASSA_WEBHOOK_SECRET` and must never be logged.
+- The endpoint does not require Telegram initData because YooKassa calls it server-to-server.
+- Supported provider events are `payment.succeeded` and `payment.canceled`.
+- `payment.succeeded` is the first source of truth for marking an order paid: it updates `Payment.status = PAID` and `Order.paymentStatus = PAID`.
+- `payment.canceled` updates the existing `Payment.status = CANCELLED` and leaves the order not paid.
+- Webhook handling is idempotent at the current schema level: repeated events update the same existing payment/order statuses and never create new `Payment` rows.
+- Unknown events, unknown provider payments, amount mismatch and metadata order mismatch are ignored safely with masked provider IDs for retry semantics.
