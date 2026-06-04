@@ -233,3 +233,12 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Receipt customer requires order phone or email; missing contact blocks payment before YooKassa is called.
 - `.env.example` now includes `YOOKASSA_VAT_CODE="1"`; the shop VAT setting must be confirmed before the next live retry.
 - `YOOKASSA_PAYMENTS_ENABLED` should remain false until the next controlled payment test. No live YooKassa retry, `Payment` creation, production data change, migration, seed or bootstrap is part of this checkpoint.
+
+## Live YooKassa redirect checkpoint
+
+- After receipt fix deployment, controlled production payment prepare succeeded on order `KRM-20260604-59DE22`.
+- Current read-only checkpoint: `Order = 4`, `Payment = 1`.
+- Order `KRM-20260604-59DE22` has exactly one YooKassa `Payment` row, amount matches order total, and confirmation URL exists.
+- `Order.paymentStatus = PENDING`; webhook/status finalization is still not implemented and the order is not marked paid by redirect creation.
+- Old order `KRM-20260602-8E3EBA` has a known idempotence-key artifact from the old pre-receipt payload.
+- Recommended next step: implement YooKassa webhook/status finalization or idempotence key version cleanup. Keep `YOOKASSA_PAYMENTS_ENABLED=false` outside explicit controlled payment tests.

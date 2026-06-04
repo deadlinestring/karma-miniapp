@@ -479,3 +479,12 @@
 - Discounts are allocated into commodity item amounts; no negative receipt lines are used, and receipt item totals must equal `Order.totalKopecks`.
 - `.env.example` documents `YOOKASSA_VAT_CODE="1"`; default `1` is used only when env is absent and must be confirmed for the shop before the next live retry.
 - Next step: keep `YOOKASSA_PAYMENTS_ENABLED=false`, deploy the receipt fix after review, then run one controlled payment retry with the flag explicitly enabled.
+
+## Live YooKassa redirect payment verification
+
+- Production live-test confirmed YooKassa redirect payment creation on order `KRM-20260604-59DE22`.
+- YooKassa accepted the receipt payload, returned a confirmation URL, and the payment page opened for the customer.
+- Local `Payment` row was created for the order; no duplicate payment rows were found for this order.
+- `Order.paymentStatus` remains `PENDING` because webhook/provider status finalization is not implemented yet.
+- Previous `KRM-20260602-8E3EBA` idempotence-key issue is a known test-order artifact from the old payload without receipt.
+- Next safe step: YooKassa webhook implementation or a small idempotence key version cleanup before further payment retries.

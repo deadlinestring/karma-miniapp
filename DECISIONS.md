@@ -484,3 +484,12 @@ Prisma migrations и другие CLI-операции используют Supa
 - Discounts are folded into commodity item amounts rather than represented as negative receipt rows, and receipt total must equal `Order.totalKopecks`.
 - VAT code is configured server-side through `YOOKASSA_VAT_CODE`; env absence currently falls back to `1`, which must be confirmed against the shop fiscal settings before live retry.
 - Provider diagnostics must not log receipt customer phone/email, authorization headers, secrets or personal data.
+
+## Live YooKassa redirect verification
+
+- Controlled production test on order `KRM-20260604-59DE22` confirmed that receipt-bearing YooKassa payment creation returns a confirmation URL.
+- A local `Payment` row is created only after YooKassa returns the redirect response; the order itself remains `paymentStatus = PENDING`.
+- Redirect success does not mean paid. Final `PAID` status must come from a future webhook or explicit provider status check.
+- Full confirmation URLs, provider payment IDs, idempotency keys and personal data must not be recorded in docs or UI logs.
+- The old `KRM-20260602-8E3EBA` failure is treated as a test-order artifact caused by the deterministic idempotence key being tied to the pre-receipt payload.
+- After the test window, `YOOKASSA_PAYMENTS_ENABLED` should be switched back to false until the next controlled payment stage.

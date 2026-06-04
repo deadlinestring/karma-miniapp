@@ -647,3 +647,13 @@ The receipt is generated server-side from the saved order snapshot:
 Discounts are not sent as a negative receipt line. They are allocated into commodity item amounts so the sum of receipt items equals `Order.totalKopecks`.
 
 The next live payment retry must keep `YOOKASSA_PAYMENTS_ENABLED=false` until the explicit controlled test step, then enable it only for the test window.
+
+### Production check: YooKassa redirect
+
+Controlled production test on order `KRM-20260604-59DE22` confirmed the first live YooKassa redirect creation.
+
+The customer pressed `Перейти к оплате`, the server created a YooKassa payment with receipt, saved one local `Payment` row and returned a confirmation URL. The YooKassa payment page opened successfully.
+
+The order remains `paymentStatus = PENDING`; webhook handling is not implemented, so redirect creation must not mark the order as paid. Full confirmation URL, provider payment id, idempotency key and personal data are not exposed in documentation.
+
+The earlier `KRM-20260602-8E3EBA` idempotence-key issue remains a known test-order artifact from the pre-receipt payload. The next safe product step is YooKassa webhook/status finalization or idempotence key version cleanup.
