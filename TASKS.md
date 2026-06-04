@@ -499,3 +499,12 @@
 - `payment.canceled` updates local `Payment.status` but does not mark the order paid.
 - Unknown events, missing payments and validation mismatches are ignored safely for retry semantics and logged without secrets/full payload.
 - No live webhook test, provider API call, migration, seed or bootstrap is part of this stage.
+
+## YooKassa webhook registration readiness
+
+- `YOOKASSA_WEBHOOK_SECRET` has been added to Vercel Production env and the app was redeployed after the env change.
+- YooKassa webhook URL has been registered manually in the provider cabinet without exposing the token in docs.
+- Subscribed events: `payment.succeeded` and `payment.canceled`.
+- Live webhook event has not been tested yet.
+- Current payment remains pending until a real webhook event is delivered and processed.
+- Next safe step: controlled webhook live test by completing or canceling one test payment, then read-only verification of status sync.

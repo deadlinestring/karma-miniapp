@@ -674,3 +674,13 @@ Supported events:
 The webhook does not create orders, does not create payment rows, does not change fulfillment status, totals, items, customer data or images. Unknown events and validation mismatches are ignored safely so provider retries do not corrupt the order state.
 
 Webhook registration in YooKassa and live webhook testing remain separate future steps.
+
+### YooKassa webhook registration readiness
+
+`YOOKASSA_WEBHOOK_SECRET` is configured in Vercel Production and the app has been redeployed after that env change.
+
+The YooKassa cabinet now has the webhook URL registered for `payment.succeeded` and `payment.canceled`. Documentation records only the safe URL pattern with `<secret>`, never the real token.
+
+No live webhook event has been processed yet. Orders and payments remain in their current statuses until YooKassa sends a real event and the webhook updates the existing `Payment` and related `Order`.
+
+The next verification should be one controlled live webhook test, followed by read-only confirmation that payment status synchronization worked.

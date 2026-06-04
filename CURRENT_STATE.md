@@ -253,3 +253,13 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - `payment.canceled` updates existing `Payment` to cancelled and leaves the order not paid.
 - The handler validates existing provider payment id, amount and metadata order public number, never creates a `Payment`, and logs only masked provider ids.
 - No live webhook test, YooKassa API call, production data change, migration, seed or bootstrap is part of this checkpoint.
+
+## YooKassa webhook registration readiness checkpoint
+
+- `YOOKASSA_WEBHOOK_SECRET` has been added to Vercel Production env.
+- Production was redeployed after the env change.
+- The webhook URL was registered manually in the YooKassa cabinet using the secret token; docs keep only the `<secret>` placeholder.
+- Registered events: `payment.succeeded`, `payment.canceled`.
+- Live webhook event has not been tested yet.
+- Current read-only baseline remains `Order = 4`, `Payment = 1`; order `KRM-20260604-59DE22` and its YooKassa payment are still `PENDING`.
+- Next safe step: controlled webhook live test by completing or canceling one test payment, then read-only verify status sync.

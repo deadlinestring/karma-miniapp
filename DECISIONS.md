@@ -504,3 +504,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - `payment.canceled` updates the existing `Payment.status = CANCELLED` and leaves the order not paid.
 - Webhook handling is idempotent at the current schema level: repeated events update the same existing payment/order statuses and never create new `Payment` rows.
 - Unknown events, unknown provider payments, amount mismatch and metadata order mismatch are ignored safely with masked provider IDs for retry semantics.
+
+## YooKassa webhook registration readiness
+
+- `YOOKASSA_WEBHOOK_SECRET` is now configured in Vercel Production and was activated through a redeploy.
+- The YooKassa cabinet has the webhook URL registered with the secret token, but the token itself must not be written to docs, logs or UI.
+- The registered event set is limited to `payment.succeeded` and `payment.canceled`.
+- Registration readiness does not prove status sync yet; a controlled live webhook event is still required.
+- Outside controlled payment tests, `YOOKASSA_PAYMENTS_ENABLED` should remain false.
