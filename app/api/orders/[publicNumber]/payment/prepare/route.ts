@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { TELEGRAM_INIT_DATA_HEADER } from "@/lib/server/admin-auth";
-import { getCustomerOrderPaymentEligibility } from "@/lib/server/payment-eligibility";
 import { validateTelegramInitData } from "@/lib/server/telegram-auth";
-import { isYooKassaConfigAvailable } from "@/lib/server/yookassa-config";
+import { prepareCustomerYooKassaPayment } from "@/lib/server/yookassa-payments";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,37 +18,13 @@ export async function POST(request: Request, { params }: { params: { publicNumbe
   }
 
   try {
-    const eligibility = await getCustomerOrderPaymentEligibility(params.publicNumber, telegramAuth.user);
+    const result = await prepareCustomerYooKassaPayment(params.publicNumber, telegramAuth.user);
 
-    if (eligibility.reason === "ORDER_NOT_FOUND") {
+    if (!result.ok && result.reason === "ORDER_NOT_FOUND") {
       return NextResponse.json({ ok: false, message: "Заказ не найден." }, { status: 404 });
     }
 
-    if (!eligibility.eligible) {
-      return NextResponse.json({
-        ok: true,
-        payment: {
-          provider: "YOOKASSA",
-          providerEnabled: false,
-          eligible: false,
-          reason: eligibility.reason,
-          message: eligibility.message
-        }
-      });
-    }
-
-    const configAvailable = isYooKassaConfigAvailable();
-
-    return NextResponse.json({
-      ok: true,
-      payment: {
-        provider: "YOOKASSA",
-        providerEnabled: false,
-        eligible: true,
-        reason: configAvailable ? "PROVIDER_DISABLED" : "PROVIDER_ENV_MISSING",
-        message: "Онлайн-оплата скоро появится. Сейчас менеджер подтвердит заказ и подскажет способ оплаты."
-      }
-    });
+    return NextResponse.json(result);
   } catch (error) {
     if (error instanceof Error && error.message === "invalid_order_number") {
       return NextResponse.json({ ok: false, message: "Заказ не найден." }, { status: 404 });

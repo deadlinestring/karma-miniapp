@@ -21,8 +21,13 @@ export function getYooKassaConfig(env: NodeJS.ProcessEnv = process.env): YooKass
 }
 
 export function isYooKassaConfigAvailable(env: NodeJS.ProcessEnv = process.env) {
+  return isYooKassaPaymentsEnabled(env);
+}
+
+export function isYooKassaPaymentsEnabled(env: NodeJS.ProcessEnv = process.env) {
   return Boolean(
-    readOptionalEnv(env.YOOKASSA_SHOP_ID) &&
+    readOptionalEnv(env.YOOKASSA_PAYMENTS_ENABLED) === "true" &&
+      readOptionalEnv(env.YOOKASSA_SHOP_ID) &&
       readOptionalEnv(env.YOOKASSA_SECRET_KEY) &&
       readOptionalEnv(env.YOOKASSA_RETURN_URL)
   );

@@ -463,3 +463,14 @@ Prisma migrations и другие CLI-операции используют Supa
 - Cancelled, completed, already paid, and non-positive-total orders are not payment eligible.
 - Provider env names are server-only: `YOOKASSA_SHOP_ID`, `YOOKASSA_SECRET_KEY`, `YOOKASSA_RETURN_URL`, `YOOKASSA_WEBHOOK_SECRET`.
 - Before live payment, implement real idempotent provider creation and webhook status mapping deliberately.
+
+## YooKassa redirect payment creation
+
+- The first live-capable payment action is `POST /api/orders/[publicNumber]/payment/prepare`, scoped to the current Telegram user and their own order.
+- The server creates a YooKassa redirect payment only for eligible orders: regular `PENDING` orders or custom orders where every custom image is `APPROVED`.
+- `PENDING_REVIEW`, `REJECTED`, cancelled/completed, already paid and invalid-total orders are blocked before provider creation.
+- `Idempotence-Key` is deterministic per public order number for this first payment attempt, and an existing pending YooKassa `Payment` with confirmation URL is reused.
+- `Payment` is inserted only after YooKassa returns a successful redirect response. Provider errors must not create local payment rows.
+- `Order.paymentStatus` is not marked `PAID` by the redirect preparation step. Final payment status requires a future webhook or explicit provider status fetch.
+- YooKassa secrets remain server-only; Authorization headers and secret keys must never be logged or returned to the client.
+- Real YooKassa creation is disabled by default and requires `YOOKASSA_PAYMENTS_ENABLED=true`; adding shop id or secret key alone must not activate payment buttons or provider calls.

@@ -618,3 +618,15 @@ Payment eligibility rules:
 - cancelled, completed, paid, failed or zero-total orders cannot proceed to payment.
 
 The customer order page currently shows disabled payment guidance only. There is no working YooKassa confirmation button yet, no live provider call, and no `Payment` row creation.
+
+### YooKassa redirect payment creation
+
+Customer order detail can start online payment for eligible orders through YooKassa redirect.
+
+When the buyer presses `Перейти к оплате`, the Mini App calls `POST /api/orders/[publicNumber]/payment/prepare` with Telegram initData. The server verifies that the order belongs to this Telegram user, checks payment eligibility, prepares a YooKassa redirect payment, saves a local `Payment` row after the provider response, and returns `confirmationUrl`.
+
+Regular pending orders can be paid immediately. Custom orders can be paid only after all uploaded images are approved by an administrator. Pending review and rejected custom images keep payment blocked with a clear customer message.
+
+The first version does not include webhook handling. A redirect/confirmation URL does not mark the order as paid by itself; final `PAID` status must be handled by a future webhook or provider status check. Existing pending YooKassa payments with confirmation URL are reused to avoid duplicates.
+
+Real YooKassa payment creation is behind the explicit server flag `YOOKASSA_PAYMENTS_ENABLED=true`. If shop id, secret key and return URL exist but the flag is absent or false, the customer still sees the safe disabled payment guidance and no provider request is made.

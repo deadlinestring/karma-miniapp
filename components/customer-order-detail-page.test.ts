@@ -46,14 +46,20 @@ describe("customer order detail page", () => {
     expect(source).not.toContain("SUPABASE_SERVICE_ROLE");
   });
 
-  it("shows payment foundation messages without an active YooKassa button", () => {
-    expect(source).toContain("getPaymentNotice(order)");
-    expect(source).toContain("Оплата заказа");
+  it("shows active YooKassa redirect button only for eligible configured orders", () => {
+    expect(source).toContain("paymentAction.providerEnabled && paymentAction.eligible");
+    expect(source).toContain("Перейти к оплате");
     expect(source).toContain("Оплата скоро");
-    expect(source).toContain("Изображение проверяется администратором. Оплата будет доступна после проверки.");
-    expect(source).toContain("Изображение одобрено. Онлайн-оплата будет подключена следующим этапом.");
-    expect(source).toContain("Онлайн-оплата скоро появится. Сейчас менеджер подтвердит заказ");
-    expect(source).not.toContain("confirmationUrl");
-    expect(source).not.toContain("yookassa");
+    expect(source).toContain("fetch(`/api/orders/${order.publicNumber}/payment/prepare`");
+    expect(source).toContain('"X-Telegram-Init-Data": initData');
+    expect(source).toContain("body.payment.confirmationUrl");
+  });
+
+  it("opens confirmationUrl from the prepare response without hardcoding provider URLs", () => {
+    expect(source).toContain("openPaymentUrl(body.payment.confirmationUrl)");
+    expect(source).toContain("window.Telegram?.WebApp?.openLink");
+    expect(source).toContain("window.location.assign(url)");
+    expect(source).not.toContain("https://api.yookassa.ru");
+    expect(source).not.toContain("YOOKASSA_SECRET_KEY");
   });
 });

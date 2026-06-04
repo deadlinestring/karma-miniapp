@@ -213,3 +213,14 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
   - custom `REJECTED`: contact manager.
 - Server-only env names are documented in `.env.example`; `YOOKASSA_SECRET_KEY` is not available/used in this stage.
 - Production data must remain unchanged until a separately approved live payment stage.
+
+## YooKassa redirect payment creation checkpoint
+
+- Controlled YooKassa redirect payment creation is prepared locally.
+- Existing `Payment` schema is sufficient; no migration is needed.
+- `POST /api/orders/[publicNumber]/payment/prepare` now performs Telegram ownership validation, payment eligibility checks, YooKassa config validation, pending Payment reuse, provider redirect creation and local `Payment` insert after successful provider response.
+- Customer order detail can show an active `Перейти к оплате` button only when the server marks the order eligible and provider env is configured.
+- Real YooKassa creation remains disabled unless `YOOKASSA_PAYMENTS_ENABLED=true`; existing shop id/secret env values alone do not activate payment creation.
+- Custom order `KRM-20260602-8E3EBA` is eligible because its custom image is `APPROVED`; `PENDING_REVIEW` and `REJECTED` custom orders remain blocked.
+- `Order.paymentStatus` is not marked `PAID` by redirect creation; webhook/provider status confirmation remains the next required payment layer.
+- YooKassa calls are covered by mocks in development checks. No live payment test, production `Payment` creation, webhook connection, migration, seed or bootstrap was performed in this stage.

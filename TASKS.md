@@ -459,3 +459,14 @@
 - Custom orders are eligible only after all custom images are `APPROVED`; `PENDING_REVIEW` and `REJECTED` custom items block payment.
 - `.env.example` documents `YOOKASSA_SHOP_ID`, `YOOKASSA_SECRET_KEY`, `YOOKASSA_RETURN_URL`, and `YOOKASSA_WEBHOOK_SECRET` without values.
 - Live YooKassa payment creation, webhook handling and idempotency execution remain future work.
+
+## YooKassa redirect payment creation
+
+- Controlled YooKassa payment creation is prepared locally for eligible customer orders.
+- `POST /api/orders/[publicNumber]/payment/prepare` now creates a YooKassa redirect payment only after Telegram customer ownership and payment eligibility checks pass.
+- A `Payment` row is created only after a successful mocked/provider response and stores provider id, amount, status, idempotency key and confirmation URL.
+- Existing pending YooKassa `Payment` with confirmation URL is reused for the order to avoid duplicate redirects.
+- Customer order detail can show the active `Перейти к оплате` button when provider env is configured and the order is eligible.
+- Real payment creation is additionally gated by `YOOKASSA_PAYMENTS_ENABLED=true`; shop id/secret/return URL alone do not enable the button or provider call.
+- Webhook handling remains future work; successful payment finalization must not rely on redirect alone.
+- Development checks use mocked YooKassa calls only. No live payment test, production `Payment` creation or webhook connection is performed in this stage.

@@ -7,7 +7,9 @@ import type {
   PaymentStatus
 } from "@prisma/client";
 import type { TelegramAuthUser } from "@/lib/server/telegram-auth";
+import { evaluatePaymentEligibility } from "@/lib/server/payment-eligibility";
 import { prisma } from "@/lib/server/prisma";
+import { isYooKassaPaymentsEnabled } from "@/lib/server/yookassa-config";
 
 type PrismaLike = typeof prisma;
 
@@ -25,6 +27,22 @@ export type CustomerOrderListItem = {
 };
 
 export type CustomerOrderDetail = CustomerOrderListItem & {
+  paymentAction: {
+    provider: "YOOKASSA";
+    providerEnabled: boolean;
+    eligible: boolean;
+    reason:
+      | "ELIGIBLE"
+      | "ORDER_NOT_FOUND"
+      | "PAYMENT_NOT_PENDING"
+      | "INVALID_AMOUNT"
+      | "ORDER_FINAL"
+      | "CUSTOM_IMAGE_PENDING_REVIEW"
+      | "CUSTOM_IMAGE_REJECTED"
+      | "PROVIDER_DISABLED"
+      | "PROVIDER_ENV_MISSING";
+    message: string;
+  };
   itemsSubtotalKopecks: number;
   customDrawingKopecks: number;
   discountKopecks: number;
@@ -298,6 +316,7 @@ function mapCustomerOrderDetail(order: CustomerOrderDetailRecord): CustomerOrder
 
   return {
     ...listItem,
+    paymentAction: mapPaymentAction(order),
     itemsSubtotalKopecks: order.itemsSubtotalKopecks,
     customDrawingKopecks: order.customDrawingKopecks,
     discountKopecks: order.discountKopecks,
@@ -326,6 +345,45 @@ function mapCustomerOrderDetail(order: CustomerOrderDetailRecord): CustomerOrder
       customDrawingSurchargeKopecks: item.customDrawingSurchargeKopecks,
       customImageReviewStatus: item.customImageReviewStatus
     }))
+  };
+}
+
+function mapPaymentAction(order: CustomerOrderDetailRecord): CustomerOrderDetail["paymentAction"] {
+  const eligibility = evaluatePaymentEligibility({
+    paymentStatus: order.paymentStatus,
+    fulfillmentStatus: order.fulfillmentStatus,
+    totalKopecks: order.totalKopecks,
+    items: order.items.map((item) => ({
+      customImageReviewStatus: item.customImageReviewStatus
+    }))
+  });
+
+  if (!eligibility.eligible) {
+    return {
+      provider: "YOOKASSA",
+      providerEnabled: false,
+      eligible: false,
+      reason: eligibility.reason,
+      message: eligibility.message
+    };
+  }
+
+  if (!isYooKassaPaymentsEnabled()) {
+    return {
+      provider: "YOOKASSA",
+      providerEnabled: false,
+      eligible: true,
+      reason: "PROVIDER_DISABLED",
+      message: "Онлайн-оплата скоро появится. Сейчас менеджер подтвердит заказ и подскажет способ оплаты."
+    };
+  }
+
+  return {
+    provider: "YOOKASSA",
+    providerEnabled: true,
+    eligible: true,
+    reason: "ELIGIBLE",
+    message: "Заказ готов к онлайн-оплате."
   };
 }
 

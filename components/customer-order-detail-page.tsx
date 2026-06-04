@@ -19,6 +19,13 @@ type CustomerOrderDetail = {
   deliveryKopecks: number;
   totalKopecks: number;
   deliveryMethod: string;
+  paymentAction: {
+    provider: "YOOKASSA";
+    providerEnabled: boolean;
+    eligible: boolean;
+    reason: string;
+    message: string;
+  };
   customer: {
     name: string;
     phone: string;
@@ -55,12 +62,27 @@ type OrderDetailResponse =
   | { ok: true; order: CustomerOrderDetail }
   | { ok: false; message: string };
 
+type PaymentPrepareResponse =
+  | {
+      ok: true;
+      payment: {
+        provider: "YOOKASSA";
+        providerEnabled: boolean;
+        eligible: boolean;
+        confirmationUrl?: string;
+        message?: string;
+      };
+    }
+  | { ok: false; message: string };
+
 export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string }) {
   const [initData, setInitData] = useState<string | null>(null);
   const [telegramChecked, setTelegramChecked] = useState(false);
   const [order, setOrder] = useState<CustomerOrderDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isPreparingPayment, setIsPreparingPayment] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   useEffect(() => {
     const telegramInitData = window.Telegram?.WebApp?.initData;
@@ -109,7 +131,7 @@ export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string
   }, [initData, publicNumber]);
 
   const supportUrl = order ? buildSupportTelegramUrl(order.publicNumber) : null;
-  const paymentNotice = order ? getPaymentNotice(order) : null;
+  const paymentAction = order?.paymentAction ?? null;
 
   function handleSupportClick(event: MouseEvent<HTMLAnchorElement>) {
     if (!supportUrl) {
@@ -124,15 +146,46 @@ export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string
     }
   }
 
+  async function handlePaymentClick() {
+    if (!initData || !order || !order.paymentAction.providerEnabled || !order.paymentAction.eligible) {
+      return;
+    }
+
+    setIsPreparingPayment(true);
+    setPaymentError(null);
+
+    try {
+      const response = await fetch(`/api/orders/${order.publicNumber}/payment/prepare`, {
+        method: "POST",
+        headers: { "X-Telegram-Init-Data": initData }
+      });
+      const body = (await response.json()) as PaymentPrepareResponse;
+
+      if (!response.ok || !body.ok) {
+        throw new Error(body.ok ? "Не удалось подготовить оплату." : body.message);
+      }
+
+      if (!body.payment.providerEnabled || !body.payment.eligible || !body.payment.confirmationUrl) {
+        throw new Error(body.payment.message ?? "Онлайн-оплата пока недоступна.");
+      }
+
+      openPaymentUrl(body.payment.confirmationUrl);
+    } catch (prepareError) {
+      setPaymentError(
+        prepareError instanceof Error ? prepareError.message : "Не удалось подготовить оплату. Попробуйте позже."
+      );
+    } finally {
+      setIsPreparingPayment(false);
+    }
+  }
+
   return (
     <AppShell>
       <section>
         <Link href="/orders" className="text-sm font-bold text-neon-cyan">
           ← Мои заказы
         </Link>
-        <p className="mt-4 text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">
-          заказ
-        </p>
+        <p className="mt-4 text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">заказ</p>
         <h1 className="mt-2 text-3xl font-black text-white">{publicNumber}</h1>
       </section>
 
@@ -159,17 +212,33 @@ export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string
 
       {order ? (
         <div className="mt-6 grid gap-5">
-          {paymentNotice ? (
+          {paymentAction ? (
             <section className="rounded-[24px] border border-neon-cyan/20 bg-neon-cyan/8 p-4">
               <h2 className="text-lg font-black text-white">Оплата заказа</h2>
-              <p className="mt-2 text-sm leading-6 text-white/66">{paymentNotice}</p>
-              <button
-                type="button"
-                disabled
-                className="mt-3 inline-flex min-h-11 items-center rounded-2xl border border-white/10 bg-white/8 px-4 text-sm font-bold text-white/45"
-              >
-                Оплата скоро
-              </button>
+              <p className="mt-2 text-sm leading-6 text-white/66">{paymentAction.message}</p>
+              {paymentError ? (
+                <p className="mt-3 rounded-2xl border border-red-400/30 bg-red-500/10 p-3 text-sm font-semibold text-red-100">
+                  {paymentError}
+                </p>
+              ) : null}
+              {paymentAction.providerEnabled && paymentAction.eligible ? (
+                <button
+                  type="button"
+                  disabled={isPreparingPayment}
+                  onClick={handlePaymentClick}
+                  className="mt-3 inline-flex min-h-11 items-center rounded-2xl border border-neon-cyan/35 bg-neon-cyan/15 px-4 text-sm font-bold text-neon-cyan transition hover:bg-neon-cyan/22 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isPreparingPayment ? "Готовим оплату..." : "Перейти к оплате"}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  className="mt-3 inline-flex min-h-11 items-center rounded-2xl border border-white/10 bg-white/8 px-4 text-sm font-bold text-white/45"
+                >
+                  Оплата скоро
+                </button>
+              )}
             </section>
           ) : null}
 
@@ -192,18 +261,14 @@ export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string
                       <p className="mt-1 text-sm text-white/54">
                         {item.itemTypeLabel}, {item.sizeCm} см · {item.quantity} шт.
                       </p>
-                      {item.note ? (
-                        <p className="mt-1 text-xs font-semibold text-neon-cyan">{item.note}</p>
-                      ) : null}
+                      {item.note ? <p className="mt-1 text-xs font-semibold text-neon-cyan">{item.note}</p> : null}
                       {item.customDrawingStyle ? (
                         <p className="mt-1 text-xs text-white/48">
                           Отрисовка: {item.customDrawingStyle}; review: {item.customImageReviewStatus}
                         </p>
                       ) : null}
                     </div>
-                    <span className="font-black text-white">
-                      {formatKopecks(item.lineTotalKopecks)} ₽
-                    </span>
+                    <span className="font-black text-white">{formatKopecks(item.lineTotalKopecks)} ₽</span>
                   </div>
                   {item.discountKopecks > 0 ? (
                     <p className="mt-2 text-xs font-semibold text-emerald-200">
@@ -224,9 +289,7 @@ export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string
               <SummaryRow label="Доставка" value={order.deliveryKopecks} />
               <div className="flex items-center justify-between border-t border-white/10 pt-3">
                 <span className="text-white/58">Итого</span>
-                <span className="text-2xl font-black text-white">
-                  {formatKopecks(order.totalKopecks)} ₽
-                </span>
+                <span className="text-2xl font-black text-white">{formatKopecks(order.totalKopecks)} ₽</span>
               </div>
             </div>
           </section>
@@ -276,6 +339,17 @@ export function buildSupportTelegramUrl(publicNumber: string) {
   return `https://t.me/${SUPPORT_BOT_USERNAME}?start=order_${encodeURIComponent(safeOrderNumber)}`;
 }
 
+function openPaymentUrl(url: string) {
+  const openLink = window.Telegram?.WebApp?.openLink;
+
+  if (openLink) {
+    openLink(url);
+    return;
+  }
+
+  window.location.assign(url);
+}
+
 function StatusBlock({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/8 p-3">
@@ -285,7 +359,7 @@ function StatusBlock({ label, value }: { label: string; value: string }) {
   );
 }
 
-function SummaryRow({ label, value }: { label: string; value: number }) {
+function SummaryRow({ label, value }: { label: number | string; value: number }) {
   return (
     <div className="flex items-center justify-between text-white/64">
       <span>{label}</span>
@@ -317,32 +391,4 @@ function formatDate(value: string) {
     hour: "2-digit",
     minute: "2-digit"
   }).format(new Date(value));
-}
-
-function getPaymentNotice(order: CustomerOrderDetail) {
-  if (order.paymentStatus !== "PENDING") {
-    return null;
-  }
-
-  if (order.fulfillmentStatus === "CANCELLED" || order.fulfillmentStatus === "COMPLETED") {
-    return null;
-  }
-
-  const customStatuses = order.items
-    .map((item) => item.customImageReviewStatus)
-    .filter((status) => status !== "NOT_REQUIRED");
-
-  if (customStatuses.includes("PENDING_REVIEW")) {
-    return "Изображение проверяется администратором. Оплата будет доступна после проверки.";
-  }
-
-  if (customStatuses.includes("REJECTED")) {
-    return "Изображение отклонено. Свяжитесь с менеджером, чтобы согласовать заказ.";
-  }
-
-  if (customStatuses.includes("APPROVED")) {
-    return "Изображение одобрено. Онлайн-оплата будет подключена следующим этапом.";
-  }
-
-  return "Онлайн-оплата скоро появится. Сейчас менеджер подтвердит заказ и подскажет способ оплаты.";
 }

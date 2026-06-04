@@ -5,8 +5,7 @@ describe("customer payment prepare route", () => {
     vi.resetModules();
     vi.clearAllMocks();
     vi.doUnmock("@/lib/server/telegram-auth");
-    vi.doUnmock("@/lib/server/payment-eligibility");
-    vi.doUnmock("@/lib/server/yookassa-config");
+    vi.doUnmock("@/lib/server/yookassa-payments");
   });
 
   it("requires Telegram initData", async () => {
@@ -22,12 +21,8 @@ describe("customer payment prepare route", () => {
     vi.doMock("@/lib/server/telegram-auth", () => ({
       validateTelegramInitData: () => ({ ok: true, user: { id: "12345" } })
     }));
-    vi.doMock("@/lib/server/payment-eligibility", () => ({
-      getCustomerOrderPaymentEligibility: vi.fn().mockResolvedValue({
-        eligible: false,
-        reason: "ORDER_NOT_FOUND",
-        message: "Заказ не найден."
-      })
+    vi.doMock("@/lib/server/yookassa-payments", () => ({
+      prepareCustomerYooKassaPayment: vi.fn().mockResolvedValue({ ok: false, reason: "ORDER_NOT_FOUND" })
     }));
 
     const { POST } = await import("./route");
@@ -43,11 +38,16 @@ describe("customer payment prepare route", () => {
     vi.doMock("@/lib/server/telegram-auth", () => ({
       validateTelegramInitData: () => ({ ok: true, user: { id: "12345" } })
     }));
-    vi.doMock("@/lib/server/payment-eligibility", () => ({
-      getCustomerOrderPaymentEligibility: vi.fn().mockResolvedValue({
-        eligible: false,
-        reason: "CUSTOM_IMAGE_PENDING_REVIEW",
-        message: "Изображение проверяется администратором."
+    vi.doMock("@/lib/server/yookassa-payments", () => ({
+      prepareCustomerYooKassaPayment: vi.fn().mockResolvedValue({
+        ok: true,
+        payment: {
+          provider: "YOOKASSA",
+          providerEnabled: false,
+          eligible: false,
+          reason: "CUSTOM_IMAGE_PENDING_REVIEW",
+          message: "Изображение проверяется администратором."
+        }
       })
     }));
 
@@ -65,21 +65,27 @@ describe("customer payment prepare route", () => {
       eligible: false,
       reason: "CUSTOM_IMAGE_PENDING_REVIEW"
     });
+    expect(JSON.stringify(data)).not.toContain("confirmationUrl");
   });
 
-  it("returns provider disabled response for eligible orders without calling YooKassa", async () => {
+  it("returns confirmationUrl for eligible prepared payments", async () => {
     vi.doMock("@/lib/server/telegram-auth", () => ({
       validateTelegramInitData: () => ({ ok: true, user: { id: "12345" } })
     }));
-    vi.doMock("@/lib/server/payment-eligibility", () => ({
-      getCustomerOrderPaymentEligibility: vi.fn().mockResolvedValue({
-        eligible: true,
-        reason: "ELIGIBLE",
-        message: "Заказ готов к онлайн-оплате."
+    vi.doMock("@/lib/server/yookassa-payments", () => ({
+      prepareCustomerYooKassaPayment: vi.fn().mockResolvedValue({
+        ok: true,
+        payment: {
+          provider: "YOOKASSA",
+          providerEnabled: true,
+          eligible: true,
+          reused: false,
+          paymentId: "payment-1",
+          providerPaymentId: "yk-1",
+          status: "PENDING",
+          confirmationUrl: "https://yookassa.test/confirm"
+        }
       })
-    }));
-    vi.doMock("@/lib/server/yookassa-config", () => ({
-      isYooKassaConfigAvailable: vi.fn().mockReturnValue(false)
     }));
 
     const { POST } = await import("./route");
@@ -91,12 +97,30 @@ describe("customer payment prepare route", () => {
 
     expect(response.status).toBe(200);
     expect(data.payment).toMatchObject({
-      provider: "YOOKASSA",
-      providerEnabled: false,
+      providerEnabled: true,
       eligible: true,
-      reason: "PROVIDER_ENV_MISSING"
+      confirmationUrl: "https://yookassa.test/confirm"
     });
     expect(JSON.stringify(data)).not.toContain("secret");
-    expect(JSON.stringify(data)).not.toContain("confirmationUrl");
+  });
+
+  it("returns a safe error when provider creation fails", async () => {
+    vi.doMock("@/lib/server/telegram-auth", () => ({
+      validateTelegramInitData: () => ({ ok: true, user: { id: "12345" } })
+    }));
+    vi.doMock("@/lib/server/yookassa-payments", () => ({
+      prepareCustomerYooKassaPayment: vi.fn().mockRejectedValue(new Error("yookassa_payment_create_failed"))
+    }));
+
+    const { POST } = await import("./route");
+    const response = await POST(new Request("http://localhost/api/orders/KRM-20260602-8E3EBA/payment/prepare", {
+      method: "POST",
+      headers: { "X-Telegram-Init-Data": "safe" }
+    }), { params: { publicNumber: "KRM-20260602-8E3EBA" } });
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.message).toContain("Не удалось подготовить оплату");
+    expect(JSON.stringify(data)).not.toContain("yookassa_payment_create_failed");
   });
 });
