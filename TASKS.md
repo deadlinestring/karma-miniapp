@@ -508,3 +508,13 @@
 - Live webhook event has not been tested yet.
 - Current payment remains pending until a real webhook event is delivered and processed.
 - Next safe step: controlled webhook live test by completing or canceling one test payment, then read-only verification of status sync.
+
+## Live YooKassa payment and webhook verification
+
+- Controlled production payment test passed on order `KRM-20260604-28B88F`.
+- Payment amount was `460 ₽`; YooKassa merchant cabinet showed the payment.
+- YooKassa `payment.succeeded` webhook synchronized local statuses: `Payment.status = PAID`, `Order.paymentStatus = PAID`.
+- The order has one YooKassa `Payment` row; no duplicate local payments were found.
+- Manual refund was performed in the YooKassa cabinet after the payment test.
+- Local status did not change after refund, which is expected for the current scope: refund webhook/status handling is not implemented yet.
+- Next safe task: design `refund.succeeded` handling and local refunded/cancelled payment state semantics.

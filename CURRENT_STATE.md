@@ -263,3 +263,15 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Live webhook event has not been tested yet.
 - Current read-only baseline remains `Order = 4`, `Payment = 1`; order `KRM-20260604-59DE22` and its YooKassa payment are still `PENDING`.
 - Next safe step: controlled webhook live test by completing or canceling one test payment, then read-only verify status sync.
+
+## Live YooKassa payment and webhook checkpoint
+
+- Controlled live payment was completed on order `KRM-20260604-28B88F`.
+- Current read-only baseline: `Order = 5`, `Payment = 2`.
+- Order `KRM-20260604-28B88F` has exactly one YooKassa `Payment` row.
+- Payment amount is `46000` kopecks and matches the order total.
+- Webhook sync worked: `Payment.status = PAID`, `Order.paymentStatus = PAID`.
+- `fulfillmentStatus` remains `NEW`; fulfillment is not changed by payment webhook.
+- Manual refund was performed in the YooKassa cabinet after the successful payment.
+- Local refund handling is not implemented yet, so refund did not change local `Payment`/`Order` status.
+- Next safe step: design `refund.succeeded` handling and local refunded state semantics.

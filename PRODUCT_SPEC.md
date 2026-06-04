@@ -684,3 +684,16 @@ The YooKassa cabinet now has the webhook URL registered for `payment.succeeded` 
 No live webhook event has been processed yet. Orders and payments remain in their current statuses until YooKassa sends a real event and the webhook updates the existing `Payment` and related `Order`.
 
 The next verification should be one controlled live webhook test, followed by read-only confirmation that payment status synchronization worked.
+
+### Production check: YooKassa payment webhook
+
+Controlled live payment on order `KRM-20260604-28B88F` confirmed the full first payment path:
+
+- customer creates an order;
+- payment prepare creates one YooKassa payment for `460 ₽`;
+- YooKassa payment page opens;
+- after successful payment, `payment.succeeded` webhook updates the existing `Payment` and related `Order` to `PAID`.
+
+The payment webhook does not change fulfillment status, item snapshots, totals, customer data or images.
+
+The customer later performed a refund manually in the YooKassa cabinet. The application does not yet process refund events, so local status remains as synchronized by the successful payment webhook. Refund handling is a future feature and must define local status semantics before implementation.

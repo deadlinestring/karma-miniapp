@@ -512,3 +512,12 @@ Prisma migrations и другие CLI-операции используют Supa
 - The registered event set is limited to `payment.succeeded` and `payment.canceled`.
 - Registration readiness does not prove status sync yet; a controlled live webhook event is still required.
 - Outside controlled payment tests, `YOOKASSA_PAYMENTS_ENABLED` should remain false.
+
+## Live YooKassa payment webhook verification
+
+- Controlled live payment on order `KRM-20260604-28B88F` confirmed that YooKassa redirect payment plus `payment.succeeded` webhook updates local status.
+- Successful payment sets both the existing `Payment.status` and `Order.paymentStatus` to `PAID`.
+- Fulfillment status is not changed by payment webhook and stays a separate admin/order workflow.
+- The webhook sync must not create duplicate local payments.
+- Manual refund in the YooKassa cabinet is not reflected locally yet because refund handling is outside the current webhook foundation.
+- Future refund support needs explicit semantics for local payment/order states before adding `refund.succeeded`.
