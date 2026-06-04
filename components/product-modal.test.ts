@@ -20,7 +20,10 @@ describe("product modal custom design flow", () => {
   });
 
   it("explains custom review and links to FAQ", () => {
-    expect(source).toContain('href="/faq"');
-    expect(source).toContain("проверит макет");
+    expect(source).toContain('useContentBlocks(["custom-design-help"])');
+    expect(source).toContain("customDesignHelpBlock.ctaHref");
+    expect(source).toContain("customDesignHelpBlock.ctaLabel");
+    expect(source).toContain("renderContentBlockLines(customDesignHelpBlock.body)");
+    expect(source).not.toContain("dangerouslySetInnerHTML");
   });
 });

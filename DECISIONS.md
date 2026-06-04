@@ -530,3 +530,14 @@ Prisma migrations и другие CLI-операции используют Supa
 - Do not add a broad redesign or new content schema until the exact editable blocks are grouped and approved.
 - A future additive `ContentBlock`-style model is the likely fit for reusable hideable banners/help blocks with `slug`, text fields, CTA fields, `isActive` and `sortOrder`.
 - Immediate safe UX fix: paid orders must be visually obvious to customers and admins without changing payment/fulfillment logic.
+
+## ContentBlock foundation decision
+
+- A separate `ContentBlock` model is needed because StoreSettings is store-level and FaqSection is FAQ-specific.
+- ContentBlock is additive and allowlist-driven for the first layer: admins edit predefined slugs instead of creating arbitrary CMS entries.
+- Public UI reads only active blocks; inactive saved blocks hide the corresponding help/promo/guidance block.
+- Admin GET returns default draft blocks when the table is empty, so no seed/bootstrap is required.
+- Admin PATCH upserts by slug and validates title/body/CTA/sortOrder/isActive server-side.
+- Content is rendered as plain text/markdown-lite lines; `dangerouslySetInnerHTML` is not used.
+- Initial connected blocks are limited to checkout guidance, customer order payment guidance, support CTA and custom design help.
+- Payment runtime, webhook handling, pricing, checkout submit logic and order status mutations are not changed by this foundation.

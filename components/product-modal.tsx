@@ -10,6 +10,7 @@ import { formatKopecks } from "@/lib/pricing";
 import { useCartStore } from "@/store/cart-store";
 import { ActionButton } from "@/components/action-button";
 import { ProductVisual } from "@/components/product-visual";
+import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
 
 const itemTypeOrder: StorefrontItemType[] = ["STANDARD", "PREMIUM", "WALL_PANEL"];
 const customStyleOptions = [
@@ -25,6 +26,7 @@ export function ProductModal({
   product: StorefrontProduct | null;
   onClose: () => void;
 }) {
+  const { getBlock } = useContentBlocks(["custom-design-help"]);
   const [selectedType, setSelectedType] = useState<StorefrontItemType>("STANDARD");
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [activeImage, setActiveImage] = useState<string | null>(null);
@@ -92,6 +94,7 @@ export function ProductModal({
     activeVariants.find((variant) => variant.priceListItemId === selectedVariantId) ??
     activeVariants[0] ??
     product.variants[0];
+  const customDesignHelpBlock = getBlock("custom-design-help");
 
   const canAddToCart =
     Boolean(selectedVariant) &&
@@ -275,13 +278,21 @@ export function ProductModal({
                 <div className="flex items-start gap-3">
                   <ImagePlus className="mt-1 shrink-0 text-neon-cyan" size={24} />
                   <div>
-                    <h3 className="text-sm font-black text-white">Свой дизайн по картинке</h3>
-                    <p className="mt-1 text-xs leading-5 text-white/60">
-                      Выберите стиль отрисовки и загрузите изображение. После заказа администратор проверит макет и свяжется с вами.
-                    </p>
-                    <Link href="/faq" className="mt-2 inline-flex text-xs font-bold text-neon-cyan">
-                      Как проходит заказ?
-                    </Link>
+                    {customDesignHelpBlock ? (
+                      <>
+                        {customDesignHelpBlock.title ? <h3 className="text-sm font-black text-white">{customDesignHelpBlock.title}</h3> : null}
+                        <div className="mt-1 grid gap-1 text-xs leading-5 text-white/60">
+                          {renderContentBlockLines(customDesignHelpBlock.body).map((line) => (
+                            <p key={line}>{line}</p>
+                          ))}
+                        </div>
+                        {customDesignHelpBlock.ctaHref && customDesignHelpBlock.ctaLabel ? (
+                          <Link href={customDesignHelpBlock.ctaHref} className="mt-2 inline-flex text-xs font-bold text-neon-cyan">
+                            {customDesignHelpBlock.ctaLabel}
+                          </Link>
+                        ) : null}
+                      </>
+                    ) : null}
                   </div>
                 </div>
 

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { ActionButton } from "@/components/action-button";
 import { useScrollIntoViewOnChange } from "@/components/use-scroll-into-view-on-change";
+import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
 import { formatKopecks } from "@/lib/pricing";
 import { useCartStore, type CartItem } from "@/store/cart-store";
 
@@ -31,6 +32,8 @@ const initialFormState: CheckoutFormState = {
   customerFallbackContact: "",
   comment: ""
 };
+
+const checkoutContentSlugs = ["checkout-delivery-help", "checkout-custom-review-help", "payment-disabled-guidance"];
 
 const fields: Array<{
   name: keyof CheckoutFormState;
@@ -106,6 +109,7 @@ type OrderResponse =
 
 export function CheckoutPage() {
   const items = useCartStore((state) => state.items);
+  const { getBlock } = useContentBlocks(checkoutContentSlugs);
   const [form, setForm] = useState(initialFormState);
   const [accepted, setAccepted] = useState(false);
   const [initData, setInitData] = useState<string | null>(null);
@@ -119,6 +123,9 @@ export function CheckoutPage() {
   const createdOrderRef = useScrollIntoViewOnChange(createdOrder?.publicNumber);
   const quoteErrorRef = useScrollIntoViewOnChange(quoteError);
   const submitErrorRef = useScrollIntoViewOnChange(submitError);
+  const deliveryHelpBlock = getBlock("checkout-delivery-help");
+  const customReviewHelpBlock = getBlock("checkout-custom-review-help");
+  const paymentDisabledBlock = getBlock("payment-disabled-guidance");
 
   const quotePayload = useMemo(() => buildQuotePayload(items), [items]);
   const requiredFieldsFilled = fields
@@ -324,6 +331,22 @@ export function CheckoutPage() {
             </label>
           </section>
 
+          {deliveryHelpBlock ? (
+            <section className="mt-5 rounded-[24px] border border-neon-cyan/20 bg-neon-cyan/8 p-4">
+              {deliveryHelpBlock.title ? <h2 className="text-base font-black text-white">{deliveryHelpBlock.title}</h2> : null}
+              <div className="mt-2 grid gap-2 text-sm leading-6 text-white/64">
+                {renderContentBlockLines(deliveryHelpBlock.body).map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+              </div>
+              {deliveryHelpBlock.ctaHref && deliveryHelpBlock.ctaLabel ? (
+                <Link href={deliveryHelpBlock.ctaHref} className="mt-3 inline-flex text-sm font-bold text-neon-cyan">
+                  {deliveryHelpBlock.ctaLabel}
+                </Link>
+              ) : null}
+            </section>
+          ) : null}
+
           <section className="mt-5 rounded-[24px] border border-white/10 bg-white/8 p-4">
             <h2 className="text-lg font-black text-white">Расчёт заказа</h2>
 
@@ -368,7 +391,8 @@ export function CheckoutPage() {
                   ) : null}
                   {item.customDrawingSurchargeKopecks > 0 ? (
                     <p className="mt-1 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/10 px-3 py-2 text-xs font-semibold text-neon-cyan">
-                      Свой дизайн: изображение будет проверено администратором перед подтверждением заказа.
+                      {customReviewHelpBlock?.body ??
+                        "Свой дизайн: изображение будет проверено администратором перед подтверждением заказа."}
                       {item.customImageFileName ? ` Файл: ${item.customImageFileName}.` : ""}
                     </p>
                   ) : null}
@@ -415,9 +439,14 @@ export function CheckoutPage() {
             <ActionButton className="mt-4 w-full" disabled={!canSubmit}>
               {isSubmitting ? "Создаём заказ..." : "Создать заказ"}
             </ActionButton>
-            <p className="mt-2 text-center text-xs text-white/42">
-              Онлайн-оплата не подключена. Мы свяжемся с вами для подтверждения заказа.
-            </p>
+            {paymentDisabledBlock ? (
+              <div className="mt-2 text-center text-xs text-white/42">
+                {paymentDisabledBlock.title ? <p className="font-bold text-white/54">{paymentDisabledBlock.title}</p> : null}
+                {renderContentBlockLines(paymentDisabledBlock.body).map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+              </div>
+            ) : null}
           </section>
         </form>
       )}

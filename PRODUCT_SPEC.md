@@ -725,3 +725,46 @@ Content that remains code-owned:
 - auth, webhook and payment provider diagnostics.
 
 This audit pass does not add a migration or redesign the interface. It only improves paid-state visibility: paid customer orders and admin order detail now show clear payment received messaging, while payment and fulfillment logic remain unchanged.
+
+## Managed Content Blocks
+
+KARMA needs a small editable content layer for interface help, promo and guidance blocks that do not belong to StoreSettings or FAQ.
+
+Prepared model: `ContentBlock`.
+
+Fields:
+
+- `slug` unique stable identifier;
+- optional `page`;
+- optional `title`;
+- optional `body`;
+- optional `ctaLabel`;
+- optional `ctaHref`;
+- `isActive`;
+- `sortOrder`.
+
+Initial default blocks:
+
+- `checkout-delivery-help`;
+- `checkout-custom-review-help`;
+- `payment-disabled-guidance`;
+- `payment-pending-guidance`;
+- `custom-design-help`;
+- `support-cta`;
+- `orders-empty-state`.
+
+Public behavior:
+
+- active blocks can replace fallback help text;
+- inactive saved blocks are hidden;
+- missing/unavailable DB rows fall back to code defaults until admin saves real rows;
+- content is rendered as text, not executable HTML.
+
+Admin behavior:
+
+- section name: `Блоки интерфейса`;
+- when DB is empty, default blocks are shown as editable drafts;
+- saving uses protected Telegram-admin upsert by slug;
+- no rich editor and no arbitrary script/HTML execution.
+
+First integration scope is deliberately small: checkout delivery/custom review guidance, customer payment-disabled guidance, support CTA and product custom-design explanation. Broader redesign and all future promo/banner placements remain separate work.

@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { type MouseEvent, useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
+import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
 import { formatKopecks } from "@/lib/pricing";
 
 const SUPPORT_BOT_USERNAME = "karmashopsupportbot";
+const orderContentSlugs = ["payment-disabled-guidance", "support-cta"];
 
 type CustomerOrderDetail = {
   publicNumber: string;
@@ -76,6 +78,7 @@ type PaymentPrepareResponse =
   | { ok: false; message: string };
 
 export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string }) {
+  const { getBlock } = useContentBlocks(orderContentSlugs);
   const [initData, setInitData] = useState<string | null>(null);
   const [telegramChecked, setTelegramChecked] = useState(false);
   const [order, setOrder] = useState<CustomerOrderDetail | null>(null);
@@ -133,6 +136,12 @@ export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string
   const supportUrl = order ? buildSupportTelegramUrl(order.publicNumber) : null;
   const paymentAction = order?.paymentAction ?? null;
   const isOrderPaid = order?.paymentStatus === "PAID";
+  const paymentDisabledBlock = getBlock("payment-disabled-guidance");
+  const supportBlock = getBlock("support-cta");
+  const paymentMessageLines =
+    paymentAction?.reason === "PROVIDER_DISABLED" && paymentDisabledBlock?.body
+      ? renderContentBlockLines(paymentDisabledBlock.body)
+      : [];
 
   function handleSupportClick(event: MouseEvent<HTMLAnchorElement>) {
     if (!supportUrl) {
@@ -224,7 +233,16 @@ export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string
                   </p>
                 </div>
               ) : (
-                <p className="mt-2 text-sm leading-6 text-white/66">{paymentAction.message}</p>
+                <div className="mt-2 text-sm leading-6 text-white/66">
+                  {paymentAction.reason === "PROVIDER_DISABLED" && paymentDisabledBlock?.title ? (
+                    <p className="font-bold text-white/78">{paymentDisabledBlock.title}</p>
+                  ) : null}
+                  {paymentMessageLines.length > 0 ? (
+                    paymentMessageLines.map((line) => <p key={line}>{line}</p>)
+                  ) : (
+                    <p>{paymentAction.message}</p>
+                  )}
+                </div>
               )}
               {paymentError ? (
                 <p className="mt-3 rounded-2xl border border-red-400/30 bg-red-500/10 p-3 text-sm font-semibold text-red-100">
@@ -322,21 +340,28 @@ export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string
             </div>
           </section>
 
-          <section className="rounded-[24px] border border-neon-cyan/20 bg-neon-cyan/8 p-4">
-            <h2 className="text-lg font-black text-white">Нужно изменить заказ?</h2>
-            <p className="mt-2 text-sm leading-6 text-white/64">
-              Напишите нам по заказу {order.publicNumber}. Менеджер ответит в Telegram.
-            </p>
-            <a
-              href={supportUrl ?? "#"}
-              target="_blank"
-              rel="noreferrer"
-              onClick={handleSupportClick}
-              className="mt-3 inline-flex min-h-11 items-center rounded-2xl border border-neon-cyan/35 bg-neon-cyan/15 px-4 text-sm font-bold text-neon-cyan transition hover:bg-neon-cyan/22"
-            >
-              Связаться
-            </a>
-          </section>
+          {supportBlock ? (
+            <section className="rounded-[24px] border border-neon-cyan/20 bg-neon-cyan/8 p-4">
+              <h2 className="text-lg font-black text-white">{supportBlock.title ?? "Нужно изменить заказ?"}</h2>
+              <div className="mt-2 grid gap-2 text-sm leading-6 text-white/64">
+                {(renderContentBlockLines(supportBlock.body).length > 0
+                  ? renderContentBlockLines(supportBlock.body)
+                  : [`Напишите нам по заказу ${order.publicNumber}. Менеджер ответит в Telegram.`]
+                ).map((line) => (
+                  <p key={line}>{line.includes("{order}") ? line.replace("{order}", order.publicNumber) : line}</p>
+                ))}
+              </div>
+              <a
+                href={supportUrl ?? "#"}
+                target="_blank"
+                rel="noreferrer"
+                onClick={handleSupportClick}
+                className="mt-3 inline-flex min-h-11 items-center rounded-2xl border border-neon-cyan/35 bg-neon-cyan/15 px-4 text-sm font-bold text-neon-cyan transition hover:bg-neon-cyan/22"
+              >
+                {supportBlock.ctaLabel ?? "Связаться"}
+              </a>
+            </section>
+          ) : null}
         </div>
       ) : null}
     </AppShell>

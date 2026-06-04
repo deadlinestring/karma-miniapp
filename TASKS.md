@@ -528,3 +528,13 @@
 - No migration is added in this pass. A future editable content layer such as `ContentBlock` is recommended for hideable banners/help blocks that do not fit StoreSettings or FAQ.
 - Small UI fix prepared: paid orders now show clear paid-state messaging in customer order detail and admin order detail; pending payment label is neutral `Ожидает оплаты`.
 - Payment, checkout, custom design and admin order flows remain otherwise untouched.
+
+## ContentBlock foundation
+
+- ContentBlock foundation is prepared locally for admin-managed hideable interface text blocks.
+- Additive migration `00000000000005_add_content_blocks` is prepared but not applied.
+- Default draft blocks: `checkout-delivery-help`, `checkout-custom-review-help`, `payment-disabled-guidance`, `payment-pending-guidance`, `custom-design-help`, `support-cta`, `orders-empty-state`.
+- Admin section `Блоки интерфейса` can load default drafts and save them by protected upsert after migration.
+- Public UI integration is intentionally small: checkout delivery/custom review guidance, customer payment-disabled guidance, support CTA and custom design explanation.
+- System copy remains in code: labels, validation/safety errors, enum labels, protected endpoint messages and diagnostics.
+- Full redesign and broader content modeling remain separate future stages.

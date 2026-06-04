@@ -85,6 +85,23 @@ model FaqSection {
   @@index([isActive, sortOrder])
 }
 
+model ContentBlock {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  page      String?
+  title     String?
+  body      String?
+  ctaLabel  String?
+  ctaHref   String?
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive, sortOrder])
+  @@index([page, isActive, sortOrder])
+}
+
 model Category {
   id            String        @id @default(cuid())
   name          String

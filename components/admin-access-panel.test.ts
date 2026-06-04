@@ -16,4 +16,10 @@ describe("admin access panel navigation", () => {
     expect(source).toContain('title: "FAQ / Как заказать"');
     expect(source).toContain("<AdminFaqPanel initData={initData}");
   });
+
+  it("contains the content blocks section and renders the content blocks panel", () => {
+    expect(source).toContain('id: "content"');
+    expect(source).toContain('title: "Блоки интерфейса"');
+    expect(source).toContain("<AdminContentBlocksPanel initData={initData}");
+  });
 });

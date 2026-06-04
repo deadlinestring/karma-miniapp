@@ -43,8 +43,18 @@ describe("checkout page order flow integration", () => {
     expect(source).toContain("useScrollIntoViewOnChange(createdOrder?.publicNumber)");
     expect(source).toContain("Открыть заказ");
     expect(source).toContain("href={`/orders/${createdOrder.publicNumber}`}");
-    expect(source).toContain("Онлайн-оплата не подключена");
+    expect(source).toContain('"payment-disabled-guidance"');
     expect(source).not.toContain("confirmationUrl");
+  });
+
+  it("uses content blocks for checkout guidance without changing order payload", () => {
+    expect(source).toContain("useContentBlocks(checkoutContentSlugs)");
+    expect(source).toContain('"checkout-delivery-help"');
+    expect(source).toContain('"checkout-custom-review-help"');
+    expect(source).toContain('"payment-disabled-guidance"');
+    expect(source).toContain("customReviewHelpBlock?.body");
+    expect(source).toContain("renderContentBlockLines(paymentDisabledBlock.body)");
+    expect(source).toContain('fetch("/api/orders"');
   });
 
   it("scrolls important quote and submit errors into view", () => {

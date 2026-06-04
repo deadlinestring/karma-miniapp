@@ -62,6 +62,16 @@ describe("customer order detail page", () => {
     expect(source).toContain("isOrderPaid ? null : paymentAction.providerEnabled");
   });
 
+  it("uses content blocks for payment disabled guidance and support CTA", () => {
+    expect(source).toContain("useContentBlocks(orderContentSlugs)");
+    expect(source).toContain('"payment-disabled-guidance"');
+    expect(source).toContain('"support-cta"');
+    expect(source).toContain('paymentAction.reason === "PROVIDER_DISABLED"');
+    expect(source).toContain("renderContentBlockLines(paymentDisabledBlock.body)");
+    expect(source).toContain("supportBlock.ctaLabel");
+    expect(source).not.toContain("dangerouslySetInnerHTML");
+  });
+
   it("opens confirmationUrl from the prepare response without hardcoding provider URLs", () => {
     expect(source).toContain("openPaymentUrl(body.payment.confirmationUrl)");
     expect(source).toContain("window.Telegram?.WebApp?.openLink");

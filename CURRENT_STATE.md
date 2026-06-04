@@ -285,3 +285,13 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - No migration is needed for the small UI fix in this checkpoint.
 - Customer order detail and admin order detail now make paid orders visually clear.
 - Payment runtime, webhook runtime, checkout, custom design and admin status updates remain stable and untouched.
+
+## ContentBlock foundation checkpoint
+
+- ContentBlock foundation is prepared locally.
+- Additive migration `00000000000005_add_content_blocks` is prepared but not applied.
+- Production data remains unchanged; current read-only baseline before implementation was `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`.
+- New protected admin section: `Блоки интерфейса`.
+- Default draft blocks are available without seed/bootstrap: checkout delivery help, checkout custom review help, payment disabled/pending guidance, custom design help, support CTA and orders empty state.
+- Public integration is intentionally minimal and uses active blocks only, with safe fallback/default text when rows are missing or DB is unavailable.
+- Content renders as plain text; runtime payment, webhook, pricing, checkout submit and status mutation logic remain untouched.
