@@ -1,9 +1,10 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   buildReturnUrl,
   createYooKassaPayment,
   formatKopecksForYooKassa,
-  mapYooKassaStatus
+  mapYooKassaStatus,
+  YooKassaProviderError
 } from "./yookassa-client";
 
 const config = {
@@ -14,6 +15,10 @@ const config = {
 };
 
 describe("YooKassa client", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("formats kopecks as rubles with two decimals", () => {
     expect(formatKopecksForYooKassa(693000)).toBe("6930.00");
     expect(formatKopecksForYooKassa(99000)).toBe("990.00");
@@ -24,6 +29,36 @@ describe("YooKassa client", () => {
     expect(buildReturnUrl(config.returnUrl, "KRM-20260602-8E3EBA")).toBe(
       "https://karma.example/orders/payment-return?order=KRM-20260602-8E3EBA"
     );
+  });
+
+  it("logs safe diagnostics for invalid return URL before provider calls", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const fetchMock = vi.fn();
+
+    await expect(
+      createYooKassaPayment(
+        {
+          publicNumber: "KRM-20260602-8E3EBA",
+          amountKopecks: 693000,
+          idempotencyKey: "key"
+        },
+        { ...config, returnUrl: "not-a-url" },
+        fetchMock
+      )
+    ).rejects.toThrow(YooKassaProviderError);
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(consoleError).toHaveBeenCalledWith(
+      "yookassa_payment_issue",
+      expect.objectContaining({
+        operation: "create_payment_invalid_request",
+        publicNumber: "KRM-20260602-8E3EBA",
+        httpStatus: null,
+        providerDescription: "invalid return_url",
+        providerParameter: "confirmation.return_url"
+      })
+    );
+    expect(JSON.stringify(consoleError.mock.calls)).not.toContain(config.secretKey);
   });
 
   it("creates a redirect payment with auth and idempotence headers", async () => {
@@ -81,9 +116,18 @@ describe("YooKassa client", () => {
     expect(JSON.stringify(result)).not.toContain(config.secretKey);
   });
 
-  it("throws safe errors for provider failures", async () => {
+  it.each([401, 403, 400])("throws and logs safe diagnostics for provider HTTP %s", async (status) => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
     const fetchMock = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ type: "error", description: "provider details" }), { status: 500 })
+      new Response(
+        JSON.stringify({
+          type: "error",
+          code: status === 400 ? "invalid_request" : "unauthorized",
+          description: "safe provider message",
+          parameter: "amount.value"
+        }),
+        { status }
+      )
     );
 
     await expect(
@@ -96,7 +140,23 @@ describe("YooKassa client", () => {
         config,
         fetchMock
       )
-    ).rejects.toThrow("yookassa_payment_create_failed");
+    ).rejects.toThrow(YooKassaProviderError);
+
+    expect(consoleError).toHaveBeenCalledWith(
+      "yookassa_payment_issue",
+      expect.objectContaining({
+        operation: "create_payment",
+        publicNumber: "KRM-20260602-8E3EBA",
+        httpStatus: status,
+        providerCode: status === 400 ? "invalid_request" : "unauthorized",
+        providerDescription: "safe provider message",
+        providerParameter: "amount.value"
+      })
+    );
+    const logged = JSON.stringify(consoleError.mock.calls);
+    expect(logged).not.toContain(config.secretKey);
+    expect(logged).not.toContain("Authorization");
+    expect(logged).not.toContain("Basic ");
   });
 
   it("maps provider statuses without marking pending payments as paid", () => {

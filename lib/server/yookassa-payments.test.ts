@@ -258,5 +258,6 @@ describe("YooKassa payment preparation", () => {
       prepareCustomerYooKassaPaymentWithServices("KRM-20260602-8E3EBA", { id: "12345" }, providerFails as any)
     ).rejects.toThrow("yookassa_payment_create_failed");
     expect(providerFails.db.payment.create).not.toHaveBeenCalled();
+    expect("update" in providerFails.db.order).toBe(false);
   });
 });

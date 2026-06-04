@@ -26,13 +26,33 @@ type YooKassaPaymentResponse = {
   confirmation?: {
     confirmation_url?: unknown;
   };
+  type?: unknown;
+  code?: unknown;
+  description?: unknown;
+  parameter?: unknown;
 };
+
+export class YooKassaProviderError extends Error {
+  constructor(
+    message: string,
+    readonly details: {
+      httpStatus: number | null;
+      providerCode: string | null;
+      providerDescription: string | null;
+      providerParameter: string | null;
+    }
+  ) {
+    super(message);
+    this.name = "YooKassaProviderError";
+  }
+}
 
 export async function createYooKassaPayment(
   input: CreateYooKassaPaymentInput,
   config: YooKassaConfig,
   fetchImpl: FetchLike = fetch
 ): Promise<CreateYooKassaPaymentResult> {
+  const returnUrl = buildYooKassaReturnUrlSafely(config.returnUrl, input.publicNumber);
   const response = await fetchImpl(YOOKASSA_PAYMENTS_URL, {
     method: "POST",
     headers: {
@@ -48,7 +68,7 @@ export async function createYooKassaPayment(
       capture: true,
       confirmation: {
         type: "redirect",
-        return_url: buildReturnUrl(config.returnUrl, input.publicNumber)
+        return_url: returnUrl
       },
       description: `Заказ ${input.publicNumber}`,
       metadata: {
@@ -61,7 +81,19 @@ export async function createYooKassaPayment(
   const body = (await readJsonSafely(response)) as YooKassaPaymentResponse | null;
 
   if (!response.ok) {
-    throw new Error("yookassa_payment_create_failed");
+    const safeError = readSafeProviderError(body);
+    logYooKassaPaymentIssue({
+      operation: "create_payment",
+      publicNumber: input.publicNumber,
+      httpStatus: response.status,
+      providerCode: safeError.providerCode,
+      providerDescription: safeError.providerDescription,
+      providerParameter: safeError.providerParameter
+    });
+    throw new YooKassaProviderError("yookassa_payment_create_failed", {
+      httpStatus: response.status,
+      ...safeError
+    });
   }
 
   const providerPaymentId = readNonEmptyString(body?.id);
@@ -69,7 +101,20 @@ export async function createYooKassaPayment(
   const confirmationUrl = readNonEmptyString(body?.confirmation?.confirmation_url);
 
   if (!providerPaymentId || !providerStatus || !confirmationUrl) {
-    throw new Error("yookassa_payment_response_invalid");
+    logYooKassaPaymentIssue({
+      operation: "create_payment_invalid_response",
+      publicNumber: input.publicNumber,
+      httpStatus: response.status,
+      providerCode: null,
+      providerDescription: "missing id/status/confirmation_url",
+      providerParameter: null
+    });
+    throw new YooKassaProviderError("yookassa_payment_response_invalid", {
+      httpStatus: response.status,
+      providerCode: null,
+      providerDescription: "missing id/status/confirmation_url",
+      providerParameter: null
+    });
   }
 
   return {
@@ -116,4 +161,44 @@ async function readJsonSafely(response: Response) {
 
 function readNonEmptyString(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function buildYooKassaReturnUrlSafely(returnUrl: string, publicNumber: string) {
+  try {
+    return buildReturnUrl(returnUrl, publicNumber);
+  } catch {
+    logYooKassaPaymentIssue({
+      operation: "create_payment_invalid_request",
+      publicNumber,
+      httpStatus: null,
+      providerCode: null,
+      providerDescription: "invalid return_url",
+      providerParameter: "confirmation.return_url"
+    });
+    throw new YooKassaProviderError("yookassa_payment_request_invalid", {
+      httpStatus: null,
+      providerCode: null,
+      providerDescription: "invalid return_url",
+      providerParameter: "confirmation.return_url"
+    });
+  }
+}
+
+function readSafeProviderError(body: YooKassaPaymentResponse | null) {
+  return {
+    providerCode: readNonEmptyString(body?.code),
+    providerDescription: readNonEmptyString(body?.description),
+    providerParameter: readNonEmptyString(body?.parameter)
+  };
+}
+
+function logYooKassaPaymentIssue(details: {
+  operation: string;
+  publicNumber: string;
+  httpStatus: number | null;
+  providerCode: string | null;
+  providerDescription: string | null;
+  providerParameter: string | null;
+}) {
+  console.error("yookassa_payment_issue", details);
 }
