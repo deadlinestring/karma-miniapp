@@ -630,3 +630,20 @@ Regular pending orders can be paid immediately. Custom orders can be paid only a
 The first version does not include webhook handling. A redirect/confirmation URL does not mark the order as paid by itself; final `PAID` status must be handled by a future webhook or provider status check. Existing pending YooKassa payments with confirmation URL are reused to avoid duplicates.
 
 Real YooKassa payment creation is behind the explicit server flag `YOOKASSA_PAYMENTS_ENABLED=true`. If shop id, secret key and return URL exist but the flag is absent or false, the customer still sees the safe disabled payment guidance and no provider request is made.
+
+### YooKassa receipt payload
+
+The current YooKassa shop requires a fiscal receipt in payment creation requests.
+
+The receipt is generated server-side from the saved order snapshot:
+
+- physical order items become `commodity` receipt items;
+- custom drawing surcharge becomes a separate `service` item when present;
+- delivery becomes a separate `service` item when present;
+- item descriptions are plain text and trimmed to provider-safe length;
+- VAT code is read from `YOOKASSA_VAT_CODE` with documented default `1` only when the env value is absent;
+- receipt customer uses order phone or email, and payment preparation is blocked before the provider call if neither is available.
+
+Discounts are not sent as a negative receipt line. They are allocated into commodity item amounts so the sum of receipt items equals `Order.totalKopecks`.
+
+The next live payment retry must keep `YOOKASSA_PAYMENTS_ENABLED=false` until the explicit controlled test step, then enable it only for the test window.

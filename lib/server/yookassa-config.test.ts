@@ -23,7 +23,8 @@ describe("YooKassa config foundation", () => {
       shopId: "shop",
       secretKey: "secret",
       returnUrl: "https://example.test/return",
-      webhookSecret: "webhook"
+      webhookSecret: "webhook",
+      vatCode: 1
     });
     expect(isYooKassaConfigAvailable({
       YOOKASSA_PAYMENTS_ENABLED: "true",
@@ -44,5 +45,19 @@ describe("YooKassa config foundation", () => {
     expect(isYooKassaPaymentsEnabled({ ...envWithKeys, YOOKASSA_PAYMENTS_ENABLED: "false" })).toBe(false);
     expect(isYooKassaPaymentsEnabled({ ...envWithKeys, YOOKASSA_PAYMENTS_ENABLED: "TRUE" })).toBe(false);
     expect(isYooKassaPaymentsEnabled({ ...envWithKeys, YOOKASSA_PAYMENTS_ENABLED: "true" })).toBe(true);
+  });
+
+  it("reads optional YooKassa VAT code with safe default", () => {
+    const baseEnv = {
+      YOOKASSA_SHOP_ID: "shop",
+      YOOKASSA_SECRET_KEY: "secret",
+      YOOKASSA_RETURN_URL: "https://example.test/return"
+    };
+
+    expect(getYooKassaConfig(baseEnv).vatCode).toBe(1);
+    expect(getYooKassaConfig({ ...baseEnv, YOOKASSA_VAT_CODE: "2" }).vatCode).toBe(2);
+    expect(() => getYooKassaConfig({ ...baseEnv, YOOKASSA_VAT_CODE: "9" })).toThrow(
+      "yookassa_vat_code_invalid"
+    );
   });
 });

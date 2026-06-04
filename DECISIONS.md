@@ -474,3 +474,13 @@ Prisma migrations и другие CLI-операции используют Supa
 - `Order.paymentStatus` is not marked `PAID` by the redirect preparation step. Final payment status requires a future webhook or explicit provider status fetch.
 - YooKassa secrets remain server-only; Authorization headers and secret keys must never be logged or returned to the client.
 - Real YooKassa creation is disabled by default and requires `YOOKASSA_PAYMENTS_ENABLED=true`; adding shop id or secret key alone must not activate payment buttons or provider calls.
+
+## YooKassa receipt payload
+
+- The active YooKassa shop requires fiscal receipt data; payment creation without `receipt` is rejected by the provider.
+- Receipt data is built server-side from stored order snapshots immediately before the YooKassa request.
+- Receipt customer data uses a safe phone/email from the order contact; if neither is available, payment preparation must stop before the provider call.
+- Physical order items are receipt `commodity` lines. Custom drawing surcharge and delivery are receipt `service` lines.
+- Discounts are folded into commodity item amounts rather than represented as negative receipt rows, and receipt total must equal `Order.totalKopecks`.
+- VAT code is configured server-side through `YOOKASSA_VAT_CODE`; env absence currently falls back to `1`, which must be confirmed against the shop fiscal settings before live retry.
+- Provider diagnostics must not log receipt customer phone/email, authorization headers, secrets or personal data.

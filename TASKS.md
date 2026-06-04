@@ -470,3 +470,12 @@
 - Real payment creation is additionally gated by `YOOKASSA_PAYMENTS_ENABLED=true`; shop id/secret/return URL alone do not enable the button or provider call.
 - Webhook handling remains future work; successful payment finalization must not rely on redirect alone.
 - Development checks use mocked YooKassa calls only. No live payment test, production `Payment` creation or webhook connection is performed in this stage.
+
+## YooKassa receipt requirement
+
+- Live diagnostics showed that the current YooKassa shop requires `receipt`; provider returned `invalid_request` for missing/illegal receipt.
+- Receipt builder is prepared locally and adds receipt data to the YooKassa payment payload before any provider call.
+- Receipt items are built from immutable `OrderItem` snapshots: physical goods as `commodity`, custom drawing surcharge as `service`, and delivery as `service`.
+- Discounts are allocated into commodity item amounts; no negative receipt lines are used, and receipt item totals must equal `Order.totalKopecks`.
+- `.env.example` documents `YOOKASSA_VAT_CODE="1"`; default `1` is used only when env is absent and must be confirmed for the shop before the next live retry.
+- Next step: keep `YOOKASSA_PAYMENTS_ENABLED=false`, deploy the receipt fix after review, then run one controlled payment retry with the flag explicitly enabled.

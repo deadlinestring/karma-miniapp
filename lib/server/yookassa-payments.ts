@@ -6,6 +6,7 @@ import { evaluatePaymentEligibility, type PaymentEligibilityResult } from "@/lib
 import { prisma } from "@/lib/server/prisma";
 import { createYooKassaPayment } from "@/lib/server/yookassa-client";
 import { getYooKassaConfig, isYooKassaPaymentsEnabled } from "@/lib/server/yookassa-config";
+import { buildYooKassaReceipt } from "@/lib/server/yookassa-receipt";
 
 type PrismaLike = typeof prisma;
 
@@ -75,8 +76,20 @@ export async function prepareCustomerYooKassaPaymentWithServices(
       paymentStatus: true,
       fulfillmentStatus: true,
       totalKopecks: true,
+      customerPhone: true,
+      customerContact: true,
+      deliveryKopecks: true,
       items: {
         select: {
+          productNameSnapshot: true,
+          itemTypeSnapshot: true,
+          itemTypeLabelSnapshot: true,
+          sizeCmSnapshot: true,
+          unitPriceKopecks: true,
+          baseSubtotalKopecks: true,
+          discountKopecks: true,
+          quantity: true,
+          customDrawingSurchargeKopecks: true,
           customImageReviewStatus: true
         }
       },
@@ -150,11 +163,13 @@ export async function prepareCustomerYooKassaPaymentWithServices(
   }
 
   const idempotencyKey = buildPaymentIdempotencyKey(order.publicNumber);
+  const receipt = buildYooKassaReceipt(order, config.vatCode);
   const providerPayment = await services.createProviderPayment(
     {
       publicNumber: order.publicNumber,
       amountKopecks: order.totalKopecks,
-      idempotencyKey
+      idempotencyKey,
+      receipt
     },
     config
   );

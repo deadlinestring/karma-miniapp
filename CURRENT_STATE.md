@@ -224,3 +224,12 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Custom order `KRM-20260602-8E3EBA` is eligible because its custom image is `APPROVED`; `PENDING_REVIEW` and `REJECTED` custom orders remain blocked.
 - `Order.paymentStatus` is not marked `PAID` by redirect creation; webhook/provider status confirmation remains the next required payment layer.
 - YooKassa calls are covered by mocks in development checks. No live payment test, production `Payment` creation, webhook connection, migration, seed or bootstrap was performed in this stage.
+
+## YooKassa receipt fix checkpoint
+
+- Live payment prepare diagnostics showed YooKassa provider error `invalid_request` for missing/illegal `receipt`.
+- Receipt builder is prepared locally and adds receipt to the payment payload without changing schema.
+- Receipt is generated from immutable order snapshots: physical items, custom drawing surcharge, delivery and allocated discount.
+- Receipt customer requires order phone or email; missing contact blocks payment before YooKassa is called.
+- `.env.example` now includes `YOOKASSA_VAT_CODE="1"`; the shop VAT setting must be confirmed before the next live retry.
+- `YOOKASSA_PAYMENTS_ENABLED` should remain false until the next controlled payment test. No live YooKassa retry, `Payment` creation, production data change, migration, seed or bootstrap is part of this checkpoint.

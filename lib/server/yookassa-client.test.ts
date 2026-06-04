@@ -11,7 +11,23 @@ const config = {
   shopId: "shop-123",
   secretKey: "super-secret",
   returnUrl: "https://karma.example/orders/payment-return",
-  webhookSecret: null
+  webhookSecret: null,
+  vatCode: 1
+};
+
+const receipt = {
+  customer: { phone: "+79000000000" },
+  items: [
+    {
+      description: "Заказ",
+      quantity: "1.00",
+      amount: { value: "6930.00", currency: "RUB" as const },
+      vat_code: 1,
+      payment_subject: "commodity" as const,
+      payment_mode: "full_prepayment" as const,
+      measure: "piece" as const
+    }
+  ]
 };
 
 describe("YooKassa client", () => {
@@ -40,7 +56,8 @@ describe("YooKassa client", () => {
         {
           publicNumber: "KRM-20260602-8E3EBA",
           amountKopecks: 693000,
-          idempotencyKey: "key"
+          idempotencyKey: "key",
+          receipt
         },
         { ...config, returnUrl: "not-a-url" },
         fetchMock
@@ -77,7 +94,8 @@ describe("YooKassa client", () => {
       {
         publicNumber: "KRM-20260602-8E3EBA",
         amountKopecks: 693000,
-        idempotencyKey: "karma-KRM-20260602-8E3EBA-payment-v1"
+        idempotencyKey: "karma-KRM-20260602-8E3EBA-payment-v1",
+        receipt
       },
       config,
       fetchMock
@@ -111,6 +129,7 @@ describe("YooKassa client", () => {
       },
       description: "Заказ KRM-20260602-8E3EBA",
       metadata: { orderPublicNumber: "KRM-20260602-8E3EBA" },
+      receipt,
       save_payment_method: false
     });
     expect(JSON.stringify(result)).not.toContain(config.secretKey);
@@ -135,7 +154,8 @@ describe("YooKassa client", () => {
         {
           publicNumber: "KRM-20260602-8E3EBA",
           amountKopecks: 693000,
-          idempotencyKey: "key"
+          idempotencyKey: "key",
+          receipt
         },
         config,
         fetchMock

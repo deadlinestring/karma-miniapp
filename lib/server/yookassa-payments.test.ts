@@ -10,7 +10,23 @@ const baseOrder = {
   paymentStatus: "PENDING" as const,
   fulfillmentStatus: "NEW" as const,
   totalKopecks: 693000,
-  items: [{ customImageReviewStatus: "APPROVED" as const }],
+  customerPhone: "+79000000000",
+  customerContact: null,
+  deliveryKopecks: 45000,
+  items: [
+    {
+      productNameSnapshot: "Свой дизайн",
+      itemTypeSnapshot: "PREMIUM",
+      itemTypeLabelSnapshot: "Премиум",
+      sizeCmSnapshot: 30,
+      unitPriceKopecks: 549000,
+      baseSubtotalKopecks: 549000,
+      discountKopecks: 0,
+      quantity: 1,
+      customDrawingSurchargeKopecks: 99000,
+      customImageReviewStatus: "APPROVED" as const
+    }
+  ],
   payments: []
 };
 
@@ -18,7 +34,8 @@ const config = {
   shopId: "shop",
   secretKey: "secret",
   returnUrl: "https://karma.example/return",
-  webhookSecret: null
+  webhookSecret: null,
+  vatCode: 1
 };
 
 function servicesFor(order: unknown) {
@@ -75,7 +92,11 @@ describe("YooKassa payment preparation", () => {
       {
         publicNumber: "KRM-20260602-8E3EBA",
         amountKopecks: 693000,
-        idempotencyKey: "karma-KRM-20260602-8E3EBA-payment-v1"
+        idempotencyKey: "karma-KRM-20260602-8E3EBA-payment-v1",
+        receipt: expect.objectContaining({
+          customer: { phone: "+79000000000" },
+          items: expect.any(Array)
+        })
       },
       config
     );
@@ -111,7 +132,22 @@ describe("YooKassa payment preparation", () => {
   it("creates regular pending order payments", async () => {
     const services = servicesFor({
       ...baseOrder,
-      items: [{ customImageReviewStatus: "NOT_REQUIRED" as const }]
+      totalKopecks: 604000,
+      deliveryKopecks: 55000,
+      items: [
+        {
+          productNameSnapshot: "Ночник",
+          itemTypeSnapshot: "PREMIUM",
+          itemTypeLabelSnapshot: "Премиум",
+          sizeCmSnapshot: 30,
+          unitPriceKopecks: 549000,
+          baseSubtotalKopecks: 549000,
+          discountKopecks: 0,
+          quantity: 1,
+          customDrawingSurchargeKopecks: 0,
+          customImageReviewStatus: "NOT_REQUIRED" as const
+        }
+      ]
     });
 
     const result = await prepareCustomerYooKassaPaymentWithServices(
@@ -259,5 +295,20 @@ describe("YooKassa payment preparation", () => {
     ).rejects.toThrow("yookassa_payment_create_failed");
     expect(providerFails.db.payment.create).not.toHaveBeenCalled();
     expect("update" in providerFails.db.order).toBe(false);
+  });
+
+  it("blocks provider calls safely when receipt customer contact is missing", async () => {
+    const services = servicesFor({
+      ...baseOrder,
+      customerPhone: "",
+      customerContact: ""
+    });
+
+    await expect(
+      prepareCustomerYooKassaPaymentWithServices("KRM-20260602-8E3EBA", { id: "12345" }, services as any)
+    ).rejects.toThrow("yookassa_receipt_customer_missing");
+
+    expect(services.createProviderPayment).not.toHaveBeenCalled();
+    expect(services.db.payment.create).not.toHaveBeenCalled();
   });
 });

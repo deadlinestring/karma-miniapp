@@ -2,6 +2,7 @@ import "server-only";
 
 import type { PaymentStatus } from "@prisma/client";
 import type { YooKassaConfig } from "@/lib/server/yookassa-config";
+import type { YooKassaReceipt } from "@/lib/server/yookassa-receipt";
 
 const YOOKASSA_PAYMENTS_URL = "https://api.yookassa.ru/v3/payments";
 
@@ -9,6 +10,7 @@ export type CreateYooKassaPaymentInput = {
   publicNumber: string;
   amountKopecks: number;
   idempotencyKey: string;
+  receipt: YooKassaReceipt;
 };
 
 export type CreateYooKassaPaymentResult = {
@@ -74,7 +76,8 @@ export async function createYooKassaPayment(
       metadata: {
         orderPublicNumber: input.publicNumber
       },
-      save_payment_method: false
+      save_payment_method: false,
+      receipt: input.receipt
     })
   });
 
