@@ -1,0 +1,35 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+
+describe("home page content blocks", () => {
+  const source = readFileSync(join(__dirname, "home-page.tsx"), "utf8");
+
+  it("loads hero copy from admin-managed content blocks", () => {
+    expect(source).toContain("useContentBlocks(homeContentSlugs)");
+    expect(source).toContain('"home-hero-eyebrow"');
+    expect(source).toContain('"home-hero-title"');
+    expect(source).toContain('"home-hero-subtitle"');
+    expect(source).toContain('"home-hero-primary-cta"');
+    expect(source).toContain('"home-hero-secondary-cta"');
+  });
+
+  it("lets inactive home blocks hide corresponding hero elements", () => {
+    expect(source).toContain("heroEyebrow ? (");
+    expect(source).toContain("primaryCtaLabel ? (");
+    expect(source).toContain("secondaryCtaLabel && data.customProduct ? (");
+    expect(source).not.toContain("НОЧНИКИ ПО ТВОЕЙ ИДЕЕ");
+  });
+
+  it("keeps StoreSettings as fallback for hero title and subtitle", () => {
+    expect(source).toContain("contentBlockText(heroTitleBlock) ?? data.settings.heroTitle");
+    expect(source).toContain("contentBlockText(heroSubtitleBlock) ?? data.settings.heroSubtitle");
+  });
+
+  it("renders content as React text without executing HTML", () => {
+    expect(source).toContain("{heroEyebrow}");
+    expect(source).toContain("{heroTitle}");
+    expect(source).toContain("{heroSubtitle}");
+    expect(source).not.toContain("dangerouslySetInnerHTML");
+  });
+});

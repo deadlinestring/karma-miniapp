@@ -541,3 +541,13 @@
 - ContentBlock migration `00000000000005_add_content_blocks` was applied successfully to production Supabase.
 - Current production state after migration: `ContentBlock = 0`; default blocks were not created manually.
 - Next live test: open admin `Блоки интерфейса`, verify default editable drafts, save/upsert, then check public fallback/active/inactive behavior.
+
+## Home ContentBlock integration
+
+- ContentBlock live-test passed in production: admin section `Блоки интерфейса` opens, default drafts appear, save/upsert works, and `isActive` hides connected public blocks.
+- Home/storefront hero copy integration is prepared without a new migration.
+- New home default draft blocks: `home-hero-eyebrow`, `home-hero-title`, `home-hero-subtitle`, `home-hero-primary-cta`, `home-hero-secondary-cta`.
+- The blue hero eyebrow `НОЧНИКИ ПО ТВОЕЙ ИДЕЕ` is now managed through ContentBlock and can be hidden with `isActive`.
+- Hero title/subtitle keep StoreSettings as fallback, while active ContentBlock rows can override them.
+- Hero CTA text is ContentBlock-managed; existing actions stay unchanged.
+- Full visual redesign remains a separate future stage.

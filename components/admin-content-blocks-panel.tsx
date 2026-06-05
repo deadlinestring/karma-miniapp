@@ -21,6 +21,11 @@ type ContentBlocksResponse =
   | { ok: false; message?: string };
 
 const placementLabels: Record<string, string> = {
+  "home-hero-eyebrow": "Главная: верхняя hero-надпись",
+  "home-hero-title": "Главная: hero-заголовок",
+  "home-hero-subtitle": "Главная: hero-подзаголовок",
+  "home-hero-primary-cta": "Главная: основная hero-кнопка",
+  "home-hero-secondary-cta": "Главная: кнопка своего дизайна",
   "checkout-delivery-help": "Checkout: подсказка про доставку",
   "checkout-custom-review-help": "Checkout: подсказка про проверку своего дизайна",
   "payment-disabled-guidance": "Заказ: онлайн-оплата выключена",

@@ -297,3 +297,14 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Public integration is intentionally minimal and uses active blocks only, with safe fallback/default text when rows are missing or DB is unavailable.
 - Content renders as plain text; runtime payment, webhook, pricing, checkout submit and status mutation logic remain untouched.
 - Next live test: open admin `Блоки интерфейса`, save defaults, verify public fallback/active/inactive behavior.
+
+## Home ContentBlock integration checkpoint
+
+- ContentBlock live-test passed: admin `Блоки интерфейса` opened, default drafts appeared, save/upsert worked, and inactive rows hid connected public blocks.
+- Current read-only baseline before this code change: `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 7`.
+- Home/storefront hero copy is being connected to existing ContentBlock without a new migration.
+- New default draft slugs: `home-hero-eyebrow`, `home-hero-title`, `home-hero-subtitle`, `home-hero-primary-cta`, `home-hero-secondary-cta`.
+- The neon eyebrow `НОЧНИКИ ПО ТВОЕЙ ИДЕЕ` is now admin-managed and hideable through `isActive`.
+- StoreSettings remains fallback for hero title/subtitle; CTA actions remain code-owned.
+- Payment, webhook, checkout, pricing, order status and production data remain untouched in this stage.
+- Full visual redesign remains a separate future stage.

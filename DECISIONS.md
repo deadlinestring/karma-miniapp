@@ -543,3 +543,13 @@ Prisma migrations и другие CLI-операции используют Supa
 - Payment runtime, webhook handling, pricing, checkout submit logic and order status mutations are not changed by this foundation.
 - Production migration application was completed before deployment: the `ContentBlock` table and indexes now exist, while `ContentBlock = 0`.
 - Default draft blocks remain code-defined until an admin saves them through the protected admin UI; no seed/bootstrap/manual row creation is required.
+
+## Home copy ContentBlock decision
+
+- The ContentBlock admin flow was live-tested: default drafts can be saved/upserted and inactive rows hide connected public blocks.
+- Home/storefront marketing copy can use ContentBlock without another migration.
+- Home hero ContentBlock slugs are allowlisted: `home-hero-eyebrow`, `home-hero-title`, `home-hero-subtitle`, `home-hero-primary-cta`, `home-hero-secondary-cta`.
+- `home-hero-eyebrow` owns the blue `НОЧНИКИ ПО ТВОЕЙ ИДЕЕ` label and can hide it through `isActive`.
+- StoreSettings remains the fallback/source for hero title and subtitle when home ContentBlock title/subtitle rows are blank.
+- Home CTA labels become editable through ContentBlock, but their actions stay code-owned so navigation and custom design modal behavior do not drift.
+- This is a content-control extension, not a visual redesign.

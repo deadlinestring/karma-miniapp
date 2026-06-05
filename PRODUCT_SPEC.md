@@ -770,3 +770,17 @@ Admin behavior:
 First integration scope is deliberately small: checkout delivery/custom review guidance, customer payment-disabled guidance, support CTA and product custom-design explanation. Broader redesign and all future promo/banner placements remain separate work.
 
 Production database status: migration `00000000000005_add_content_blocks` has been applied successfully. The `ContentBlock` table exists with `ContentBlock = 0`, so the first deployment should show code-defined default drafts in admin until an administrator saves them.
+
+## Home Page Managed Copy
+
+The storefront home hero can read a small set of admin-managed ContentBlocks:
+
+- `home-hero-eyebrow` controls the neon eyebrow text, including `НОЧНИКИ ПО ТВОЕЙ ИДЕЕ`;
+- `home-hero-title` can override the StoreSettings hero title;
+- `home-hero-subtitle` can override the StoreSettings hero subtitle;
+- `home-hero-primary-cta` controls the catalog CTA label and href fallback;
+- `home-hero-secondary-cta` controls the custom design CTA label while keeping the modal action in code.
+
+If a block is missing, the public endpoint provides the code-defined default draft. If a saved block is inactive, the connected public element is hidden. Content is rendered as React text, not HTML. StoreSettings continues to manage the core home title/subtitle fallback and hero image.
+
+The home integration is intentionally narrow and does not change catalog, checkout, payment, webhook or custom order logic. A broader visual redesign remains a separate future stage.

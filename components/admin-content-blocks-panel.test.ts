@@ -20,4 +20,10 @@ describe("admin content blocks panel", () => {
     expect(source).toContain("renderPlainTextPreview");
     expect(source).not.toContain("dangerouslySetInnerHTML");
   });
+
+  it("shows placement labels for home hero blocks", () => {
+    expect(source).toContain('"home-hero-eyebrow"');
+    expect(source).toContain('"home-hero-primary-cta"');
+    expect(source).toContain('"home-hero-secondary-cta"');
+  });
 });

@@ -52,6 +52,61 @@ const pageMaxLength = 80;
 
 export const DEFAULT_CONTENT_BLOCKS: ContentBlockDto[] = [
   {
+    id: "draft-home-hero-eyebrow",
+    slug: "home-hero-eyebrow",
+    page: "home",
+    title: "НОЧНИКИ ПО ТВОЕЙ ИДЕЕ",
+    body: null,
+    ctaLabel: null,
+    ctaHref: null,
+    sortOrder: 1,
+    isActive: true
+  },
+  {
+    id: "draft-home-hero-title",
+    slug: "home-hero-title",
+    page: "home",
+    title: null,
+    body: null,
+    ctaLabel: null,
+    ctaHref: null,
+    sortOrder: 2,
+    isActive: true
+  },
+  {
+    id: "draft-home-hero-subtitle",
+    slug: "home-hero-subtitle",
+    page: "home",
+    title: null,
+    body: null,
+    ctaLabel: null,
+    ctaHref: null,
+    sortOrder: 3,
+    isActive: true
+  },
+  {
+    id: "draft-home-hero-primary-cta",
+    slug: "home-hero-primary-cta",
+    page: "home",
+    title: null,
+    body: null,
+    ctaLabel: "Смотреть каталог",
+    ctaHref: "/catalog",
+    sortOrder: 4,
+    isActive: true
+  },
+  {
+    id: "draft-home-hero-secondary-cta",
+    slug: "home-hero-secondary-cta",
+    page: "home",
+    title: null,
+    body: null,
+    ctaLabel: "Свой дизайн",
+    ctaHref: null,
+    sortOrder: 5,
+    isActive: true
+  },
+  {
     id: "draft-checkout-delivery-help",
     slug: "checkout-delivery-help",
     page: "checkout",

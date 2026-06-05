@@ -24,6 +24,7 @@ describe("content blocks repository", () => {
 
     expect(blocks.map((block) => block.slug)).toEqual(DEFAULT_CONTENT_BLOCKS.map((block) => block.slug));
     expect(blocks).toContainEqual(expect.objectContaining({ slug: "checkout-delivery-help", isActive: true }));
+    expect(blocks).toContainEqual(expect.objectContaining({ slug: "home-hero-eyebrow", page: "home", isActive: true }));
   });
 
   it("returns only active public blocks and lets inactive DB rows hide defaults", async () => {
@@ -46,6 +47,26 @@ describe("content blocks repository", () => {
     expect(blocks).toEqual([]);
   });
 
+  it("lets an inactive home hero eyebrow hide the storefront label", async () => {
+    const services = makeServices([
+      {
+        id: "saved-home-eyebrow",
+        slug: "home-hero-eyebrow",
+        page: "home",
+        title: "Hidden",
+        body: null,
+        ctaLabel: null,
+        ctaHref: null,
+        sortOrder: 1,
+        isActive: false
+      }
+    ]);
+
+    const blocks = await getPublicContentBlocksWithServices(["home-hero-eyebrow"], services);
+
+    expect(blocks).toEqual([]);
+  });
+
   it("falls back to default public blocks when the table is unavailable", async () => {
     const services = {
       contentBlock: {
@@ -56,6 +77,14 @@ describe("content blocks repository", () => {
     const blocks = await getPublicContentBlocksWithServices(["custom-design-help"], services);
 
     expect(blocks).toContainEqual(expect.objectContaining({ slug: "custom-design-help", isActive: true }));
+  });
+
+  it("returns home hero defaults when saved rows are missing", async () => {
+    const services = makeServices([]);
+    const blocks = await getPublicContentBlocksWithServices(["home-hero-eyebrow", "home-hero-primary-cta"], services);
+
+    expect(blocks).toContainEqual(expect.objectContaining({ slug: "home-hero-eyebrow", title: "НОЧНИКИ ПО ТВОЕЙ ИДЕЕ" }));
+    expect(blocks).toContainEqual(expect.objectContaining({ slug: "home-hero-primary-cta", ctaHref: "/catalog" }));
   });
 
   it("upserts validated blocks by slug", async () => {

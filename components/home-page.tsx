@@ -10,6 +10,16 @@ import type { StorefrontHomeData, StorefrontProduct } from "@/lib/storefront-typ
 import { AppShell } from "@/components/app-shell";
 import { ProductCard } from "@/components/product-card";
 import { ProductModal } from "@/components/product-modal";
+import type { UiContentBlock } from "@/components/use-content-blocks";
+import { useContentBlocks } from "@/components/use-content-blocks";
+
+const homeContentSlugs = [
+  "home-hero-eyebrow",
+  "home-hero-title",
+  "home-hero-subtitle",
+  "home-hero-primary-cta",
+  "home-hero-secondary-cta"
+];
 
 export function HomePage({
   data,
@@ -19,6 +29,7 @@ export function HomePage({
   loadError?: boolean;
 }) {
   const [openedProduct, setOpenedProduct] = useState<StorefrontProduct | null>(null);
+  const { getBlock } = useContentBlocks(homeContentSlugs);
 
   if (loadError || !data) {
     return (
@@ -29,6 +40,16 @@ export function HomePage({
   }
 
   const heroImage = data.settings.heroImageUrl || "/images/mock/hero-night-light.svg";
+  const heroEyebrowBlock = getBlock("home-hero-eyebrow");
+  const heroTitleBlock = getBlock("home-hero-title");
+  const heroSubtitleBlock = getBlock("home-hero-subtitle");
+  const primaryCtaBlock = getBlock("home-hero-primary-cta");
+  const secondaryCtaBlock = getBlock("home-hero-secondary-cta");
+  const heroEyebrow = contentBlockText(heroEyebrowBlock);
+  const heroTitle = heroTitleBlock ? contentBlockText(heroTitleBlock) ?? data.settings.heroTitle : null;
+  const heroSubtitle = heroSubtitleBlock ? contentBlockText(heroSubtitleBlock) ?? data.settings.heroSubtitle : null;
+  const primaryCtaLabel = contentBlockCtaLabel(primaryCtaBlock);
+  const secondaryCtaLabel = contentBlockCtaLabel(secondaryCtaBlock);
 
   return (
     <AppShell settings={data.settings}>
@@ -41,31 +62,41 @@ export function HomePage({
         <div className="absolute inset-0 bg-gradient-to-b from-black/18 via-black/42 to-black/88" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(49,246,255,0.2),transparent_20rem)]" />
         <div className="relative flex min-h-[492px] flex-col justify-end">
-          <p className="text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">
-            НОЧНИКИ ПО ТВОЕЙ ИДЕЕ
-          </p>
-          <h1 className="mt-5 text-4xl font-black leading-[1.05] text-white">
-            {data.settings.heroTitle}
-          </h1>
-          <p className="mt-4 text-base leading-7 text-white/70">
-            {data.settings.heroSubtitle}
-          </p>
+          {heroEyebrow ? (
+            <p className="text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">
+              {heroEyebrow}
+            </p>
+          ) : null}
+          {heroTitle ? (
+            <h1 className="mt-5 text-4xl font-black leading-[1.05] text-white">
+              {heroTitle}
+            </h1>
+          ) : null}
+          {heroSubtitle ? (
+            <p className="mt-4 text-base leading-7 text-white/70">
+              {heroSubtitle}
+            </p>
+          ) : null}
           <div className="mt-6 grid grid-cols-2 gap-3">
-            <motion.div whileTap={{ scale: 0.97 }}>
-              <Link
-                href="/catalog"
-                className="flex h-14 items-center justify-center rounded-2xl bg-gradient-to-r from-neon-violet via-neon-blue to-neon-cyan text-sm font-black text-white shadow-glow"
+            {primaryCtaLabel ? (
+              <motion.div whileTap={{ scale: 0.97 }}>
+                <Link
+                  href={primaryCtaBlock?.ctaHref ?? "/catalog"}
+                  className="flex h-14 items-center justify-center rounded-2xl bg-gradient-to-r from-neon-violet via-neon-blue to-neon-cyan text-sm font-black text-white shadow-glow"
+                >
+                  {primaryCtaLabel}
+                </Link>
+              </motion.div>
+            ) : null}
+            {secondaryCtaLabel && data.customProduct ? (
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                className="h-14 rounded-2xl border border-white/12 bg-white/8 text-sm font-black text-white"
+                onClick={() => setOpenedProduct(data.customProduct)}
               >
-                Смотреть каталог
-              </Link>
-            </motion.div>
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              className="h-14 rounded-2xl border border-white/12 bg-white/8 text-sm font-black text-white"
-              onClick={() => data.customProduct && setOpenedProduct(data.customProduct)}
-            >
-              Свой дизайн
-            </motion.button>
+                {secondaryCtaLabel}
+              </motion.button>
+            ) : null}
           </div>
         </div>
       </section>
@@ -136,4 +167,12 @@ function CatalogLoadError() {
       <p className="mt-3 text-sm leading-6 text-white/60">Попробуйте обновить страницу чуть позже.</p>
     </div>
   );
+}
+
+function contentBlockText(block: UiContentBlock | null) {
+  return block?.title?.trim() || block?.body?.trim() || null;
+}
+
+function contentBlockCtaLabel(block: UiContentBlock | null) {
+  return block?.ctaLabel?.trim() || block?.title?.trim() || block?.body?.trim() || null;
 }
