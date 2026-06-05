@@ -580,3 +580,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - The checked cleanup slugs remain allowlisted and are not arbitrary CMS entries.
 - Payment, order and webhook behavior stays outside ContentBlock management.
 - The next larger UI step should be design system / visual redesign foundation, not more runtime behavior changes.
+
+## Design system foundation decision
+
+- The visual redesign should start from small shared primitives rather than a full-screen rewrite.
+- Existing `ActionButton` remains valid for animated action buttons; new shared helpers provide reusable static button classes and link/button accessibility defaults.
+- Shared primitives should cover repeated low-risk patterns first: surfaces, empty states, status badges and section headings.
+- Initial rollout is limited to catalog/cart empty states and customer order payment badges so checkout, payment, webhook, pricing and order mutation logic remain unchanged.
+- A broader redesign should proceed screen by screen after this foundation is verified.

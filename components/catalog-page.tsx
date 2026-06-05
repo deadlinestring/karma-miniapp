@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
+import { EmptyState } from "@/components/ui/empty-state";
 import { ProductCard } from "@/components/product-card";
 import { ProductModal } from "@/components/product-modal";
 import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
@@ -111,17 +112,12 @@ export function CatalogPage({
         {filteredProducts.map((product) => (
           <ProductCard key={product.id} product={product} onOpen={setOpenedProduct} variant="compact" />
         ))}
-        {filteredProducts.length === 0 ? (
-          <div className="col-span-2 rounded-3xl border border-white/10 bg-white/7 p-8 text-center">
-            {emptyBlock?.title ? <p className="text-lg font-black text-white">{emptyBlock.title}</p> : null}
-            {emptyBlock?.body ? (
-              <div className="mt-2 grid gap-1 text-sm text-white/55">
-                {renderContentBlockLines(emptyBlock.body).map((line) => (
-                  <p key={line}>{line}</p>
-                ))}
-              </div>
-            ) : null}
-          </div>
+        {filteredProducts.length === 0 && emptyBlock ? (
+          <EmptyState
+            className="col-span-2"
+            title={emptyBlock.title}
+            bodyLines={emptyBlock.body ? renderContentBlockLines(emptyBlock.body) : []}
+          />
         ) : null}
       </section>
 

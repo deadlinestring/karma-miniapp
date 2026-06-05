@@ -813,3 +813,19 @@ Live verification:
 - admin can see and edit the cleanup blocks;
 - `isActive` hides connected catalog/cart/orders/custom help blocks;
 - payment, order, webhook and pricing runtime behavior is unchanged.
+
+## Design system foundation
+
+The interface keeps the dark futuristic KARMA style, but repeated UI patterns are now being formalized before a larger redesign.
+
+Foundation patterns:
+
+- shared button/link classes with focus-visible and disabled states;
+- shared glass/neon surface panels;
+- shared status badges;
+- shared empty states with optional CTA;
+- shared section heading pattern.
+
+The first safe integration uses these primitives only in catalog/cart empty states and the customer orders payment badge. This does not change checkout, cart calculations, order creation, payment prepare, webhook handling or admin status updates.
+
+Future visual redesign should continue in small slices: storefront cards and sections first, then checkout/order detail, then admin panels.

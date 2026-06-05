@@ -346,3 +346,11 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Production data was not changed by this docs checkpoint beyond already performed user admin checks.
 - Payment, order and webhook runtime logic remains unchanged.
 - Next recommended stage: design system / visual redesign foundation.
+
+## Design system foundation checkpoint
+
+- Design-system foundation is being prepared without schema changes or production data changes.
+- UI audit found repeated patterns across the storefront: gradient CTA buttons, glass surfaces/cards, status pills, section headers, empty states and help/info blocks.
+- New lightweight shared UI primitives are introduced for staged redesign work: button class helpers, surface panels, status badges, empty states and section headings.
+- Initial integration is deliberately narrow: catalog and cart empty states use the shared empty-state pattern, and the customer orders list uses the shared status badge.
+- Full visual redesign remains a future staged effort; payment, webhook, pricing, checkout submit, order creation and status mutation logic remain untouched.

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
 import { formatKopecks } from "@/lib/pricing";
 
@@ -155,9 +156,7 @@ export function CustomerOrdersPage() {
                   </h2>
                   <p className="mt-1 text-xs text-white/46">{formatDate(order.createdAt)}</p>
                 </div>
-                <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-bold text-white/70">
-                  {order.paymentStatusLabel}
-                </span>
+                <StatusBadge>{order.paymentStatusLabel}</StatusBadge>
               </div>
 
               <div className="mt-4 grid gap-2 text-sm text-white/62">

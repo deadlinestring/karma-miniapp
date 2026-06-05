@@ -7,15 +7,17 @@ describe("catalog page content blocks", () => {
 
   it("uses content blocks for catalog intro and empty state", () => {
     expect(source).toContain("useContentBlocks(catalogContentSlugs)");
+    expect(source).toContain('import { EmptyState }');
     expect(source).toContain('"catalog-intro-help"');
     expect(source).toContain('"catalog-empty-state"');
     expect(source).toContain("introBlock?.title");
-    expect(source).toContain("emptyBlock?.body");
+    expect(source).toContain("bodyLines={emptyBlock.body ? renderContentBlockLines(emptyBlock.body) : []}");
   });
 
   it("renders catalog content as plain text", () => {
     expect(source).toContain("renderContentBlockLines(introBlock.body)");
     expect(source).toContain("renderContentBlockLines(emptyBlock.body)");
+    expect(source).toContain("filteredProducts.length === 0 && emptyBlock");
     expect(source).not.toContain("dangerouslySetInnerHTML");
   });
 });

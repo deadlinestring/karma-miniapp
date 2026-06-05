@@ -583,3 +583,12 @@
 - Checked admin-managed slugs: `catalog-intro-help`, `catalog-empty-state`, `cart-empty-state`, `orders-intro-help`, `custom-product-features-help`, `custom-upload-requirements-help`.
 - Payment, order and webhook runtime logic did not change.
 - Next recommended stage: design system / visual redesign foundation.
+
+## Design system foundation
+
+- UI audit started for the stable storefront/admin surface.
+- Repeated patterns to unify: buttons, glass cards/surfaces, status badges, section headers, empty states and help/info blocks.
+- Lightweight shared primitives are prepared without new UI libraries: button helpers, `Surface`, `StatusBadge`, `EmptyState` and `SectionHeading`.
+- Minimal integration scope: catalog empty state, cart empty state and customer order payment badge.
+- Redesign order should stay staged: storefront surfaces first, then checkout/order detail, then admin panels.
+- Payment, webhook, order creation, pricing and status mutation runtime stay untouched in this step.

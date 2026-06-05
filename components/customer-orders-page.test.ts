@@ -25,6 +25,11 @@ describe("customer orders page", () => {
     expect(source).toContain("Открыть");
   });
 
+  it("uses shared status badge for payment status display", () => {
+    expect(source).toContain('import { StatusBadge }');
+    expect(source).toContain("<StatusBadge>{order.paymentStatusLabel}</StatusBadge>");
+  });
+
   it("renders intro and empty state content as plain text", () => {
     expect(source).toContain("renderContentBlockLines(introBlock.body)");
     expect(source).toContain("renderContentBlockLines(emptyBlock.body)");

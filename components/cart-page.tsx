@@ -5,6 +5,7 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { ActionButton } from "@/components/action-button";
 import { ProductVisual } from "@/components/product-visual";
+import { EmptyState } from "@/components/ui/empty-state";
 import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
 import { formatKopecks } from "@/lib/pricing";
 import { useCartStore, useCartTotals } from "@/store/cart-store";
@@ -25,26 +26,15 @@ export function CartPage() {
         <h1 className="mt-2 text-3xl font-black text-white">Корзина</h1>
       </section>
 
-      {items.length === 0 ? (
-        <div className="mt-6 rounded-[28px] border border-white/10 bg-white/7 p-8 text-center shadow-violet">
-          <div className="mx-auto h-24 w-24 rounded-full bg-neon-violet/15 blur-sm" />
-          {emptyBlock?.title ? <h2 className="mt-4 text-xl font-black text-white">{emptyBlock.title}</h2> : null}
-          {emptyBlock?.body ? (
-            <div className="mt-2 grid gap-1 text-sm leading-6 text-white/60">
-              {renderContentBlockLines(emptyBlock.body).map((line) => (
-                <p key={line}>{line}</p>
-              ))}
-            </div>
-          ) : null}
-          {emptyBlock?.ctaHref && emptyBlock.ctaLabel ? (
-            <Link
-              href={emptyBlock.ctaHref}
-              className="mt-5 inline-flex h-12 items-center justify-center rounded-2xl bg-gradient-to-r from-neon-violet to-neon-cyan px-5 text-sm font-black text-white shadow-glow"
-            >
-              {emptyBlock.ctaLabel}
-            </Link>
-          ) : null}
-        </div>
+      {items.length === 0 && emptyBlock ? (
+        <EmptyState
+          className="mt-6"
+          title={emptyBlock.title}
+          bodyLines={emptyBlock.body ? renderContentBlockLines(emptyBlock.body) : []}
+          ctaHref={emptyBlock.ctaHref}
+          ctaLabel={emptyBlock.ctaLabel}
+          visual={<div className="h-24 w-24 rounded-full bg-neon-violet/15 blur-sm" />}
+        />
       ) : (
         <>
           <div className="mt-5 grid gap-4">
