@@ -847,6 +847,6 @@ Foundation elements:
 - neon borders and premium glass surfaces;
 - motion-safe hover/tap feedback;
 - neon eyebrow and optional gradient heading text;
-- decorative `BrandMaskWatermark` for hero/empty states.
+- decorative `BrandMaskWatermark` for hero/empty states, using the real asset `/brand/karma-mask.svg`.
 
 The mask is not interactive content and should not appear everywhere. It is a background accent for selected surfaces. The first integration touches only the home hero visual layer and shared empty states; order, payment, webhook, checkout and custom design runtime behavior remain unchanged.

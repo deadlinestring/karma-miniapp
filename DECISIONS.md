@@ -600,6 +600,7 @@ Prisma migrations и другие CLI-операции используют Supa
 
 - KARMA Neon Mask should be introduced through reusable tokens and decorative layers before any broad page redesign.
 - The mask is a brand watermark/background accent and must stay decorative: `aria-hidden`, non-interactive and visually restrained.
-- The first layer uses CSS/SVG-only implementation so no heavy image asset or external URL is required.
+- The watermark must use the real KARMA mask asset from `/brand/karma-mask.svg`; abstract code-drawn placeholders are not acceptable for brand direction checks.
+- No external URL or inline base64 image data should be used for the mask.
 - Neon/violet/magenta glow should support a premium anime/gaming feel without casino-like color overload.
 - Payment, order, webhook, checkout and ContentBlock behavior remain outside this visual direction task.

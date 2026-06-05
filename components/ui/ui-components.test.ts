@@ -32,10 +32,15 @@ describe("shared UI foundation", () => {
   it("renders brand mask watermark as decorative non-interactive UI", () => {
     expect(maskSource).toContain('aria-hidden="true"');
     expect(maskSource).toContain("pointer-events-none");
+    expect(maskSource).toContain('const maskAssetPath = "/brand/karma-mask.svg"');
+    expect(maskSource).toContain("<img");
+    expect(maskSource).toContain('alt=""');
+    expect(maskSource).toContain("draggable={false}");
     expect(maskSource).toContain("variant = \"subtle\"");
     expect(maskSource).toContain("hero");
     expect(maskSource).toContain("empty");
     expect(maskSource).not.toContain("http");
+    expect(maskSource).not.toContain("<svg");
   });
 
   it("keeps Neon Mask tokens as lightweight class constants", () => {
