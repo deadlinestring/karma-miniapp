@@ -784,3 +784,11 @@ The storefront home hero can read a small set of admin-managed ContentBlocks:
 If a block is missing, the public endpoint provides the code-defined default draft. If a saved block is inactive, the connected public element is hidden. Content is rendered as React text, not HTML. StoreSettings continues to manage the core home title/subtitle fallback and hero image.
 
 The home integration is intentionally narrow and does not change catalog, checkout, payment, webhook or custom order logic. A broader visual redesign remains a separate future stage.
+
+Live verification:
+
+- production home hero ContentBlock integration is confirmed after commit `6190132`;
+- `home-hero-eyebrow` edits the blue home hero eyebrow;
+- disabling `home-hero-eyebrow` through `isActive` hides the eyebrow;
+- hero title/subtitle/CTA labels are available through ContentBlock defaults/overrides;
+- CTA actions remain unchanged and are not editable content behavior.

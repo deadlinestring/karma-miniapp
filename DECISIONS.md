@@ -553,3 +553,12 @@ Prisma migrations и другие CLI-операции используют Supa
 - StoreSettings remains the fallback/source for hero title and subtitle when home ContentBlock title/subtitle rows are blank.
 - Home CTA labels become editable through ContentBlock, but their actions stay code-owned so navigation and custom design modal behavior do not drift.
 - This is a content-control extension, not a visual redesign.
+
+## Live Home ContentBlock verification decision
+
+- Production live-check confirmed that home hero ContentBlocks work after commit `6190132`.
+- The blue home hero eyebrow is controlled by `home-hero-eyebrow`.
+- `isActive` is the supported way to hide the eyebrow without code changes.
+- Home hero title/subtitle and CTA labels remain allowlisted ContentBlock defaults/overrides, with StoreSettings fallback for title/subtitle.
+- CTA behavior stays code-owned to avoid accidental navigation/modal changes from content edits.
+- A broader visual redesign remains a future stage and should not be mixed with content-block management.

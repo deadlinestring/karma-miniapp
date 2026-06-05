@@ -551,3 +551,14 @@
 - Hero title/subtitle keep StoreSettings as fallback, while active ContentBlock rows can override them.
 - Hero CTA text is ContentBlock-managed; existing actions stay unchanged.
 - Full visual redesign remains a separate future stage.
+
+## Live Home ContentBlock verification
+
+- Home hero ContentBlock integration was live-checked in production after commit `6190132`.
+- Admin `Блоки интерфейса` works for the home hero blocks.
+- `home-hero-eyebrow` controls the blue hero eyebrow on the storefront home page.
+- Editing the eyebrow through ContentBlock works.
+- `isActive` hides the eyebrow block on the public home page.
+- Hero title/subtitle and CTA labels are available through ContentBlock defaults/overrides.
+- CTA actions did not change: catalog still opens `/catalog`, and custom design still opens the existing product modal.
+- Full visual redesign remains a separate future stage.

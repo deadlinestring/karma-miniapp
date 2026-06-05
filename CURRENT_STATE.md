@@ -308,3 +308,16 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - StoreSettings remains fallback for hero title/subtitle; CTA actions remain code-owned.
 - Payment, webhook, checkout, pricing, order status and production data remain untouched in this stage.
 - Full visual redesign remains a separate future stage.
+
+## Live Home ContentBlock checkpoint
+
+- Home hero ContentBlock integration was live-checked in production after commit `6190132`.
+- Admin `Блоки интерфейса` works for home hero blocks.
+- `home-hero-eyebrow` controls the blue hero eyebrow on the home page.
+- Editing the eyebrow through ContentBlock works.
+- `isActive` hides the eyebrow on the public home page.
+- Hero title/subtitle and CTA labels are available through ContentBlock defaults/overrides.
+- CTA actions remain unchanged: `/catalog` navigation and custom design modal behavior are code-owned.
+- Current read-only baseline: `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
+- Production data was not changed by this docs checkpoint beyond the already performed user admin edits.
+- Full visual redesign remains a separate future stage.
