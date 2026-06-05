@@ -611,3 +611,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - The abstract placeholder must not return; future mask refinements should update the asset or its restrained presentation classes.
 - Home hero and empty states are the verified first placements.
 - The next redesign stage should use the real mask asset as a watermark/accent, not as primary content or repeated decoration.
+
+## Home hero Neon Mask redesign decision
+
+- The home hero can receive a stronger visual redesign first because it is mostly presentation and already uses stable ContentBlock/StoreSettings inputs.
+- The redesign must preserve the allowlisted ContentBlock contract and existing CTA behavior; content editors control labels/text, while actions remain code-owned.
+- The real KARMA mask stays behind content as a watermark; text readability has priority over brand decoration.
+- Shared UI primitives and Neon Mask tokens should be used before inventing one-off hero button/surface styles.
+- Catalog/product cards are the next logical stage; checkout, orders and payment surfaces should wait until storefront visuals are verified.

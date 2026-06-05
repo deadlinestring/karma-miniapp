@@ -383,3 +383,12 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Current read-only baseline remains `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
 - Payment, order and webhook runtime logic remained untouched.
 - Next staged visual step: storefront/home redesign using Neon Mask tokens and the real mask asset.
+
+## Home hero Neon Mask redesign checkpoint
+
+- Staged home/storefront hero redesign is prepared locally on top of the real KARMA mask asset and Neon Mask tokens.
+- Hero composition now uses a darker violet/radial glow background, calmer image overlay, real mask watermark in the background, glass text surface, gradient headline and shared CTA button classes.
+- ContentBlock contract is preserved: `home-hero-eyebrow`, `home-hero-title`, `home-hero-subtitle`, `home-hero-primary-cta`, `home-hero-secondary-cta`.
+- CTA actions remain unchanged: primary CTA opens `/catalog`, secondary CTA opens the existing custom product modal.
+- Checkout, cart, orders, payment, webhook, custom upload/review and production data remain untouched.
+- Next staged redesign target after review: catalog/product cards.

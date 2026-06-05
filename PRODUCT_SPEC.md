@@ -858,3 +858,18 @@ Live smoke-check:
 - home hero and empty-state placements were visually checked in production;
 - the watermark remains decorative and non-interactive;
 - future storefront/home redesign should build on Neon Mask tokens and the real mask asset.
+
+## Home hero Neon Mask redesign
+
+The storefront hero is the first staged redesign target. It should feel like premium anime/gaming acrylic light, with restrained violet/magenta glow and the real KARMA mask as a soft background watermark.
+
+Prepared hero rules:
+
+- ContentBlock-managed hero text and CTA labels stay unchanged;
+- StoreSettings remains fallback for hero title/subtitle;
+- primary CTA still opens `/catalog`;
+- secondary CTA still opens the custom design product modal;
+- headline can use gradient/neon styling, but readability wins over effects;
+- hero uses glass surface and mask watermark without changing catalog, cart, checkout, order, payment or webhook logic.
+
+The next visual stage after hero review is catalog/product card redesign.

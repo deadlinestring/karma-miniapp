@@ -11,7 +11,16 @@ import { AppShell } from "@/components/app-shell";
 import { ProductCard } from "@/components/product-card";
 import { ProductModal } from "@/components/product-modal";
 import { BrandMaskWatermark } from "@/components/ui/brand-mask-watermark";
-import { neonMaskBackground, neonMaskBorder, neonMaskGradientText } from "@/components/ui/neon-mask-tokens";
+import { uiButtonClassName } from "@/components/ui/button";
+import {
+  neonMaskBackground,
+  neonMaskBorder,
+  neonMaskEyebrow,
+  neonMaskGradientText,
+  neonMaskHover,
+  neonMaskMutedText,
+  neonMaskSurface
+} from "@/components/ui/neon-mask-tokens";
 import type { UiContentBlock } from "@/components/use-content-blocks";
 import { useContentBlocks } from "@/components/use-content-blocks";
 
@@ -55,51 +64,62 @@ export function HomePage({
 
   return (
     <AppShell settings={data.settings}>
-      <section className={`relative min-h-[540px] overflow-hidden rounded-[30px] ${neonMaskBorder} ${neonMaskBackground} p-6 shadow-violet`}>
+      <section className={`relative min-h-[560px] overflow-hidden rounded-[32px] ${neonMaskBorder} ${neonMaskBackground} p-4 shadow-[0_0_70px_rgba(155,92,255,0.24)] sm:p-6`}>
         <img
           src={heroImage}
           alt={`Светящийся акриловый ночник ${data.settings.storeName}`}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover opacity-62 saturate-125 [mask-image:linear-gradient(180deg,rgba(0,0,0,0.92),rgba(0,0,0,0.46))]"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/18 via-black/42 to-black/88" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(49,246,255,0.2),transparent_20rem)]" />
-        <BrandMaskWatermark variant="hero" className="absolute -right-16 top-10 rotate-6" />
-        <div className="relative flex min-h-[492px] flex-col justify-end">
-          {heroEyebrow ? (
-            <p className="text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">
-              {heroEyebrow}
-            </p>
-          ) : null}
-          {heroTitle ? (
-            <h1 className={`mt-5 text-4xl font-black leading-[1.05] ${neonMaskGradientText}`}>
-              {heroTitle}
-            </h1>
-          ) : null}
-          {heroSubtitle ? (
-            <p className="mt-4 text-base leading-7 text-white/70">
-              {heroSubtitle}
-            </p>
-          ) : null}
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            {primaryCtaLabel ? (
-              <motion.div whileTap={{ scale: 0.97 }}>
-                <Link
-                  href={primaryCtaBlock?.ctaHref ?? "/catalog"}
-                  className="flex h-14 items-center justify-center rounded-2xl bg-gradient-to-r from-neon-violet via-neon-blue to-neon-cyan text-sm font-black text-white shadow-glow"
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-[#07030f]/46 to-[#05030b]/94" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_18%,rgba(255,79,216,0.20),transparent_18rem),radial-gradient(circle_at_78%_44%,rgba(49,246,255,0.18),transparent_18rem)]" />
+        <BrandMaskWatermark variant="hero" className="absolute -right-20 top-8 rotate-6 sm:-right-12 sm:top-12" />
+        <div className="pointer-events-none absolute inset-x-4 bottom-4 h-px bg-gradient-to-r from-transparent via-neon-cyan/50 to-transparent" />
+
+        <div className="relative flex min-h-[528px] flex-col justify-end">
+          <div className={`max-w-[440px] rounded-[28px] ${neonMaskSurface} p-4 sm:p-5`}>
+            {heroEyebrow ? (
+              <p className={`text-[11px] tracking-[0.24em] ${neonMaskEyebrow}`}>
+                {heroEyebrow}
+              </p>
+            ) : null}
+            {heroTitle ? (
+              <h1 className={`mt-5 text-4xl font-black leading-[1.05] sm:text-5xl ${neonMaskGradientText}`}>
+                {heroTitle}
+              </h1>
+            ) : null}
+            {heroSubtitle ? (
+              <p className={`mt-4 text-base leading-7 ${neonMaskMutedText}`}>
+                {heroSubtitle}
+              </p>
+            ) : null}
+            <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {primaryCtaLabel ? (
+                <motion.div whileTap={{ scale: 0.97 }}>
+                  <Link
+                    href={primaryCtaBlock?.ctaHref ?? "/catalog"}
+                    className={uiButtonClassName({
+                      variant: "mask",
+                      className: `h-14 w-full text-sm font-black ${neonMaskHover}`
+                    })}
+                  >
+                    {primaryCtaLabel}
+                  </Link>
+                </motion.div>
+              ) : null}
+              {secondaryCtaLabel && data.customProduct ? (
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.97 }}
+                  className={uiButtonClassName({
+                    variant: "secondary",
+                    className: `h-14 w-full text-sm font-black ${neonMaskHover}`
+                  })}
+                  onClick={() => setOpenedProduct(data.customProduct)}
                 >
-                  {primaryCtaLabel}
-                </Link>
-              </motion.div>
-            ) : null}
-            {secondaryCtaLabel && data.customProduct ? (
-              <motion.button
-                whileTap={{ scale: 0.97 }}
-                className="h-14 rounded-2xl border border-white/12 bg-white/8 text-sm font-black text-white"
-                onClick={() => setOpenedProduct(data.customProduct)}
-              >
-                {secondaryCtaLabel}
-              </motion.button>
-            ) : null}
+                  {secondaryCtaLabel}
+                </motion.button>
+              ) : null}
+            </div>
           </div>
         </div>
       </section>

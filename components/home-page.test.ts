@@ -9,6 +9,8 @@ describe("home page content blocks", () => {
     expect(source).toContain("useContentBlocks(homeContentSlugs)");
     expect(source).toContain("BrandMaskWatermark");
     expect(source).toContain("neonMaskBackground");
+    expect(source).toContain("neonMaskSurface");
+    expect(source).toContain("neonMaskHover");
     expect(source).toContain('"home-hero-eyebrow"');
     expect(source).toContain('"home-hero-title"');
     expect(source).toContain('"home-hero-subtitle"');
@@ -26,6 +28,13 @@ describe("home page content blocks", () => {
   it("keeps StoreSettings as fallback for hero title and subtitle", () => {
     expect(source).toContain("contentBlockText(heroTitleBlock) ?? data.settings.heroTitle");
     expect(source).toContain("contentBlockText(heroSubtitleBlock) ?? data.settings.heroSubtitle");
+  });
+
+  it("keeps hero CTA actions stable through the visual redesign", () => {
+    expect(source).toContain("uiButtonClassName");
+    expect(source).toContain('href={primaryCtaBlock?.ctaHref ?? "/catalog"}');
+    expect(source).toContain("setOpenedProduct(data.customProduct)");
+    expect(source).toContain('type="button"');
   });
 
   it("renders content as React text without executing HTML", () => {
