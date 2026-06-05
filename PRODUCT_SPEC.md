@@ -870,6 +870,8 @@ Prepared hero rules:
 - primary CTA still opens `/catalog`;
 - secondary CTA still opens the custom design product modal;
 - headline can use gradient/neon styling, but readability wins over effects;
+- background artwork should remain sharp, without blur/filter; text readability is handled by dim/gradient overlays and the glass card;
+- the KARMA mask can overlap the glass card as a subtle decorative layer, but text and CTA content must remain above it and readable/clickable;
 - hero uses glass surface and mask watermark without changing catalog, cart, checkout, order, payment or webhook logic.
 
 The next visual stage after hero review is catalog/product card redesign.

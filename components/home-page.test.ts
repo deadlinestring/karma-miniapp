@@ -37,6 +37,16 @@ describe("home page content blocks", () => {
     expect(source).toContain('type="button"');
   });
 
+  it("keeps the hero background sharp while layering the mask above the glass panel", () => {
+    expect(source).toContain("relative isolate min-h-[560px]");
+    expect(source).toContain("absolute inset-0 z-0 h-full w-full object-cover opacity-78");
+    expect(source).not.toContain("blur-sm");
+    expect(source).not.toContain("filter");
+    expect(source).toContain('BrandMaskWatermark variant="hero" className="absolute -right-16 top-6 z-30');
+    expect(source).toContain("absolute inset-0 z-20 rounded-[28px]");
+    expect(source).toContain("relative z-40");
+  });
+
   it("renders content as React text without executing HTML", () => {
     expect(source).toContain("{heroEyebrow}");
     expect(source).toContain("{heroTitle}");

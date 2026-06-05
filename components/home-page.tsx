@@ -64,62 +64,70 @@ export function HomePage({
 
   return (
     <AppShell settings={data.settings}>
-      <section className={`relative min-h-[560px] overflow-hidden rounded-[32px] ${neonMaskBorder} ${neonMaskBackground} p-4 shadow-[0_0_70px_rgba(155,92,255,0.24)] sm:p-6`}>
+      <section className={`relative isolate min-h-[560px] overflow-hidden rounded-[32px] ${neonMaskBorder} ${neonMaskBackground} p-4 shadow-[0_0_70px_rgba(155,92,255,0.24)] sm:p-6`}>
         <img
           src={heroImage}
           alt={`Светящийся акриловый ночник ${data.settings.storeName}`}
-          className="absolute inset-0 h-full w-full object-cover opacity-62 saturate-125 [mask-image:linear-gradient(180deg,rgba(0,0,0,0.92),rgba(0,0,0,0.46))]"
+          className="absolute inset-0 z-0 h-full w-full object-cover opacity-78 saturate-125 [mask-image:linear-gradient(180deg,rgba(0,0,0,0.98),rgba(0,0,0,0.58))]"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-[#07030f]/46 to-[#05030b]/94" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_18%,rgba(255,79,216,0.20),transparent_18rem),radial-gradient(circle_at_78%_44%,rgba(49,246,255,0.18),transparent_18rem)]" />
-        <BrandMaskWatermark variant="hero" className="absolute -right-20 top-8 rotate-6 sm:-right-12 sm:top-12" />
-        <div className="pointer-events-none absolute inset-x-4 bottom-4 h-px bg-gradient-to-r from-transparent via-neon-cyan/50 to-transparent" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/18 via-[#07030f]/54 to-[#05030b]/92" />
+        <div className="absolute inset-0 z-20 bg-[radial-gradient(circle_at_30%_18%,rgba(255,79,216,0.18),transparent_18rem),radial-gradient(circle_at_80%_40%,rgba(49,246,255,0.16),transparent_18rem)]" />
+        <BrandMaskWatermark variant="hero" className="absolute -right-16 top-6 z-30 rotate-6 opacity-[0.22] sm:-right-10 sm:top-10" />
+        <div className="pointer-events-none absolute inset-x-4 bottom-4 z-50 h-px bg-gradient-to-r from-transparent via-neon-cyan/50 to-transparent" />
 
         <div className="relative flex min-h-[528px] flex-col justify-end">
-          <div className={`max-w-[440px] rounded-[28px] ${neonMaskSurface} p-4 sm:p-5`}>
-            {heroEyebrow ? (
-              <p className={`text-[11px] tracking-[0.24em] ${neonMaskEyebrow}`}>
-                {heroEyebrow}
-              </p>
-            ) : null}
-            {heroTitle ? (
-              <h1 className={`mt-5 text-4xl font-black leading-[1.05] sm:text-5xl ${neonMaskGradientText}`}>
-                {heroTitle}
-              </h1>
-            ) : null}
-            {heroSubtitle ? (
-              <p className={`mt-4 text-base leading-7 ${neonMaskMutedText}`}>
-                {heroSubtitle}
-              </p>
-            ) : null}
-            <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {primaryCtaLabel ? (
-                <motion.div whileTap={{ scale: 0.97 }}>
-                  <Link
-                    href={primaryCtaBlock?.ctaHref ?? "/catalog"}
+          <div className="relative max-w-[440px] overflow-hidden rounded-[28px] p-4 sm:p-5">
+            <div className={`absolute inset-0 z-20 rounded-[28px] ${neonMaskSurface}`} />
+            <div className="absolute inset-0 z-30 rounded-[28px] bg-[radial-gradient(circle_at_85%_20%,rgba(255,79,216,0.10),transparent_13rem)]" />
+            <div className="relative z-40">
+              {heroEyebrow ? (
+                <p className={`text-[11px] tracking-[0.24em] ${neonMaskEyebrow}`}>
+                  {heroEyebrow}
+                </p>
+              ) : null}
+              {heroTitle ? (
+                <h1 className={`mt-5 text-4xl font-black leading-[1.05] sm:text-5xl ${neonMaskGradientText}`}>
+                  {heroTitle}
+                </h1>
+              ) : null}
+              {heroSubtitle ? (
+                <p className={`mt-4 text-base leading-7 ${neonMaskMutedText}`}>
+                  {heroSubtitle}
+                </p>
+              ) : null}
+              <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {primaryCtaLabel ? (
+                  <motion.div whileTap={{ scale: 0.97 }}>
+                    <Link
+                      href={primaryCtaBlock?.ctaHref ?? "/catalog"}
+                      className={uiButtonClassName({
+                        variant: "mask",
+                        className: `h-14 w-full text-sm font-black ${neonMaskHover}`
+                      })}
+                    >
+                      {primaryCtaLabel}
+                    </Link>
+                  </motion.div>
+                ) : null}
+                {secondaryCtaLabel && data.customProduct ? (
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.97 }}
                     className={uiButtonClassName({
-                      variant: "mask",
+                      variant: "secondary",
                       className: `h-14 w-full text-sm font-black ${neonMaskHover}`
                     })}
+                    onClick={() => setOpenedProduct(data.customProduct)}
                   >
-                    {primaryCtaLabel}
-                  </Link>
-                </motion.div>
-              ) : null}
-              {secondaryCtaLabel && data.customProduct ? (
-                <motion.button
-                  type="button"
-                  whileTap={{ scale: 0.97 }}
-                  className={uiButtonClassName({
-                    variant: "secondary",
-                    className: `h-14 w-full text-sm font-black ${neonMaskHover}`
-                  })}
-                  onClick={() => setOpenedProduct(data.customProduct)}
-                >
-                  {secondaryCtaLabel}
-                </motion.button>
-              ) : null}
+                    {secondaryCtaLabel}
+                  </motion.button>
+                ) : null}
+              </div>
             </div>
+            <BrandMaskWatermark
+              variant="subtle"
+              className="absolute -right-8 top-2 z-30 rotate-6 opacity-[0.16] sm:-right-5"
+            />
           </div>
         </div>
       </section>

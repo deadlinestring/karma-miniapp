@@ -388,6 +388,7 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 
 - Staged home/storefront hero redesign is prepared locally on top of the real KARMA mask asset and Neon Mask tokens.
 - Hero composition now uses a darker violet/radial glow background, calmer image overlay, real mask watermark in the background, glass text surface, gradient headline and shared CTA button classes.
+- Hero layering was adjusted after visual review: the background artwork is no longer blurred, dim/gradient overlays handle readability, the KARMA mask is lifted above the problematic glass blur composition, and text/CTA content remains the top interactive layer.
 - ContentBlock contract is preserved: `home-hero-eyebrow`, `home-hero-title`, `home-hero-subtitle`, `home-hero-primary-cta`, `home-hero-secondary-cta`.
 - CTA actions remain unchanged: primary CTA opens `/catalog`, secondary CTA opens the existing custom product modal.
 - Checkout, cart, orders, payment, webhook, custom upload/review and production data remain untouched.

@@ -624,6 +624,7 @@
 
 - Prepare staged visual redesign of the storefront hero without changing business logic.
 - Apply deep violet/radial glow background, real mask watermark, glass text surface, gradient headline and shared CTA button styles.
+- Adjust hero layering so the background artwork stays sharp, dim/glow overlays keep text readable, the real mask watermark sits above the problematic glass blur composition, and the text/CTA layer remains on top and clickable.
 - Preserve all home hero ContentBlock slugs and StoreSettings title/subtitle fallback.
 - Preserve CTA behavior: catalog link and custom design modal.
 - Do not touch checkout, orders, payment, webhook, cart logic or production data.
