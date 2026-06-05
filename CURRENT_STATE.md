@@ -354,3 +354,12 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - New lightweight shared UI primitives are introduced for staged redesign work: button class helpers, surface panels, status badges, empty states and section headings.
 - Initial integration is deliberately narrow: catalog and cart empty states use the shared empty-state pattern, and the customer orders list uses the shared status badge.
 - Full visual redesign remains a future staged effort; payment, webhook, pricing, checkout submit, order creation and status mutation logic remain untouched.
+
+## Live design system foundation smoke-check
+
+- Design system foundation was published in commit `5d23823` and Vercel deployment reached Ready.
+- Production smoke-check passed for `/catalog`, `/cart` and `/orders`.
+- Shared `EmptyState` integration for catalog/cart and `StatusBadge` integration for customer orders did not break visible UX.
+- Current read-only baseline remains `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
+- Payment, order and webhook runtime logic was not changed by this foundation.
+- Next visual direction checkpoint: KARMA Neon Mask / storefront redesign foundation.

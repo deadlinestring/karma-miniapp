@@ -829,3 +829,10 @@ Foundation patterns:
 The first safe integration uses these primitives only in catalog/cart empty states and the customer orders payment badge. This does not change checkout, cart calculations, order creation, payment prepare, webhook handling or admin status updates.
 
 Future visual redesign should continue in small slices: storefront cards and sections first, then checkout/order detail, then admin panels.
+
+Live smoke-check:
+
+- deployment of commit `5d23823` reached Ready;
+- `/catalog`, `/cart` and `/orders` were visually checked in production;
+- catalog/cart empty states and customer orders payment badge remained usable;
+- the next design stage is KARMA Neon Mask visual direction / storefront redesign foundation.

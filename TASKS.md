@@ -592,3 +592,11 @@
 - Minimal integration scope: catalog empty state, cart empty state and customer order payment badge.
 - Redesign order should stay staged: storefront surfaces first, then checkout/order detail, then admin panels.
 - Payment, webhook, order creation, pricing and status mutation runtime stay untouched in this step.
+
+## Live design system foundation smoke-check
+
+- Design system foundation commit `5d23823` deployed successfully.
+- Production `/catalog`, `/cart` and `/orders` were visually smoke-checked after Vercel Ready.
+- `EmptyState` and `StatusBadge` minimal integrations did not break the checked UX.
+- Runtime payment/order/webhook logic remained untouched.
+- Next stage: KARMA Neon Mask visual direction / storefront redesign foundation.

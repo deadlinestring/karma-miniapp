@@ -588,3 +588,10 @@ Prisma migrations и другие CLI-операции используют Supa
 - Shared primitives should cover repeated low-risk patterns first: surfaces, empty states, status badges and section headings.
 - Initial rollout is limited to catalog/cart empty states and customer order payment badges so checkout, payment, webhook, pricing and order mutation logic remain unchanged.
 - A broader redesign should proceed screen by screen after this foundation is verified.
+
+## Live design system foundation smoke-check decision
+
+- Production smoke-check confirmed that the first shared primitives can be used without disrupting existing storefront flows.
+- `/catalog`, `/cart` and `/orders` are the verified baseline screens for `EmptyState` and `StatusBadge`.
+- The next visual iteration should establish KARMA Neon Mask direction on storefront surfaces before touching checkout/order/admin complexity.
+- Payment, order and webhook behavior must remain outside visual redesign work unless a dedicated runtime task explicitly requires it.
