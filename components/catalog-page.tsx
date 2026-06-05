@@ -6,9 +6,11 @@ import { useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { ProductCard } from "@/components/product-card";
 import { ProductModal } from "@/components/product-modal";
+import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
 import type { StorefrontCatalogData, StorefrontProduct } from "@/lib/storefront-types";
 
 type FilterValue = "Все" | string;
+const catalogContentSlugs = ["catalog-intro-help", "catalog-empty-state"];
 
 export function CatalogPage({
   data,
@@ -23,6 +25,7 @@ export function CatalogPage({
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<FilterValue>("Все");
   const [openedProduct, setOpenedProduct] = useState<StorefrontProduct | null>(null);
+  const { getBlock } = useContentBlocks(catalogContentSlugs);
 
   const categories = useMemo(() => data?.categories ?? [], [data?.categories]);
   const products = useMemo(() => data?.products ?? [], [data?.products]);
@@ -52,6 +55,8 @@ export function CatalogPage({
       return categoryMatch && queryMatch;
     });
   }, [category, products, query]);
+  const introBlock = getBlock("catalog-intro-help");
+  const emptyBlock = getBlock("catalog-empty-state");
 
   if (loadError || !data) {
     return (
@@ -65,7 +70,14 @@ export function CatalogPage({
     <AppShell>
       <section>
         <p className="text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">каталог</p>
-        <h1 className="mt-2 text-3xl font-black text-white">Выбери свет под свою комнату</h1>
+        {introBlock?.title ? <h1 className="mt-2 text-3xl font-black text-white">{introBlock.title}</h1> : null}
+        {introBlock?.body ? (
+          <div className="mt-2 grid gap-1 text-sm leading-6 text-white/58">
+            {renderContentBlockLines(introBlock.body).map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+        ) : null}
         <div className="mt-5 flex items-center gap-3 rounded-3xl border border-white/10 bg-white/8 px-4 py-3">
           <Search size={20} className="text-white/45" />
           <input
@@ -101,8 +113,14 @@ export function CatalogPage({
         ))}
         {filteredProducts.length === 0 ? (
           <div className="col-span-2 rounded-3xl border border-white/10 bg-white/7 p-8 text-center">
-            <p className="text-lg font-black text-white">Ничего не найдено</p>
-            <p className="mt-2 text-sm text-white/55">Попробуй другой запрос или категорию.</p>
+            {emptyBlock?.title ? <p className="text-lg font-black text-white">{emptyBlock.title}</p> : null}
+            {emptyBlock?.body ? (
+              <div className="mt-2 grid gap-1 text-sm text-white/55">
+                {renderContentBlockLines(emptyBlock.body).map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+              </div>
+            ) : null}
           </div>
         ) : null}
       </section>

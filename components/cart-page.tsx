@@ -5,15 +5,18 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { ActionButton } from "@/components/action-button";
 import { ProductVisual } from "@/components/product-visual";
+import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
 import { formatKopecks } from "@/lib/pricing";
 import { useCartStore, useCartTotals } from "@/store/cart-store";
 
 export function CartPage() {
+  const { getBlock } = useContentBlocks(["cart-empty-state"]);
   const items = useCartStore((state) => state.items);
   const increment = useCartStore((state) => state.increment);
   const decrement = useCartStore((state) => state.decrement);
   const removeItem = useCartStore((state) => state.removeItem);
   const { totalKopecks } = useCartTotals();
+  const emptyBlock = getBlock("cart-empty-state");
 
   return (
     <AppShell>
@@ -25,16 +28,22 @@ export function CartPage() {
       {items.length === 0 ? (
         <div className="mt-6 rounded-[28px] border border-white/10 bg-white/7 p-8 text-center shadow-violet">
           <div className="mx-auto h-24 w-24 rounded-full bg-neon-violet/15 blur-sm" />
-          <h2 className="mt-4 text-xl font-black text-white">Здесь пока пусто</h2>
-          <p className="mt-2 text-sm leading-6 text-white/60">
-            Выберите ночник из каталога или соберите свой дизайн.
-          </p>
-          <Link
-            href="/catalog"
-            className="mt-5 inline-flex h-12 items-center justify-center rounded-2xl bg-gradient-to-r from-neon-violet to-neon-cyan px-5 text-sm font-black text-white shadow-glow"
-          >
-            Открыть каталог
-          </Link>
+          {emptyBlock?.title ? <h2 className="mt-4 text-xl font-black text-white">{emptyBlock.title}</h2> : null}
+          {emptyBlock?.body ? (
+            <div className="mt-2 grid gap-1 text-sm leading-6 text-white/60">
+              {renderContentBlockLines(emptyBlock.body).map((line) => (
+                <p key={line}>{line}</p>
+              ))}
+            </div>
+          ) : null}
+          {emptyBlock?.ctaHref && emptyBlock.ctaLabel ? (
+            <Link
+              href={emptyBlock.ctaHref}
+              className="mt-5 inline-flex h-12 items-center justify-center rounded-2xl bg-gradient-to-r from-neon-violet to-neon-cyan px-5 text-sm font-black text-white shadow-glow"
+            >
+              {emptyBlock.ctaLabel}
+            </Link>
+          ) : null}
         </div>
       ) : (
         <>

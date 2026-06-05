@@ -107,6 +107,50 @@ export const DEFAULT_CONTENT_BLOCKS: ContentBlockDto[] = [
     isActive: true
   },
   {
+    id: "draft-catalog-intro-help",
+    slug: "catalog-intro-help",
+    page: "catalog",
+    title: "Выбери свет под свою комнату",
+    body: null,
+    ctaLabel: null,
+    ctaHref: null,
+    sortOrder: 6,
+    isActive: true
+  },
+  {
+    id: "draft-catalog-empty-state",
+    slug: "catalog-empty-state",
+    page: "catalog",
+    title: "Ничего не найдено",
+    body: "Попробуй другой запрос или категорию.",
+    ctaLabel: null,
+    ctaHref: null,
+    sortOrder: 7,
+    isActive: true
+  },
+  {
+    id: "draft-cart-empty-state",
+    slug: "cart-empty-state",
+    page: "cart",
+    title: "Здесь пока пусто",
+    body: "Выберите ночник из каталога или соберите свой дизайн.",
+    ctaLabel: "Открыть каталог",
+    ctaHref: "/catalog",
+    sortOrder: 8,
+    isActive: true
+  },
+  {
+    id: "draft-orders-intro-help",
+    slug: "orders-intro-help",
+    page: "orders",
+    title: null,
+    body: "Здесь видны только заказы текущего Telegram-аккаунта.",
+    ctaLabel: null,
+    ctaHref: null,
+    sortOrder: 9,
+    isActive: true
+  },
+  {
     id: "draft-checkout-delivery-help",
     slug: "checkout-delivery-help",
     page: "checkout",
@@ -159,6 +203,28 @@ export const DEFAULT_CONTENT_BLOCKS: ContentBlockDto[] = [
     ctaLabel: "Как проходит заказ?",
     ctaHref: "/faq",
     sortOrder: 50,
+    isActive: true
+  },
+  {
+    id: "draft-custom-product-features-help",
+    slug: "custom-product-features-help",
+    page: "product",
+    title: null,
+    body: "Мягкое теплое свечение\nИзготовим под заказ\nМожно изменить дизайн под себя",
+    ctaLabel: null,
+    ctaHref: null,
+    sortOrder: 55,
+    isActive: true
+  },
+  {
+    id: "draft-custom-upload-requirements-help",
+    slug: "custom-upload-requirements-help",
+    page: "product",
+    title: "Изображение",
+    body: "JPEG, PNG или WEBP до 8 МБ",
+    ctaLabel: null,
+    ctaHref: null,
+    sortOrder: 56,
     isActive: true
   },
   {

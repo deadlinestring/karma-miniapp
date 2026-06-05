@@ -26,11 +26,17 @@ const placementLabels: Record<string, string> = {
   "home-hero-subtitle": "Главная: hero-подзаголовок",
   "home-hero-primary-cta": "Главная: основная hero-кнопка",
   "home-hero-secondary-cta": "Главная: кнопка своего дизайна",
+  "catalog-intro-help": "Каталог: заголовок/intro",
+  "catalog-empty-state": "Каталог: пустая выдача",
+  "cart-empty-state": "Корзина: пустое состояние",
+  "orders-intro-help": "Мои заказы: пояснение",
   "checkout-delivery-help": "Checkout: подсказка про доставку",
   "checkout-custom-review-help": "Checkout: подсказка про проверку своего дизайна",
   "payment-disabled-guidance": "Заказ: онлайн-оплата выключена",
   "payment-pending-guidance": "Заказ: ожидает оплаты",
   "custom-design-help": "Карточка товара «Свой дизайн»",
+  "custom-product-features-help": "Карточка товара: преимущества",
+  "custom-upload-requirements-help": "Карточка товара: требования к изображению",
   "support-cta": "Заказ: связь с менеджером",
   "orders-empty-state": "Мои заказы: пустое состояние"
 };

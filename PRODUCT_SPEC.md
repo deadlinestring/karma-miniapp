@@ -792,3 +792,17 @@ Live verification:
 - disabling `home-hero-eyebrow` through `isActive` hides the eyebrow;
 - hero title/subtitle/CTA labels are available through ContentBlock defaults/overrides;
 - CTA actions remain unchanged and are not editable content behavior.
+
+## Additional Managed Help Blocks
+
+The ContentBlock layer also covers remaining small business/help placements without changing layout or order/payment logic:
+
+- `catalog-intro-help`: catalog intro headline/body;
+- `catalog-empty-state`: no-results copy in catalog;
+- `cart-empty-state`: empty cart title/body/catalog CTA;
+- `orders-intro-help`: explanatory copy on `/orders`;
+- `orders-empty-state`: empty customer orders title/body/catalog CTA;
+- `custom-product-features-help`: product modal feature bullets;
+- `custom-upload-requirements-help`: custom upload title and image requirements.
+
+All connected content renders as plain React text. Saved inactive blocks hide the connected public block. Missing rows use default drafts from code. Form labels, validation errors, technical errors, status labels and payment/webhook diagnostics remain system copy in code.

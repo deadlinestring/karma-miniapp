@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
+import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
 import { formatKopecks } from "@/lib/pricing";
 
 type CustomerOrderListItem = {
@@ -28,11 +29,14 @@ type OrdersResponse =
   | { ok: false; message: string };
 
 export function CustomerOrdersPage() {
+  const { getBlock } = useContentBlocks(["orders-intro-help", "orders-empty-state"]);
   const [initData, setInitData] = useState<string | null>(null);
   const [telegramChecked, setTelegramChecked] = useState(false);
   const [orders, setOrders] = useState<CustomerOrderListItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const introBlock = getBlock("orders-intro-help");
+  const emptyBlock = getBlock("orders-empty-state");
 
   useEffect(() => {
     const telegramInitData = window.Telegram?.WebApp?.initData;
@@ -85,9 +89,14 @@ export function CustomerOrdersPage() {
       <section>
         <p className="text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">заказы</p>
         <h1 className="mt-2 text-3xl font-black text-white">Мои заказы</h1>
-        <p className="mt-2 text-sm leading-6 text-white/58">
-          Здесь видны только заказы текущего Telegram-аккаунта.
-        </p>
+        {introBlock ? (
+          <div className="mt-2 grid gap-1 text-sm leading-6 text-white/58">
+            {introBlock.title ? <p className="font-bold text-white/72">{introBlock.title}</p> : null}
+            {renderContentBlockLines(introBlock.body).map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+        ) : null}
       </section>
 
       {telegramChecked && !initData ? (
@@ -113,16 +122,22 @@ export function CustomerOrdersPage() {
 
       {!isLoading && initData && !error && orders.length === 0 ? (
         <section className="mt-6 rounded-[28px] border border-white/10 bg-white/7 p-8 text-center shadow-violet">
-          <h2 className="text-xl font-black text-white">У вас пока нет заказов.</h2>
-          <p className="mt-2 text-sm leading-6 text-white/60">
-            После оформления заказа здесь появятся его статус, состав и итоговая сумма.
-          </p>
-          <Link
-            href="/catalog"
-            className="mt-5 inline-flex h-12 items-center justify-center rounded-2xl bg-gradient-to-r from-neon-violet to-neon-cyan px-5 text-sm font-black text-white shadow-glow"
-          >
-            Перейти в каталог
-          </Link>
+          {emptyBlock?.title ? <h2 className="text-xl font-black text-white">{emptyBlock.title}</h2> : null}
+          {emptyBlock?.body ? (
+            <div className="mt-2 grid gap-1 text-sm leading-6 text-white/60">
+              {renderContentBlockLines(emptyBlock.body).map((line) => (
+                <p key={line}>{line}</p>
+              ))}
+            </div>
+          ) : null}
+          {emptyBlock?.ctaHref && emptyBlock.ctaLabel ? (
+            <Link
+              href={emptyBlock.ctaHref}
+              className="mt-5 inline-flex h-12 items-center justify-center rounded-2xl bg-gradient-to-r from-neon-violet to-neon-cyan px-5 text-sm font-black text-white shadow-glow"
+            >
+              {emptyBlock.ctaLabel}
+            </Link>
+          ) : null}
         </section>
       ) : null}
 

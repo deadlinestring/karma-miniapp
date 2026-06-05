@@ -562,3 +562,13 @@ Prisma migrations и другие CLI-операции используют Supa
 - Home hero title/subtitle and CTA labels remain allowlisted ContentBlock defaults/overrides, with StoreSettings fallback for title/subtitle.
 - CTA behavior stays code-owned to avoid accidental navigation/modal changes from content edits.
 - A broader visual redesign remains a future stage and should not be mixed with content-block management.
+
+## ContentBlock cleanup decision
+
+- Remaining business/help copy can be connected to the existing allowlisted ContentBlock model; no schema change is needed.
+- Added cleanup slugs only for connected placements: `catalog-intro-help`, `catalog-empty-state`, `cart-empty-state`, `orders-intro-help`, `custom-product-features-help`, `custom-upload-requirements-help`.
+- Existing `orders-empty-state` remains the canonical customer orders empty-state slug and is now used by the `/orders` page.
+- Inactive ContentBlock rows hide optional public help/empty-state blocks; missing rows fall back to code-defined defaults.
+- CTA href/labels can be content-managed where the action is simple navigation, but upload, cart, checkout, payment and modal behavior stay code-owned.
+- System copy remains code-owned: form labels, validation/safety errors, enum labels, protected endpoint messages, diagnostics and provider/webhook safety copy.
+- This cleanup must not change pricing, payment prepare, webhook, order creation or status mutation behavior.

@@ -321,3 +321,16 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Current read-only baseline: `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
 - Production data was not changed by this docs checkpoint beyond the already performed user admin edits.
 - Full visual redesign remains a separate future stage.
+
+## ContentBlock cleanup checkpoint
+
+- ContentBlock cleanup is prepared locally with no migration.
+- Current read-only baseline before this code change: `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
+- New connected slugs: `catalog-intro-help`, `catalog-empty-state`, `cart-empty-state`, `orders-intro-help`, `custom-product-features-help`, `custom-upload-requirements-help`.
+- Existing `orders-empty-state` is now connected on `/orders`.
+- Connected UI surfaces: catalog intro/empty state, cart empty state, customer orders intro/empty state, product modal feature bullets and custom upload requirements.
+- Missing rows fall back to code defaults; inactive saved rows hide the connected public block.
+- System copy remains in code: form labels, validation errors, enum/status labels, endpoint errors and provider/webhook diagnostics.
+- Payment, webhook, pricing, checkout submit, order creation and status mutation logic remain untouched.
+- Production data remains unchanged during this development stage.
+- Full visual redesign remains a separate future stage.

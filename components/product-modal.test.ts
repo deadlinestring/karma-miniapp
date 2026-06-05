@@ -20,10 +20,18 @@ describe("product modal custom design flow", () => {
   });
 
   it("explains custom review and links to FAQ", () => {
-    expect(source).toContain('useContentBlocks(["custom-design-help"])');
+    expect(source).toContain('"custom-design-help"');
     expect(source).toContain("customDesignHelpBlock.ctaHref");
     expect(source).toContain("customDesignHelpBlock.ctaLabel");
     expect(source).toContain("renderContentBlockLines(customDesignHelpBlock.body)");
     expect(source).not.toContain("dangerouslySetInnerHTML");
+  });
+
+  it("uses content blocks for product features and upload requirements", () => {
+    expect(source).toContain('"custom-product-features-help"');
+    expect(source).toContain('"custom-upload-requirements-help"');
+    expect(source).toContain("renderContentBlockLines(customProductFeaturesBlock.body)");
+    expect(source).toContain("customUploadRequirementsBlock?.title");
+    expect(source).toContain("customUploadRequirementsBlock?.body");
   });
 });

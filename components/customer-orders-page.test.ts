@@ -14,13 +14,20 @@ describe("customer orders page", () => {
 
   it("shows outside Telegram and empty states", () => {
     expect(source).toContain("Заказы доступны внутри Telegram Mini App.");
-    expect(source).toContain("У вас пока нет заказов.");
+    expect(source).toContain('"orders-empty-state"');
+    expect(source).toContain("emptyBlock?.title");
   });
 
   it("links order cards to the detail route", () => {
     expect(source).toContain("Мои заказы");
-    expect(source).toContain("Здесь видны только заказы текущего Telegram-аккаунта");
+    expect(source).toContain('"orders-intro-help"');
     expect(source).toContain("href={`/orders/${order.publicNumber}`}");
     expect(source).toContain("Открыть");
+  });
+
+  it("renders intro and empty state content as plain text", () => {
+    expect(source).toContain("renderContentBlockLines(introBlock.body)");
+    expect(source).toContain("renderContentBlockLines(emptyBlock.body)");
+    expect(source).not.toContain("dangerouslySetInnerHTML");
   });
 });

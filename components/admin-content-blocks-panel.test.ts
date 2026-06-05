@@ -26,4 +26,13 @@ describe("admin content blocks panel", () => {
     expect(source).toContain('"home-hero-primary-cta"');
     expect(source).toContain('"home-hero-secondary-cta"');
   });
+
+  it("shows placement labels for cleanup blocks", () => {
+    expect(source).toContain('"catalog-intro-help"');
+    expect(source).toContain('"catalog-empty-state"');
+    expect(source).toContain('"cart-empty-state"');
+    expect(source).toContain('"orders-intro-help"');
+    expect(source).toContain('"custom-product-features-help"');
+    expect(source).toContain('"custom-upload-requirements-help"');
+  });
 });

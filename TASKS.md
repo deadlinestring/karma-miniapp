@@ -562,3 +562,14 @@
 - Hero title/subtitle and CTA labels are available through ContentBlock defaults/overrides.
 - CTA actions did not change: catalog still opens `/catalog`, and custom design still opens the existing product modal.
 - Full visual redesign remains a separate future stage.
+
+## ContentBlock cleanup
+
+- ContentBlock cleanup is prepared without a new migration.
+- Newly connected default draft blocks: `catalog-intro-help`, `catalog-empty-state`, `cart-empty-state`, `orders-intro-help`, `custom-product-features-help`, `custom-upload-requirements-help`.
+- Existing `orders-empty-state` is now connected to the customer orders empty state.
+- Connected UI surfaces: catalog intro/empty state, cart empty state, customer orders intro/empty state, product modal feature bullets and custom upload requirements.
+- Missing rows use code defaults; inactive saved rows hide the connected public block.
+- System copy remains code-owned: form labels, validation errors, technical endpoint messages, enum/status labels and core action buttons.
+- Payment, webhook, pricing, checkout submit and order status logic remain untouched.
+- Full visual redesign remains a separate future stage.

@@ -25,6 +25,8 @@ describe("content blocks repository", () => {
     expect(blocks.map((block) => block.slug)).toEqual(DEFAULT_CONTENT_BLOCKS.map((block) => block.slug));
     expect(blocks).toContainEqual(expect.objectContaining({ slug: "checkout-delivery-help", isActive: true }));
     expect(blocks).toContainEqual(expect.objectContaining({ slug: "home-hero-eyebrow", page: "home", isActive: true }));
+    expect(blocks).toContainEqual(expect.objectContaining({ slug: "cart-empty-state", page: "cart", isActive: true }));
+    expect(blocks).toContainEqual(expect.objectContaining({ slug: "custom-upload-requirements-help", page: "product", isActive: true }));
   });
 
   it("returns only active public blocks and lets inactive DB rows hide defaults", async () => {
@@ -67,6 +69,26 @@ describe("content blocks repository", () => {
     expect(blocks).toEqual([]);
   });
 
+  it("lets inactive cleanup blocks hide their public UI", async () => {
+    const services = makeServices([
+      {
+        id: "saved-cart-empty",
+        slug: "cart-empty-state",
+        page: "cart",
+        title: "Hidden",
+        body: "Hidden",
+        ctaLabel: null,
+        ctaHref: null,
+        sortOrder: 8,
+        isActive: false
+      }
+    ]);
+
+    const blocks = await getPublicContentBlocksWithServices(["cart-empty-state"], services);
+
+    expect(blocks).toEqual([]);
+  });
+
   it("falls back to default public blocks when the table is unavailable", async () => {
     const services = {
       contentBlock: {
@@ -85,6 +107,14 @@ describe("content blocks repository", () => {
 
     expect(blocks).toContainEqual(expect.objectContaining({ slug: "home-hero-eyebrow", title: "НОЧНИКИ ПО ТВОЕЙ ИДЕЕ" }));
     expect(blocks).toContainEqual(expect.objectContaining({ slug: "home-hero-primary-cta", ctaHref: "/catalog" }));
+  });
+
+  it("returns cleanup defaults when saved rows are missing", async () => {
+    const services = makeServices([]);
+    const blocks = await getPublicContentBlocksWithServices(["catalog-empty-state", "cart-empty-state"], services);
+
+    expect(blocks).toContainEqual(expect.objectContaining({ slug: "catalog-empty-state", title: "Ничего не найдено" }));
+    expect(blocks).toContainEqual(expect.objectContaining({ slug: "cart-empty-state", ctaHref: "/catalog" }));
   });
 
   it("upserts validated blocks by slug", async () => {

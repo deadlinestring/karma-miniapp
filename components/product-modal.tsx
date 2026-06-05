@@ -26,7 +26,7 @@ export function ProductModal({
   product: StorefrontProduct | null;
   onClose: () => void;
 }) {
-  const { getBlock } = useContentBlocks(["custom-design-help"]);
+  const { getBlock } = useContentBlocks(["custom-design-help", "custom-product-features-help", "custom-upload-requirements-help"]);
   const [selectedType, setSelectedType] = useState<StorefrontItemType>("STANDARD");
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [activeImage, setActiveImage] = useState<string | null>(null);
@@ -95,6 +95,9 @@ export function ProductModal({
     activeVariants[0] ??
     product.variants[0];
   const customDesignHelpBlock = getBlock("custom-design-help");
+  const customProductFeaturesBlock = getBlock("custom-product-features-help");
+  const customUploadRequirementsBlock = getBlock("custom-upload-requirements-help");
+  const customProductFeatureIcons = [Sparkles, Wand2, ImagePlus];
 
   const canAddToCart =
     Boolean(selectedVariant) &&
@@ -248,22 +251,20 @@ export function ProductModal({
             </div>
             <p className="mt-4 text-sm leading-6 text-white/72">{product.description}</p>
 
-            <div className="mt-4 grid gap-2">
-              {[
-                { icon: Sparkles, text: "Мягкое теплое свечение" },
-                { icon: Wand2, text: "Изготовим под заказ" },
-                { icon: ImagePlus, text: "Можно изменить дизайн под себя" }
-              ].map((item) => {
-                const Icon = item.icon;
+            {customProductFeaturesBlock ? (
+              <div className="mt-4 grid gap-2">
+                {renderContentBlockLines(customProductFeaturesBlock.body).map((line, index) => {
+                  const Icon = customProductFeatureIcons[index % customProductFeatureIcons.length];
 
-                return (
-                  <div key={item.text} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/7 px-3 py-2">
-                    <Icon size={16} className="text-neon-cyan" />
-                    <span className="text-sm font-semibold text-white/76">{item.text}</span>
-                  </div>
-                );
-              })}
-            </div>
+                  return (
+                    <div key={line} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/7 px-3 py-2">
+                      <Icon size={16} className="text-neon-cyan" />
+                      <span className="text-sm font-semibold text-white/76">{line}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null}
 
             {product.isCustom ? (
               <div className="hidden">
@@ -314,8 +315,12 @@ export function ProductModal({
                 </div>
 
                 <label className="mt-4 block rounded-2xl border border-white/10 bg-white/7 p-3">
-                  <span className="block text-sm font-bold text-white">Изображение</span>
-                  <span className="mt-1 block text-xs text-white/54">JPEG, PNG или WEBP до 8 МБ</span>
+                  {customUploadRequirementsBlock?.title ? (
+                    <span className="block text-sm font-bold text-white">{customUploadRequirementsBlock.title}</span>
+                  ) : null}
+                  {customUploadRequirementsBlock?.body ? (
+                    <span className="mt-1 block text-xs text-white/54">{customUploadRequirementsBlock.body}</span>
+                  ) : null}
                   <input
                     className="mt-3 block w-full text-xs text-white/70 file:mr-3 file:rounded-xl file:border-0 file:bg-neon-cyan/20 file:px-3 file:py-2 file:text-xs file:font-bold file:text-neon-cyan"
                     type="file"
