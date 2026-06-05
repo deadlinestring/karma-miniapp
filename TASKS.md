@@ -610,3 +610,12 @@
 - Minimal integration scope: home hero background/watermark and shared empty-state watermark.
 - Keep ContentBlock logic, CTA actions, payment/order/webhook runtime and production data unchanged.
 - Next stage after review: storefront redesign foundation in small slices.
+
+## Live real KARMA mask asset smoke-check
+
+- Production smoke-check after Vercel Ready confirmed the real KARMA mask asset.
+- `BrandMaskWatermark` uses `public/brand/karma-mask.svg`; abstract placeholder is removed.
+- Home hero and empty states were visually checked.
+- Watermark remains decorative and non-interactive.
+- Payment/order/webhook runtime logic did not change.
+- Next stage: storefront/home redesign using Neon Mask tokens and the real mask asset.

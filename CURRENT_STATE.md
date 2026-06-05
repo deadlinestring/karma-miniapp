@@ -373,3 +373,13 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Minimal integration: home hero gets the Neon Mask background/watermark layer, and shared `EmptyState` can show a subtle mask watermark.
 - ContentBlock hero copy, CTA behavior, catalog/product/checkout/payment/order/webhook runtime logic and production data remain untouched.
 - Full storefront redesign remains the next staged visual work after this foundation is reviewed.
+
+## Live real KARMA mask asset smoke-check
+
+- Real KARMA mask asset deployment was smoke-checked in production after commit `2d4261b`.
+- `public/brand/karma-mask.svg` is used by `BrandMaskWatermark`; the abstract placeholder is no longer used.
+- Visual check passed on the home hero and connected empty states.
+- The mask remains a decorative non-interactive watermark: `aria-hidden`, empty alt text, pointer-events disabled and not draggable.
+- Current read-only baseline remains `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
+- Payment, order and webhook runtime logic remained untouched.
+- Next staged visual step: storefront/home redesign using Neon Mask tokens and the real mask asset.

@@ -604,3 +604,10 @@ Prisma migrations и другие CLI-операции используют Supa
 - No external URL or inline base64 image data should be used for the mask.
 - Neon/violet/magenta glow should support a premium anime/gaming feel without casino-like color overload.
 - Payment, order, webhook, checkout and ContentBlock behavior remain outside this visual direction task.
+
+## Live real KARMA mask asset smoke-check decision
+
+- Production smoke-check confirmed the real mask asset is the correct foundation for future Neon Mask visuals.
+- The abstract placeholder must not return; future mask refinements should update the asset or its restrained presentation classes.
+- Home hero and empty states are the verified first placements.
+- The next redesign stage should use the real mask asset as a watermark/accent, not as primary content or repeated decoration.
