@@ -334,3 +334,15 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Payment, webhook, pricing, checkout submit, order creation and status mutation logic remain untouched.
 - Production data remains unchanged during this development stage.
 - Full visual redesign remains a separate future stage.
+
+## Live ContentBlock cleanup checkpoint
+
+- ContentBlock cleanup was live-checked in production after commit `f750b3b`.
+- New cleanup blocks appeared in admin `Блоки интерфейса`.
+- Editing works for catalog/cart/orders/custom help blocks.
+- `isActive` hides connected public blocks.
+- Checked slugs: `catalog-intro-help`, `catalog-empty-state`, `cart-empty-state`, `orders-intro-help`, `custom-product-features-help`, `custom-upload-requirements-help`.
+- Current read-only baseline: `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
+- Production data was not changed by this docs checkpoint beyond already performed user admin checks.
+- Payment, order and webhook runtime logic remains unchanged.
+- Next recommended stage: design system / visual redesign foundation.

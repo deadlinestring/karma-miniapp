@@ -573,3 +573,13 @@
 - System copy remains code-owned: form labels, validation errors, technical endpoint messages, enum/status labels and core action buttons.
 - Payment, webhook, pricing, checkout submit and order status logic remain untouched.
 - Full visual redesign remains a separate future stage.
+
+## Live ContentBlock cleanup verification
+
+- ContentBlock cleanup was live-checked in production after commit `f750b3b`.
+- New cleanup blocks appeared in admin `Блоки интерфейса`.
+- Editing works for catalog/cart/orders/custom help blocks.
+- `isActive` hides connected public blocks.
+- Checked admin-managed slugs: `catalog-intro-help`, `catalog-empty-state`, `cart-empty-state`, `orders-intro-help`, `custom-product-features-help`, `custom-upload-requirements-help`.
+- Payment, order and webhook runtime logic did not change.
+- Next recommended stage: design system / visual redesign foundation.

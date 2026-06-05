@@ -806,3 +806,10 @@ The ContentBlock layer also covers remaining small business/help placements with
 - `custom-upload-requirements-help`: custom upload title and image requirements.
 
 All connected content renders as plain React text. Saved inactive blocks hide the connected public block. Missing rows use default drafts from code. Form labels, validation errors, technical errors, status labels and payment/webhook diagnostics remain system copy in code.
+
+Live verification:
+
+- cleanup ContentBlocks were verified in production after commit `f750b3b`;
+- admin can see and edit the cleanup blocks;
+- `isActive` hides connected catalog/cart/orders/custom help blocks;
+- payment, order, webhook and pricing runtime behavior is unchanged.

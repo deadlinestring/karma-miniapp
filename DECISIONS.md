@@ -572,3 +572,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - CTA href/labels can be content-managed where the action is simple navigation, but upload, cart, checkout, payment and modal behavior stay code-owned.
 - System copy remains code-owned: form labels, validation/safety errors, enum labels, protected endpoint messages, diagnostics and provider/webhook safety copy.
 - This cleanup must not change pricing, payment prepare, webhook, order creation or status mutation behavior.
+
+## Live ContentBlock cleanup verification decision
+
+- Production live-check confirmed that the cleanup ContentBlock slugs appear in admin and can be edited.
+- `isActive` is confirmed as the public hide mechanism for catalog/cart/orders/custom help blocks.
+- The checked cleanup slugs remain allowlisted and are not arbitrary CMS entries.
+- Payment, order and webhook behavior stays outside ContentBlock management.
+- The next larger UI step should be design system / visual redesign foundation, not more runtime behavior changes.
