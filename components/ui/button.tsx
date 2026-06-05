@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type UiButtonVariant = "primary" | "secondary" | "ghost";
+type UiButtonVariant = "primary" | "secondary" | "ghost" | "mask";
 type UiButtonSize = "sm" | "md";
 
 const baseButtonClass =
@@ -10,7 +10,8 @@ const baseButtonClass =
 const variantClass: Record<UiButtonVariant, string> = {
   primary: "bg-gradient-to-r from-neon-violet via-neon-blue to-neon-cyan text-white shadow-glow",
   secondary: "border border-white/12 bg-white/8 text-white hover:bg-white/12",
-  ghost: "border border-neon-cyan/30 bg-neon-cyan/10 text-neon-cyan hover:bg-neon-cyan/16"
+  ghost: "border border-neon-cyan/30 bg-neon-cyan/10 text-neon-cyan hover:bg-neon-cyan/16",
+  mask: "border border-neon-pink/30 bg-neon-violet/14 text-white shadow-[0_0_34px_rgba(255,79,216,0.18)] hover:bg-neon-pink/14"
 };
 
 const sizeClass: Record<UiButtonSize, string> = {

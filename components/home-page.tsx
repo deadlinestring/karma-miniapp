@@ -10,6 +10,8 @@ import type { StorefrontHomeData, StorefrontProduct } from "@/lib/storefront-typ
 import { AppShell } from "@/components/app-shell";
 import { ProductCard } from "@/components/product-card";
 import { ProductModal } from "@/components/product-modal";
+import { BrandMaskWatermark } from "@/components/ui/brand-mask-watermark";
+import { neonMaskBackground, neonMaskBorder, neonMaskGradientText } from "@/components/ui/neon-mask-tokens";
 import type { UiContentBlock } from "@/components/use-content-blocks";
 import { useContentBlocks } from "@/components/use-content-blocks";
 
@@ -53,7 +55,7 @@ export function HomePage({
 
   return (
     <AppShell settings={data.settings}>
-      <section className="relative min-h-[540px] overflow-hidden rounded-[30px] border border-white/10 bg-white/8 p-6 shadow-violet">
+      <section className={`relative min-h-[540px] overflow-hidden rounded-[30px] ${neonMaskBorder} ${neonMaskBackground} p-6 shadow-violet`}>
         <img
           src={heroImage}
           alt={`Светящийся акриловый ночник ${data.settings.storeName}`}
@@ -61,6 +63,7 @@ export function HomePage({
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/18 via-black/42 to-black/88" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(49,246,255,0.2),transparent_20rem)]" />
+        <BrandMaskWatermark variant="hero" className="absolute -right-16 top-10 rotate-6" />
         <div className="relative flex min-h-[492px] flex-col justify-end">
           {heroEyebrow ? (
             <p className="text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">
@@ -68,7 +71,7 @@ export function HomePage({
             </p>
           ) : null}
           {heroTitle ? (
-            <h1 className="mt-5 text-4xl font-black leading-[1.05] text-white">
+            <h1 className={`mt-5 text-4xl font-black leading-[1.05] ${neonMaskGradientText}`}>
               {heroTitle}
             </h1>
           ) : null}

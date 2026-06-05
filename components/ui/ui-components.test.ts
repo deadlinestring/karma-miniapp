@@ -7,6 +7,8 @@ const uiDir = join(__dirname);
 describe("shared UI foundation", () => {
   const buttonSource = readFileSync(join(uiDir, "button.tsx"), "utf8");
   const emptyStateSource = readFileSync(join(uiDir, "empty-state.tsx"), "utf8");
+  const maskSource = readFileSync(join(uiDir, "brand-mask-watermark.tsx"), "utf8");
+  const tokenSource = readFileSync(join(uiDir, "neon-mask-tokens.ts"), "utf8");
   const statusBadgeSource = readFileSync(join(uiDir, "status-badge.tsx"), "utf8");
   const surfaceSource = readFileSync(join(uiDir, "surface.tsx"), "utf8");
   const headingSource = readFileSync(join(uiDir, "section-heading.tsx"), "utf8");
@@ -15,6 +17,7 @@ describe("shared UI foundation", () => {
     expect(buttonSource).toContain('type = "button"');
     expect(buttonSource).toContain("disabled:cursor-not-allowed");
     expect(buttonSource).toContain("focus-visible:ring-neon-cyan");
+    expect(buttonSource).toContain('"mask"');
     expect(buttonSource).toContain("className");
   });
 
@@ -22,7 +25,24 @@ describe("shared UI foundation", () => {
     expect(emptyStateSource).toContain("bodyLines.map");
     expect(emptyStateSource).toContain("UiButtonLink");
     expect(emptyStateSource).toContain("ctaHref");
+    expect(emptyStateSource).toContain("BrandMaskWatermark");
     expect(emptyStateSource).not.toContain("dangerouslySetInnerHTML");
+  });
+
+  it("renders brand mask watermark as decorative non-interactive UI", () => {
+    expect(maskSource).toContain('aria-hidden="true"');
+    expect(maskSource).toContain("pointer-events-none");
+    expect(maskSource).toContain("variant = \"subtle\"");
+    expect(maskSource).toContain("hero");
+    expect(maskSource).toContain("empty");
+    expect(maskSource).not.toContain("http");
+  });
+
+  it("keeps Neon Mask tokens as lightweight class constants", () => {
+    expect(tokenSource).toContain("neonMaskBackground");
+    expect(tokenSource).toContain("neonMaskSurface");
+    expect(tokenSource).toContain("neonMaskHover");
+    expect(tokenSource).toContain("motion-reduce");
   });
 
   it("provides reusable surface, status badge and section heading patterns", () => {

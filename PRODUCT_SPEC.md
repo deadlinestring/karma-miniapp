@@ -836,3 +836,17 @@ Live smoke-check:
 - `/catalog`, `/cart` and `/orders` were visually checked in production;
 - catalog/cart empty states and customer orders payment badge remained usable;
 - the next design stage is KARMA Neon Mask visual direction / storefront redesign foundation.
+
+## KARMA Neon Mask visual direction
+
+The next visual foundation is `KARMA Neon Mask`: dark anime/gaming premium, violet/magenta glow, restrained glassmorphism, acrylic light feeling and a neon mask used as a subtle brand watermark.
+
+Foundation elements:
+
+- deep black/violet background with radial violet and magenta glow;
+- neon borders and premium glass surfaces;
+- motion-safe hover/tap feedback;
+- neon eyebrow and optional gradient heading text;
+- decorative `BrandMaskWatermark` for hero/empty states.
+
+The mask is not interactive content and should not appear everywhere. It is a background accent for selected surfaces. The first integration touches only the home hero visual layer and shared empty states; order, payment, webhook, checkout and custom design runtime behavior remain unchanged.

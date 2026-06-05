@@ -600,3 +600,12 @@
 - `EmptyState` and `StatusBadge` minimal integrations did not break the checked UX.
 - Runtime payment/order/webhook logic remained untouched.
 - Next stage: KARMA Neon Mask visual direction / storefront redesign foundation.
+
+## KARMA Neon Mask visual direction foundation
+
+- Start KARMA Neon Mask visual direction without full redesign.
+- Add reusable visual tokens for violet night background, radial glow, neon border, glass surfaces, premium shadow, motion-safe hover/tap and neon text.
+- Add `BrandMaskWatermark` as a decorative watermark/background accent, not primary content.
+- Minimal integration scope: home hero background/watermark and shared empty-state watermark.
+- Keep ContentBlock logic, CTA actions, payment/order/webhook runtime and production data unchanged.
+- Next stage after review: storefront redesign foundation in small slices.

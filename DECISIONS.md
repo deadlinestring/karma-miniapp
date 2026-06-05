@@ -595,3 +595,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - `/catalog`, `/cart` and `/orders` are the verified baseline screens for `EmptyState` and `StatusBadge`.
 - The next visual iteration should establish KARMA Neon Mask direction on storefront surfaces before touching checkout/order/admin complexity.
 - Payment, order and webhook behavior must remain outside visual redesign work unless a dedicated runtime task explicitly requires it.
+
+## KARMA Neon Mask visual direction decision
+
+- KARMA Neon Mask should be introduced through reusable tokens and decorative layers before any broad page redesign.
+- The mask is a brand watermark/background accent and must stay decorative: `aria-hidden`, non-interactive and visually restrained.
+- The first layer uses CSS/SVG-only implementation so no heavy image asset or external URL is required.
+- Neon/violet/magenta glow should support a premium anime/gaming feel without casino-like color overload.
+- Payment, order, webhook, checkout and ContentBlock behavior remain outside this visual direction task.

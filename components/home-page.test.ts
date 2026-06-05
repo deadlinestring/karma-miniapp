@@ -7,6 +7,8 @@ describe("home page content blocks", () => {
 
   it("loads hero copy from admin-managed content blocks", () => {
     expect(source).toContain("useContentBlocks(homeContentSlugs)");
+    expect(source).toContain("BrandMaskWatermark");
+    expect(source).toContain("neonMaskBackground");
     expect(source).toContain('"home-hero-eyebrow"');
     expect(source).toContain('"home-hero-title"');
     expect(source).toContain('"home-hero-subtitle"');
@@ -30,6 +32,7 @@ describe("home page content blocks", () => {
     expect(source).toContain("{heroEyebrow}");
     expect(source).toContain("{heroTitle}");
     expect(source).toContain("{heroSubtitle}");
+    expect(source).toContain("neonMaskGradientText");
     expect(source).not.toContain("dangerouslySetInnerHTML");
   });
 });

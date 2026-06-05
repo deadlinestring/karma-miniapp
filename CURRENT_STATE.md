@@ -363,3 +363,12 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Current read-only baseline remains `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
 - Payment, order and webhook runtime logic was not changed by this foundation.
 - Next visual direction checkpoint: KARMA Neon Mask / storefront redesign foundation.
+
+## KARMA Neon Mask visual direction checkpoint
+
+- KARMA Neon Mask direction is being prepared as a lightweight visual foundation, not a full redesign.
+- New style tokens cover deep violet background, radial violet/magenta glows, neon borders, glass mask surfaces, premium shadows, motion-reduced hover/tap classes and neon/gradient text helpers.
+- `BrandMaskWatermark` is a decorative CSS/SVG-only brand accent with `aria-hidden` and `pointer-events-none`; it is intended as a background watermark, not primary content.
+- Minimal integration: home hero gets the Neon Mask background/watermark layer, and shared `EmptyState` can show a subtle mask watermark.
+- ContentBlock hero copy, CTA behavior, catalog/product/checkout/payment/order/webhook runtime logic and production data remain untouched.
+- Full storefront redesign remains the next staged visual work after this foundation is reviewed.
