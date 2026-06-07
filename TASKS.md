@@ -625,6 +625,8 @@
 - Prepare staged visual redesign of the storefront hero without changing business logic.
 - Apply deep violet/radial glow background, real mask watermark, glass text surface, gradient headline and shared CTA button styles.
 - Adjust hero layering so the background artwork stays sharp, dim/glow overlays keep text readable, the real mask watermark sits above the problematic glass blur composition, and the text/CTA layer remains on top and clickable.
+- Remove the duplicate inner hero mask accent; keep one large KARMA watermark shifted to the right.
+- Use uploaded StoreSettings logo consistently in the shared public header across catalog, cart, checkout, orders, order detail and FAQ, with the existing `K / KARMA` fallback.
 - Preserve all home hero ContentBlock slugs and StoreSettings title/subtitle fallback.
 - Preserve CTA behavior: catalog link and custom design modal.
 - Do not touch checkout, orders, payment, webhook, cart logic or production data.

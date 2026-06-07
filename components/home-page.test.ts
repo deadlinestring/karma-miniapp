@@ -11,6 +11,7 @@ describe("home page content blocks", () => {
     expect(source).toContain("neonMaskBackground");
     expect(source).toContain("neonMaskSurface");
     expect(source).toContain("neonMaskHover");
+    expect(source.match(/<BrandMaskWatermark/g)?.length).toBe(1);
     expect(source).toContain('"home-hero-eyebrow"');
     expect(source).toContain('"home-hero-title"');
     expect(source).toContain('"home-hero-subtitle"');
@@ -42,7 +43,7 @@ describe("home page content blocks", () => {
     expect(source).toContain("absolute inset-0 z-0 h-full w-full object-cover opacity-78");
     expect(source).not.toContain("blur-sm");
     expect(source).not.toContain("filter");
-    expect(source).toContain('BrandMaskWatermark variant="hero" className="absolute -right-16 top-6 z-30');
+    expect(source).toContain('BrandMaskWatermark variant="hero" className="absolute -right-28 top-12 z-30');
     expect(source).toContain("absolute inset-0 z-20 rounded-[28px]");
     expect(source).toContain("relative z-40");
   });

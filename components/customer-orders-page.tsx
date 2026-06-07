@@ -6,6 +6,7 @@ import { AppShell } from "@/components/app-shell";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
 import { formatKopecks } from "@/lib/pricing";
+import type { StorefrontSettings } from "@/lib/storefront-types";
 
 type CustomerOrderListItem = {
   publicNumber: string;
@@ -29,7 +30,11 @@ type OrdersResponse =
     }
   | { ok: false; message: string };
 
-export function CustomerOrdersPage() {
+export function CustomerOrdersPage({
+  settings
+}: {
+  settings?: Pick<StorefrontSettings, "storeName" | "subtitle" | "logoUrl">;
+}) {
   const { getBlock } = useContentBlocks(["orders-intro-help", "orders-empty-state"]);
   const [initData, setInitData] = useState<string | null>(null);
   const [telegramChecked, setTelegramChecked] = useState(false);
@@ -86,7 +91,7 @@ export function CustomerOrdersPage() {
   }, [initData]);
 
   return (
-    <AppShell>
+    <AppShell settings={settings}>
       <section>
         <p className="text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">заказы</p>
         <h1 className="mt-2 text-3xl font-black text-white">Мои заказы</h1>

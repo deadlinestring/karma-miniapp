@@ -8,17 +8,19 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ProductCard } from "@/components/product-card";
 import { ProductModal } from "@/components/product-modal";
 import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
-import type { StorefrontCatalogData, StorefrontProduct } from "@/lib/storefront-types";
+import type { StorefrontCatalogData, StorefrontProduct, StorefrontSettings } from "@/lib/storefront-types";
 
 type FilterValue = "Все" | string;
 const catalogContentSlugs = ["catalog-intro-help", "catalog-empty-state"];
 
 export function CatalogPage({
   data,
-  loadError = false
+  loadError = false,
+  settings
 }: {
   data: StorefrontCatalogData | null;
   loadError?: boolean;
+  settings?: Pick<StorefrontSettings, "storeName" | "subtitle" | "logoUrl">;
 }) {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category");
@@ -61,14 +63,14 @@ export function CatalogPage({
 
   if (loadError || !data) {
     return (
-      <AppShell>
+      <AppShell settings={settings}>
         <CatalogLoadError />
       </AppShell>
     );
   }
 
   return (
-    <AppShell>
+    <AppShell settings={settings}>
       <section>
         <p className="text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">каталог</p>
         {introBlock?.title ? <h1 className="mt-2 text-3xl font-black text-white">{introBlock.title}</h1> : null}

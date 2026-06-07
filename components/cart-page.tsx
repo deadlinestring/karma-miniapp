@@ -8,9 +8,14 @@ import { ProductVisual } from "@/components/product-visual";
 import { EmptyState } from "@/components/ui/empty-state";
 import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
 import { formatKopecks } from "@/lib/pricing";
+import type { StorefrontSettings } from "@/lib/storefront-types";
 import { useCartStore, useCartTotals } from "@/store/cart-store";
 
-export function CartPage() {
+export function CartPage({
+  settings
+}: {
+  settings?: Pick<StorefrontSettings, "storeName" | "subtitle" | "logoUrl">;
+}) {
   const { getBlock } = useContentBlocks(["cart-empty-state"]);
   const items = useCartStore((state) => state.items);
   const increment = useCartStore((state) => state.increment);
@@ -20,7 +25,7 @@ export function CartPage() {
   const emptyBlock = getBlock("cart-empty-state");
 
   return (
-    <AppShell>
+    <AppShell settings={settings}>
       <section>
         <p className="text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">корзина</p>
         <h1 className="mt-2 text-3xl font-black text-white">Корзина</h1>

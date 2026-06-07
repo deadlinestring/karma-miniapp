@@ -7,6 +7,7 @@ import { ActionButton } from "@/components/action-button";
 import { useScrollIntoViewOnChange } from "@/components/use-scroll-into-view-on-change";
 import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
 import { formatKopecks } from "@/lib/pricing";
+import type { StorefrontSettings } from "@/lib/storefront-types";
 import { useCartStore, type CartItem } from "@/store/cart-store";
 
 type CheckoutFormState = {
@@ -107,7 +108,11 @@ type OrderResponse =
     }
   | { ok: false; message: string };
 
-export function CheckoutPage() {
+export function CheckoutPage({
+  settings
+}: {
+  settings?: Pick<StorefrontSettings, "storeName" | "subtitle" | "logoUrl">;
+}) {
   const items = useCartStore((state) => state.items);
   const { getBlock } = useContentBlocks(checkoutContentSlugs);
   const [form, setForm] = useState(initialFormState);
@@ -241,7 +246,7 @@ export function CheckoutPage() {
   }
 
   return (
-    <AppShell>
+    <AppShell settings={settings}>
       <section>
         <p className="text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">оформление</p>
         <h1 className="mt-2 text-3xl font-black text-white">Куда доставить заказ?</h1>

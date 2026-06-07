@@ -5,6 +5,7 @@ import { type MouseEvent, useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
 import { formatKopecks } from "@/lib/pricing";
+import type { StorefrontSettings } from "@/lib/storefront-types";
 
 const SUPPORT_BOT_USERNAME = "karmashopsupportbot";
 const orderContentSlugs = ["payment-disabled-guidance", "support-cta"];
@@ -77,7 +78,13 @@ type PaymentPrepareResponse =
     }
   | { ok: false; message: string };
 
-export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string }) {
+export function CustomerOrderDetailPage({
+  publicNumber,
+  settings
+}: {
+  publicNumber: string;
+  settings?: Pick<StorefrontSettings, "storeName" | "subtitle" | "logoUrl">;
+}) {
   const { getBlock } = useContentBlocks(orderContentSlugs);
   const [initData, setInitData] = useState<string | null>(null);
   const [telegramChecked, setTelegramChecked] = useState(false);
@@ -190,7 +197,7 @@ export function CustomerOrderDetailPage({ publicNumber }: { publicNumber: string
   }
 
   return (
-    <AppShell>
+    <AppShell settings={settings}>
       <section>
         <Link href="/orders" className="text-sm font-bold text-neon-cyan">
           ← Мои заказы

@@ -9,17 +9,24 @@ import {
   getOrdinaryFaqSections,
   type FaqSectionDto
 } from "@/lib/server/faq";
+import type { StorefrontSettings } from "@/lib/storefront-types";
 
 const supportBotUrl = "https://t.me/karmashopsupportbot";
 
-export function FaqPage({ sections }: { sections: FaqSectionDto[] }) {
+export function FaqPage({
+  sections,
+  settings
+}: {
+  sections: FaqSectionDto[];
+  settings?: Pick<StorefrontSettings, "storeName" | "subtitle" | "logoUrl">;
+}) {
   const eyebrow = getFaqSectionBySlug(sections, FAQ_HERO_EYEBROW_SLUG);
   const hero = getFaqSectionBySlug(sections, FAQ_HERO_SLUG);
   const contactCta = getFaqSectionBySlug(sections, FAQ_CONTACT_CTA_SLUG);
   const ordinarySections = getOrdinaryFaqSections(sections);
 
   return (
-    <AppShell>
+    <AppShell settings={settings}>
       <section>
         <p className="text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">{eyebrow.title}</p>
         <h1 className="mt-2 text-3xl font-black text-white">{hero.title}</h1>

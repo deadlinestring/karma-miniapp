@@ -617,6 +617,8 @@ Prisma migrations и другие CLI-операции используют Supa
 - The home hero can receive a stronger visual redesign first because it is mostly presentation and already uses stable ContentBlock/StoreSettings inputs.
 - The redesign must preserve the allowlisted ContentBlock contract and existing CTA behavior; content editors control labels/text, while actions remain code-owned.
 - The real KARMA mask stays behind content as a watermark; text readability has priority over brand decoration.
-- Hero layering should keep the artwork sharp without image blur/filter. Readability comes from dim/gradient overlays and the glass text card; the mask may sit above the glass panel as a restrained decorative layer, while text and CTA controls stay above it.
+- Hero layering should keep the artwork sharp without image blur/filter. Readability comes from dim/gradient overlays and the glass text card.
+- Home hero should render one large real KARMA mask watermark, shifted to the right; duplicate inner mask accents are avoided so the brand mark does not visually repeat.
+- Public pages should use the shared `TopBar` with StoreSettings passed from their server page so uploaded logos are consistent outside the home page. The fallback remains `K / KARMA`.
 - Shared UI primitives and Neon Mask tokens should be used before inventing one-off hero button/surface styles.
 - Catalog/product cards are the next logical stage; checkout, orders and payment surfaces should wait until storefront visuals are verified.

@@ -871,7 +871,9 @@ Prepared hero rules:
 - secondary CTA still opens the custom design product modal;
 - headline can use gradient/neon styling, but readability wins over effects;
 - background artwork should remain sharp, without blur/filter; text readability is handled by dim/gradient overlays and the glass card;
-- the KARMA mask can overlap the glass card as a subtle decorative layer, but text and CTA content must remain above it and readable/clickable;
+- the hero uses a single large KARMA mask watermark shifted to the right; duplicate inner mask accents are not used;
+- text and CTA content must remain above decorative layers and readable/clickable;
+- uploaded StoreSettings logo is used by the shared public header on home, catalog, cart, checkout, orders, order detail and FAQ; if no logo is uploaded, the fallback `K / KARMA` identity is shown;
 - hero uses glass surface and mask watermark without changing catalog, cart, checkout, order, payment or webhook logic.
 
 The next visual stage after hero review is catalog/product card redesign.

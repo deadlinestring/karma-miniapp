@@ -72,7 +72,7 @@ export function HomePage({
         />
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/18 via-[#07030f]/54 to-[#05030b]/92" />
         <div className="absolute inset-0 z-20 bg-[radial-gradient(circle_at_30%_18%,rgba(255,79,216,0.18),transparent_18rem),radial-gradient(circle_at_80%_40%,rgba(49,246,255,0.16),transparent_18rem)]" />
-        <BrandMaskWatermark variant="hero" className="absolute -right-16 top-6 z-30 rotate-6 opacity-[0.22] sm:-right-10 sm:top-10" />
+        <BrandMaskWatermark variant="hero" className="absolute -right-28 top-12 z-30 rotate-6 opacity-[0.22] sm:-right-20 sm:top-16" />
         <div className="pointer-events-none absolute inset-x-4 bottom-4 z-50 h-px bg-gradient-to-r from-transparent via-neon-cyan/50 to-transparent" />
 
         <div className="relative flex min-h-[528px] flex-col justify-end">
@@ -124,10 +124,6 @@ export function HomePage({
                 ) : null}
               </div>
             </div>
-            <BrandMaskWatermark
-              variant="subtle"
-              className="absolute -right-8 top-2 z-30 rotate-6 opacity-[0.16] sm:-right-5"
-            />
           </div>
         </div>
       </section>
