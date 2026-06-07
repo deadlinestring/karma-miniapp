@@ -622,3 +622,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - Public pages should use the shared `TopBar` with StoreSettings passed from their server page so uploaded logos are consistent outside the home page. The fallback remains `K / KARMA`.
 - Shared UI primitives and Neon Mask tokens should be used before inventing one-off hero button/surface styles.
 - Catalog/product cards are the next logical stage; checkout, orders and payment surfaces should wait until storefront visuals are verified.
+
+## Live visual fixes verification decision
+
+- Production smoke-check confirmed the single-mask hero composition after commit `7580fed`.
+- The real KARMA mask should remain a single large right-shifted watermark in the hero; duplicate inner mask accents should not return.
+- Uploaded StoreSettings logo is confirmed as the shared public header source across home, catalog, cart, checkout, orders, order detail and FAQ.
+- CTA actions and payment/order runtime remain outside this visual fix.
+- The next visual work should move to catalog/product cards rather than revisiting payment/order behavior.

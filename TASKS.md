@@ -631,3 +631,13 @@
 - Preserve CTA behavior: catalog link and custom design modal.
 - Do not touch checkout, orders, payment, webhook, cart logic or production data.
 - Next staged redesign: catalog/product cards.
+
+## Live visual fixes verification
+
+- Live smoke-check passed after visual fixes commit `7580fed` reached Vercel Ready.
+- Home hero now shows one large KARMA mask watermark; the duplicate inner mask layer is gone.
+- Mask placement is visually acceptable on Telegram/mobile, with text and CTA remaining readable and clickable.
+- Uploaded StoreSettings logo is consistent on home, catalog, cart, checkout, orders, order detail and FAQ.
+- CTA actions stayed intact: catalog opens `/catalog`, and custom design still opens the existing modal.
+- Payment, order and webhook runtime remained untouched.
+- Next staged redesign: catalog/product cards.

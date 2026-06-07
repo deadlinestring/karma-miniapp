@@ -395,3 +395,14 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - CTA actions remain unchanged: primary CTA opens `/catalog`, secondary CTA opens the existing custom product modal.
 - Checkout, cart, orders, payment, webhook, custom upload/review and production data remain untouched.
 - Next staged redesign target after review: catalog/product cards.
+
+## Live visual fixes smoke-check
+
+- Visual fixes commit `7580fed` reached Vercel Ready and was smoke-checked in production on Telegram/mobile.
+- Home hero now shows one large real KARMA mask watermark; the duplicate inner decorative mask layer is removed.
+- Mask placement is visually acceptable and does not block text or CTA interaction.
+- Uploaded StoreSettings logo appears consistently on home, catalog, cart, checkout, orders, order detail and FAQ.
+- CTA actions remain unchanged.
+- Current read-only baseline remains `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
+- Payment, order and webhook runtime logic remained untouched.
+- Next staged redesign target: catalog/product cards.

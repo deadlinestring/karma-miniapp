@@ -877,3 +877,11 @@ Prepared hero rules:
 - hero uses glass surface and mask watermark without changing catalog, cart, checkout, order, payment or webhook logic.
 
 The next visual stage after hero review is catalog/product card redesign.
+
+Live verification:
+
+- visual fixes commit `7580fed` was smoke-checked in production after Vercel Ready;
+- the home hero shows a single large KARMA mask watermark with acceptable placement;
+- uploaded StoreSettings logo appears consistently on home, catalog, cart, checkout, orders, order detail and FAQ;
+- CTA actions remain unchanged;
+- payment, order and webhook runtime behavior is unchanged.
