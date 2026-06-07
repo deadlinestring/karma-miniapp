@@ -630,3 +630,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - Uploaded StoreSettings logo is confirmed as the shared public header source across home, catalog, cart, checkout, orders, order detail and FAQ.
 - CTA actions and payment/order runtime remain outside this visual fix.
 - The next visual work should move to catalog/product cards rather than revisiting payment/order behavior.
+
+## Catalog/product cards Neon Mask decision
+
+- Catalog redesign should be visual-only at this stage: keep storefront data fetching, filtering, product visibility, product modal open behavior, variant pricing and cart behavior unchanged.
+- Existing ContentBlock slugs remain the contract for catalog copy: `catalog-intro-help` and `catalog-empty-state`.
+- Catalog surfaces and product cards can use shared Neon Mask tokens before creating new abstractions.
+- Product cards should emphasize the image first, then compact badges and price information; custom product badges are presentation only and must not affect availability or pricing.
+- Checkout, orders, payment, webhook and custom upload/review runtime remain outside this visual stage.

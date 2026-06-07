@@ -5,8 +5,10 @@ import { Search } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Surface } from "@/components/ui/surface";
 import { ProductCard } from "@/components/product-card";
 import { ProductModal } from "@/components/product-modal";
+import { neonMaskEyebrow, neonMaskGradientText, neonMaskHover, neonMaskMutedText } from "@/components/ui/neon-mask-tokens";
 import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
 import type { StorefrontCatalogData, StorefrontProduct, StorefrontSettings } from "@/lib/storefront-types";
 
@@ -71,18 +73,20 @@ export function CatalogPage({
 
   return (
     <AppShell settings={settings}>
-      <section>
-        <p className="text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">каталог</p>
-        {introBlock?.title ? <h1 className="mt-2 text-3xl font-black text-white">{introBlock.title}</h1> : null}
+      <Surface tone="mask" className="relative overflow-hidden p-5">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_0%,rgba(255,79,216,0.14),transparent_14rem),radial-gradient(circle_at_90%_18%,rgba(49,246,255,0.12),transparent_15rem)]" />
+        <div className="relative">
+        <p className={`text-xs tracking-[0.24em] ${neonMaskEyebrow}`}>каталог</p>
+        {introBlock?.title ? <h1 className={`mt-2 text-3xl font-black ${neonMaskGradientText}`}>{introBlock.title}</h1> : null}
         {introBlock?.body ? (
-          <div className="mt-2 grid gap-1 text-sm leading-6 text-white/58">
+          <div className={`mt-3 grid gap-1 text-sm leading-6 ${neonMaskMutedText}`}>
             {renderContentBlockLines(introBlock.body).map((line) => (
               <p key={line}>{line}</p>
             ))}
           </div>
         ) : null}
-        <div className="mt-5 flex items-center gap-3 rounded-3xl border border-white/10 bg-white/8 px-4 py-3">
-          <Search size={20} className="text-white/45" />
+        <div className="mt-5 flex items-center gap-3 rounded-3xl border border-neon-cyan/20 bg-[#05030b]/62 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition focus-within:border-neon-cyan/50 focus-within:shadow-[0_0_28px_rgba(49,246,255,0.12)]">
+          <Search size={20} className="text-neon-cyan/70" />
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -90,18 +94,20 @@ export function CatalogPage({
             className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/38"
           />
         </div>
-      </section>
+        </div>
+      </Surface>
 
       <section className="mt-5">
         <div className="hide-scrollbar flex gap-2 overflow-x-auto pb-1">
           {(["Все", ...categories.map((item) => item.name)] as FilterValue[]).map((item) => (
             <button
+              type="button"
               key={item}
               onClick={() => setCategory(item)}
-              className={`h-11 shrink-0 rounded-2xl px-4 text-sm font-bold transition ${
+              className={`h-11 shrink-0 rounded-2xl px-4 text-sm font-bold ${neonMaskHover} ${
                 category === item
-                  ? "bg-neon-cyan text-night shadow-glow"
-                  : "border border-white/10 bg-white/7 text-white/68"
+                  ? "border border-neon-cyan/40 bg-neon-cyan text-night shadow-glow"
+                  : "border border-white/10 bg-white/7 text-white/68 hover:text-white"
               }`}
             >
               {item}

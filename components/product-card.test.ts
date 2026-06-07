@@ -1,0 +1,29 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+
+describe("product card Neon Mask styling", () => {
+  const source = readFileSync(join(__dirname, "product-card.tsx"), "utf8");
+
+  it("keeps product navigation and modal open behavior", () => {
+    expect(source).toContain("href={`/catalog?product=${product.slug}`}");
+    expect(source).toContain("onClick={() => onOpen(product)}");
+    expect(source).toContain("<ActionButton");
+  });
+
+  it("renders product names, prices and badges without changing pricing", () => {
+    expect(source).toContain("{product.name}");
+    expect(source).toContain("formatKopecks(product.minPriceKopecks)");
+    expect(source).toContain("ProductPrice");
+    expect(source).toContain("{product.subcategory}");
+    expect(source).toContain("product.isCustom");
+  });
+
+  it("uses glass/neon card styling and safe text rendering", () => {
+    expect(source).toContain("neonMaskHover");
+    expect(source).toContain("border-neon-violet/24");
+    expect(source).toContain("bg-[#090713]/78");
+    expect(source).toContain("border-neon-cyan/12");
+    expect(source).not.toContain("dangerouslySetInnerHTML");
+  });
+});

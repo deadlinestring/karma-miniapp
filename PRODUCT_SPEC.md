@@ -885,3 +885,19 @@ Live verification:
 - uploaded StoreSettings logo appears consistently on home, catalog, cart, checkout, orders, order detail and FAQ;
 - CTA actions remain unchanged;
 - payment, order and webhook runtime behavior is unchanged.
+
+## Catalog/product cards Neon Mask redesign
+
+The catalog is the next staged storefront surface for the KARMA Neon Mask direction. The redesign is limited to presentation and keeps the existing catalog behavior intact.
+
+Prepared catalog rules:
+
+- catalog intro/help copy remains managed by `catalog-intro-help`;
+- catalog empty state remains managed by `catalog-empty-state` and shared `EmptyState`;
+- category filters keep their current data and click behavior, but use neon pill styling;
+- product cards are image-first glass/neon surfaces with subtle glow borders, hover lift, tap feedback and image scale;
+- product name, subcategory/custom badges and price remain readable on mobile;
+- custom badges are visual labels only and do not change custom upload/order logic;
+- product modal opening, variant/price calculation, cart, checkout, payment, webhook and order runtime are unchanged.
+
+The next staged redesign target can be product modal or checkout/order detail after catalog cards are reviewed.

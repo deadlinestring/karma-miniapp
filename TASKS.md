@@ -641,3 +641,13 @@
 - CTA actions stayed intact: catalog opens `/catalog`, and custom design still opens the existing modal.
 - Payment, order and webhook runtime remained untouched.
 - Next staged redesign: catalog/product cards.
+
+## Catalog/product cards Neon Mask redesign
+
+- Prepare staged visual redesign for the catalog and product cards without schema changes.
+- Catalog intro keeps `catalog-intro-help` ContentBlock behavior and now sits on a glass/neon mask surface with subtle violet/cyan glow.
+- Category filters keep the same filtering logic and receive neon pill styling with hover/tap feedback.
+- Product cards become image-first glass/neon surfaces with readable subcategory/custom badges, price surfaces, glow borders and subtle image hover scale.
+- Catalog empty state remains managed through `catalog-empty-state` and shared `EmptyState`.
+- Product modal open behavior, product visibility, category filtering, pricing, cart, checkout, payment, webhook and order runtime stay unchanged.
+- Next staged redesign after review: product modal or checkout/order detail.

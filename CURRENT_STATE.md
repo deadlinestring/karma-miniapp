@@ -406,3 +406,14 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Current read-only baseline remains `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
 - Payment, order and webhook runtime logic remained untouched.
 - Next staged redesign target: catalog/product cards.
+
+## Catalog/product cards Neon Mask redesign checkpoint
+
+- Staged catalog/product card redesign is prepared locally without migration or production data changes.
+- Catalog intro remains ContentBlock-driven through `catalog-intro-help`; catalog empty state remains ContentBlock-driven through `catalog-empty-state`.
+- Catalog header now uses a glass/neon mask surface with restrained violet/cyan glow.
+- Category filters keep the same state/filter behavior and receive neon pill styling.
+- Product cards now use image-first glass/neon surfaces, readable badges, price panels, glow borders and hover/tap micro-interactions.
+- Product modal opening, product visibility rules, pricing, variants, cart, checkout, payment, webhook and order runtime remain untouched.
+- Current read-only baseline remains `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
+- Next staged redesign target after review: product modal or checkout/order detail.
