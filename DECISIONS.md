@@ -638,3 +638,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - Catalog surfaces and product cards can use shared Neon Mask tokens before creating new abstractions.
 - Product cards should emphasize the image first, then compact badges and price information; custom product badges are presentation only and must not affect availability or pricing.
 - Checkout, orders, payment, webhook and custom upload/review runtime remain outside this visual stage.
+
+## Live catalog/product cards smoke-check decision
+
+- Production smoke-check confirmed the catalog/product card redesign after commit `6a45197`.
+- The glass/neon catalog header, neon category pills and image-first product cards are acceptable on Telegram/mobile.
+- Search, category filtering, product modal opening and custom product visibility remain the verified behavior contract.
+- Pricing, variants, cart, checkout, payment, webhook and order runtime remain outside visual card work.
+- The next visual stage should move to the product modal rather than widening scope into checkout/orders.

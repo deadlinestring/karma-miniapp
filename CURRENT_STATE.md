@@ -417,3 +417,14 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Product modal opening, product visibility rules, pricing, variants, cart, checkout, payment, webhook and order runtime remain untouched.
 - Current read-only baseline remains `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
 - Next staged redesign target after review: product modal or checkout/order detail.
+
+## Live catalog/product cards smoke-check
+
+- Catalog/product cards redesign was published in commit `6a45197` and Vercel deployment reached Ready.
+- Production `/catalog` was visually smoke-checked on Telegram/mobile.
+- Glass/neon catalog header, neon category pills, image-first product cards, badges, price panels, glow borders and hover/tap feedback are visible.
+- Product names, prices and images remain readable.
+- Search, category filtering, product modal opening and custom product visibility were not broken by the redesign.
+- Current read-only baseline remains `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
+- Cart, checkout, payment, webhook, order and custom runtime logic remained untouched.
+- Next staged redesign target: product modal.

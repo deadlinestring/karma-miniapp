@@ -651,3 +651,13 @@
 - Catalog empty state remains managed through `catalog-empty-state` and shared `EmptyState`.
 - Product modal open behavior, product visibility, category filtering, pricing, cart, checkout, payment, webhook and order runtime stay unchanged.
 - Next staged redesign after review: product modal or checkout/order detail.
+
+## Live catalog/product cards smoke-check
+
+- Catalog/product cards redesign commit `6a45197` reached Vercel Ready and was visually smoke-checked in production on Telegram/mobile.
+- `/catalog` now shows the glass/neon catalog header, neon category pills and image-first glass/neon product cards.
+- Product names, prices, images, badges, price panels, glow borders and hover/tap feedback are readable and usable.
+- Search, category filtering and product modal opening were visually checked and remained intact.
+- Custom product remains visible/openable where expected.
+- Cart, checkout, payment, webhook, order and custom runtime logic remained untouched.
+- Next staged redesign: product modal.

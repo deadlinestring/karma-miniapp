@@ -901,3 +901,12 @@ Prepared catalog rules:
 - product modal opening, variant/price calculation, cart, checkout, payment, webhook and order runtime are unchanged.
 
 The next staged redesign target can be product modal or checkout/order detail after catalog cards are reviewed.
+
+Live smoke-check:
+
+- catalog/product cards redesign commit `6a45197` reached Vercel Ready;
+- `/catalog` was visually checked in production on Telegram/mobile;
+- catalog header, category chips, product cards, price/name/image readability and custom product opening were confirmed;
+- search, category filtering and product modal behavior remained intact;
+- cart, checkout, payment, webhook and order runtime behavior is unchanged;
+- the next staged redesign target is product modal.
