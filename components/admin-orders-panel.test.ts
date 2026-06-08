@@ -49,6 +49,10 @@ describe("admin orders panel", () => {
     expect(source).toContain("Отклонить");
     expect(source).toContain("customImageReviewStatus");
     expect(source).toContain("hasCustomImage");
+    expect(source).toContain('import { ImageLightbox }');
+    expect(source).toContain("setLightboxUrl(image.signedUrl)");
+    expect(source).toContain("setLightboxUrl(customImageUrl)");
+    expect(source).toContain("<ImageLightbox src={lightboxUrl}");
     expect(source).not.toContain("customImageStoragePath:");
   });
 

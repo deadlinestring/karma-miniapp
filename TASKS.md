@@ -661,3 +661,25 @@
 - Custom product remains visible/openable where expected.
 - Cart, checkout, payment, webhook, order and custom runtime logic remained untouched.
 - Next staged redesign: product modal.
+
+## Product modal Neon Mask redesign
+
+- Prepare staged visual redesign for the product modal without schema changes or production writes.
+- Modal shell now uses a darker glass/neon surface with restrained violet/cyan glow and mobile-friendly scroll.
+- Product preview area gets a neon frame while preserving gallery image selection.
+- Product title, category/subcategory badges, feature rows, variant selectors, size selectors and custom style options receive clearer selected states and tap-friendly neon card styling.
+- Custom design help/upload requirements remain ContentBlock-driven through `custom-design-help`, `custom-product-features-help` and `custom-upload-requirements-help`.
+- Add-to-cart footer gets a clearer price panel and stronger primary CTA styling.
+- Variant selection, price calculation, custom upload endpoint/validation, customDesignKey, custom surcharge, add-to-cart payload, cart, checkout, payment, webhook and order runtime remain unchanged.
+- Next staged redesign after review: cart/checkout or order detail.
+
+## Catalog chips and image lightbox bugfix
+
+- Fix catalog category chips clipping/hover border regression without changing filter/search logic.
+- Category chip row now has safe horizontal padding so the last chip is not clipped.
+- Chip borders remain stable across normal, hover, active and focus-visible states.
+- Add lightweight shared `ImageLightbox` for opening images large without new UI libraries.
+- Product modal images can be opened large by customers.
+- Admin product gallery images can be opened large.
+- Admin custom review images open through the existing signed URL only; raw private storage paths remain hidden.
+- Payment, order, webhook, storage policy and production data remain untouched.

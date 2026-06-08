@@ -646,3 +646,20 @@ Prisma migrations и другие CLI-операции используют Supa
 - Search, category filtering, product modal opening and custom product visibility remain the verified behavior contract.
 - Pricing, variants, cart, checkout, payment, webhook and order runtime remain outside visual card work.
 - The next visual stage should move to the product modal rather than widening scope into checkout/orders.
+
+## Product modal Neon Mask decision
+
+- Product modal redesign is presentation-only and must preserve the existing open/close contract, product data model, variant selection, price calculation and cart payload.
+- Custom design behavior stays code-owned: upload validation, `customDesignKey`, storage path, surcharge and add-to-cart gating are not changed by visual work.
+- Custom help copy remains allowlisted ContentBlock content through `custom-design-help`, `custom-product-features-help` and `custom-upload-requirements-help`.
+- Selected/disabled states can be made visually clearer with Neon Mask tokens, but they must continue to reflect the same state variables.
+- Checkout, orders, payment, webhook, admin and production data remain outside this modal redesign stage.
+
+## Catalog chips and image lightbox decision
+
+- Category chips should not use hover movement inside the horizontal overflow row because translated/focused edge chips can be clipped by the scroll container.
+- Chip borders should be explicit and stable in all visual states; focus-visible should use a ring without changing layout.
+- Large image viewing is a shared UI concern, handled by a lightweight `ImageLightbox` rather than page-specific overlays.
+- Public product images can use their normal public URLs in the lightbox.
+- Private custom uploads must only be opened from an admin-authenticated signed URL already returned by the protected endpoint; raw storage paths are never displayed or stored in lightbox state.
+- The lightbox must not change storage policy, payment/order behavior, upload validation, review status or admin mutations.

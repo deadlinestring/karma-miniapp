@@ -5,6 +5,7 @@
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ImageUp, Plus, Save, Search, Star, Trash2 } from "lucide-react";
 import { useScrollIntoViewOnChange } from "@/components/use-scroll-into-view-on-change";
+import { ImageLightbox } from "@/components/ui/image-lightbox";
 
 type ProductType = "REGULAR" | "CUSTOM";
 type ProductStatus = "all" | "active" | "hidden" | "featured";
@@ -742,7 +743,10 @@ function ProductImagesEditor({
   onSetCover: (imageId: string) => void;
   onDeleteImage: (image: AdminProductImage) => void;
 }) {
+  const [lightboxImage, setLightboxImage] = useState<{ src: string; alt: string } | null>(null);
+
   return (
+    <>
     <div className="mt-5 rounded-3xl border border-white/10 bg-white/7 p-4">
       <h3 className="text-lg font-black text-white">Фотографии товара</h3>
       <p className="mt-1 text-sm text-white/58">JPG, PNG или WEBP, до 4 МБ. Главную обложку нельзя удалить, пока не выбрана другая.</p>
@@ -751,10 +755,15 @@ function ProductImagesEditor({
       <div className="mt-5 grid gap-3">
         {product.images.map((image) => (
           <div key={image.id} className="rounded-3xl border border-white/10 bg-night/60 p-3">
-            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-night">
+            <button
+              type="button"
+              onClick={() => setLightboxImage({ src: image.url, alt: image.altText ?? product.name })}
+              className="relative block w-full overflow-hidden rounded-2xl border border-white/10 bg-night transition hover:border-neon-cyan/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
+              aria-label="Открыть фотографию товара крупно"
+            >
               <img src={image.url} alt={image.altText ?? product.name} className="h-48 w-full object-cover" />
               {image.isCover ? <span className="absolute left-3 top-3 rounded-full bg-neon-cyan px-3 py-1 text-xs font-black text-night">Главная</span> : null}
-            </div>
+            </button>
             <div className="mt-3 flex flex-wrap gap-2">
               {image.isCover ? (
                 <span className="rounded-2xl border border-white/10 bg-white/7 px-3 py-2 text-xs text-white/52">Сначала выберите другую главную фотографию</span>
@@ -775,6 +784,8 @@ function ProductImagesEditor({
         ))}
       </div>
     </div>
+    <ImageLightbox src={lightboxImage?.src ?? null} alt={lightboxImage?.alt ?? ""} onClose={() => setLightboxImage(null)} />
+    </>
   );
 }
 

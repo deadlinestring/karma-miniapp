@@ -10,6 +10,9 @@ import { formatKopecks } from "@/lib/pricing";
 import { useCartStore } from "@/store/cart-store";
 import { ActionButton } from "@/components/action-button";
 import { ProductVisual } from "@/components/product-visual";
+import { Surface } from "@/components/ui/surface";
+import { ImageLightbox } from "@/components/ui/image-lightbox";
+import { neonMaskGradientText, neonMaskHover, neonMaskMutedText, neonMaskSurface } from "@/components/ui/neon-mask-tokens";
 import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
 
 const itemTypeOrder: StorefrontItemType[] = ["STANDARD", "PREMIUM", "WALL_PANEL"];
@@ -40,6 +43,7 @@ export function ProductModal({
   } | null>(null);
   const [customUploadError, setCustomUploadError] = useState<string | null>(null);
   const [isCustomUploading, setIsCustomUploading] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState<{ src: string; alt: string } | null>(null);
   const addItem = useCartStore((state) => state.addItem);
 
   const variantsByType = useMemo(() => {
@@ -72,6 +76,7 @@ export function ProductModal({
       setCustomUpload(null);
       setCustomUploadError(null);
       setIsCustomUploading(false);
+      setLightboxImage(null);
     }
   }, [product]);
 
@@ -98,6 +103,8 @@ export function ProductModal({
   const customProductFeaturesBlock = getBlock("custom-product-features-help");
   const customUploadRequirementsBlock = getBlock("custom-upload-requirements-help");
   const customProductFeatureIcons = [Sparkles, Wand2, ImagePlus];
+  const visibleImage = activeImage ?? product.coverImage;
+  const visibleImageAlt = `Изображение товара ${product.name}`;
 
   const canAddToCart =
     Boolean(selectedVariant) &&
@@ -191,24 +198,27 @@ export function ProductModal({
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-[60] bg-black/70 px-4 py-5 backdrop-blur-xl"
+        className="fixed inset-0 z-[60] bg-[#020107]/82 px-4 py-5 backdrop-blur-xl"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_0%,rgba(255,79,216,0.14),transparent_18rem),radial-gradient(circle_at_82%_18%,rgba(49,246,255,0.13),transparent_20rem)]" />
         <motion.div
-          className="mx-auto flex max-h-[92vh] max-w-xl flex-col overflow-hidden rounded-[28px] border border-white/12 bg-[#080913] shadow-[0_0_80px_rgba(155,92,255,0.24)]"
+          className={`relative mx-auto flex max-h-[92vh] max-w-xl flex-col overflow-hidden rounded-[30px] ${neonMaskSurface} border-neon-violet/30`}
           initial={{ y: 30, scale: 0.98 }}
           animate={{ y: 0, scale: 1 }}
           exit={{ y: 24, scale: 0.98 }}
         >
-          <div className="flex items-center justify-between border-b border-white/10 p-4">
+          <div className="relative flex items-center justify-between border-b border-white/10 p-4">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(49,246,255,0.12),transparent_14rem)]" />
             <div>
               <p className="text-[11px] uppercase tracking-[0.24em] text-neon-cyan">карточка</p>
-              <h2 className="text-xl font-black text-white">{product.name}</h2>
+              <h2 className={`text-xl font-black ${neonMaskGradientText}`}>{product.name}</h2>
             </div>
             <button
-              className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/8"
+              type="button"
+              className={`relative flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/8 text-white ${neonMaskHover}`}
               onClick={onClose}
               aria-label="Закрыть карточку товара"
             >
@@ -217,17 +227,28 @@ export function ProductModal({
           </div>
 
           <div className="overflow-y-auto p-4">
-            <ProductVisual product={{ ...product, coverImage: activeImage ?? product.coverImage }} priority />
+            <button
+              type="button"
+              onClick={() => setLightboxImage({ src: visibleImage, alt: visibleImageAlt })}
+              className="block w-full rounded-[26px] border border-neon-cyan/20 bg-white/5 p-2 text-left shadow-[0_0_38px_rgba(49,246,255,0.1)] transition hover:border-neon-cyan/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
+              aria-label="Открыть изображение товара крупно"
+            >
+              <ProductVisual product={{ ...product, coverImage: visibleImage }} priority />
+            </button>
             <div className="mt-3 grid grid-cols-3 gap-2">
               {product.galleryImages.map((image) => (
                 <button
                   key={image}
-                  className={`relative aspect-[4/3] overflow-hidden rounded-2xl border transition ${
+                  type="button"
+                  className={`relative aspect-[4/3] overflow-hidden rounded-2xl border transition ${neonMaskHover} ${
                     (activeImage ?? product.coverImage) === image
                       ? "border-neon-cyan/70 shadow-glow"
                       : "border-white/10 opacity-72"
                   }`}
-                  onClick={() => setActiveImage(image)}
+                  onClick={() => {
+                    setActiveImage(image);
+                    setLightboxImage({ src: image, alt: `Изображение товара ${product.name}` });
+                  }}
                   aria-label={`Показать изображение ${product.name}`}
                 >
                   <Image
@@ -242,14 +263,14 @@ export function ProductModal({
               ))}
             </div>
             <div className="mt-4 flex flex-wrap gap-2 text-xs text-white/58">
-              <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1">
+              <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1 font-bold">
                 {product.category}
               </span>
-              <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1">
+              <span className="rounded-full border border-neon-cyan/20 bg-neon-cyan/8 px-3 py-1 font-bold text-neon-cyan/80">
                 {product.subcategory}
               </span>
             </div>
-            <p className="mt-4 text-sm leading-6 text-white/72">{product.description}</p>
+            <p className={`mt-4 text-sm leading-6 ${neonMaskMutedText}`}>{product.description}</p>
 
             {customProductFeaturesBlock ? (
               <div className="mt-4 grid gap-2">
@@ -257,7 +278,7 @@ export function ProductModal({
                   const Icon = customProductFeatureIcons[index % customProductFeatureIcons.length];
 
                   return (
-                    <div key={line} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/7 px-3 py-2">
+                    <div key={line} className="flex items-center gap-3 rounded-2xl border border-neon-violet/20 bg-white/7 px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
                       <Icon size={16} className="text-neon-cyan" />
                       <span className="text-sm font-semibold text-white/76">{line}</span>
                     </div>
@@ -275,9 +296,11 @@ export function ProductModal({
             ) : null}
 
             {product.isCustom ? (
-              <section className="mt-4 rounded-3xl border border-dashed border-neon-cyan/35 bg-neon-cyan/5 p-4">
+              <Surface tone="mask" className="mt-4 border-dashed border-neon-cyan/35 p-4">
                 <div className="flex items-start gap-3">
-                  <ImagePlus className="mt-1 shrink-0 text-neon-cyan" size={24} />
+                  <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-neon-cyan/25 bg-neon-cyan/10">
+                    <ImagePlus className="text-neon-cyan" size={22} />
+                  </div>
                   <div>
                     {customDesignHelpBlock ? (
                       <>
@@ -301,7 +324,8 @@ export function ProductModal({
                   {customStyleOptions.map((option) => (
                     <button
                       key={option.value}
-                      className={`flex items-center justify-between rounded-2xl border px-3 py-3 text-left transition ${
+                      type="button"
+                      className={`flex min-h-14 items-center justify-between rounded-2xl border px-3 py-3 text-left transition ${neonMaskHover} ${
                         selectedCustomStyle === option.value
                           ? "border-neon-cyan/55 bg-neon-cyan/12 text-white shadow-glow"
                           : "border-white/10 bg-white/6 text-white/70"
@@ -314,7 +338,7 @@ export function ProductModal({
                   ))}
                 </div>
 
-                <label className="mt-4 block rounded-2xl border border-white/10 bg-white/7 p-3">
+                <label className="mt-4 block rounded-2xl border border-neon-violet/20 bg-[#05030b]/50 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
                   {customUploadRequirementsBlock?.title ? (
                     <span className="block text-sm font-bold text-white">{customUploadRequirementsBlock.title}</span>
                   ) : null}
@@ -345,7 +369,7 @@ export function ProductModal({
                     {customUploadError}
                   </p>
                 ) : null}
-              </section>
+              </Surface>
             ) : null}
 
             <section className="mt-5">
@@ -362,7 +386,8 @@ export function ProductModal({
                     return (
                       <button
                         key={type}
-                        className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-left transition ${
+                        type="button"
+                        className={`flex min-h-14 items-center justify-between rounded-2xl border px-4 py-3 text-left transition ${neonMaskHover} ${
                           selectedType === type
                             ? "border-neon-cyan/50 bg-neon-cyan/10 text-white shadow-glow"
                             : "border-white/10 bg-white/6 text-white/70"
@@ -389,7 +414,8 @@ export function ProductModal({
                   {activeVariants.map((variant) => (
                     <button
                       key={variant.priceListItemId}
-                      className={`rounded-2xl border px-3 py-3 text-sm font-bold transition ${
+                      type="button"
+                      className={`min-h-12 rounded-2xl border px-3 py-3 text-sm font-bold transition ${neonMaskHover} ${
                         selectedVariant?.priceListItemId === variant.priceListItemId
                           ? "border-neon-violet/60 bg-neon-violet/15 text-white shadow-violet"
                           : "border-white/10 bg-white/6 text-white/68"
@@ -404,24 +430,25 @@ export function ProductModal({
             ) : null}
           </div>
 
-          <div className="border-t border-white/10 bg-night/92 p-4">
+          <div className="border-t border-white/10 bg-[#05030b]/94 p-4 shadow-[0_-18px_40px_rgba(5,3,11,0.72)]">
             {selectedVariant?.note ? (
               <p className="mb-3 rounded-2xl border border-neon-cyan/25 bg-neon-cyan/10 px-3 py-2 text-sm font-semibold text-neon-cyan">
                 {selectedVariant.note}
               </p>
             ) : null}
-            <div className="mb-3 flex items-end justify-between">
+            <div className="mb-3 flex items-end justify-between rounded-3xl border border-neon-cyan/20 bg-neon-cyan/8 px-4 py-3">
               <span className="text-sm text-white/55">Цена</span>
               <span className="text-2xl font-black text-white">
                 {selectedVariant ? `${formatKopecks(selectedVariant.priceKopecks)} ₽` : "—"}
               </span>
             </div>
-            <ActionButton className="w-full" onClick={handleAdd} disabled={!canAddToCart}>
+            <ActionButton className="min-h-[52px] w-full shadow-[0_0_34px_rgba(49,246,255,0.2)]" onClick={handleAdd} disabled={!canAddToCart}>
               {added ? "Добавлено в корзину" : "Добавить в корзину"}
             </ActionButton>
           </div>
         </motion.div>
       </motion.div>
+      <ImageLightbox src={lightboxImage?.src ?? null} alt={lightboxImage?.alt ?? ""} onClose={() => setLightboxImage(null)} />
     </AnimatePresence>
   );
 }

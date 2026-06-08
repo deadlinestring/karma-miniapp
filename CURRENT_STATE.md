@@ -428,3 +428,25 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Current read-only baseline remains `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
 - Cart, checkout, payment, webhook, order and custom runtime logic remained untouched.
 - Next staged redesign target: product modal.
+
+## Product modal Neon Mask redesign checkpoint
+
+- Staged product modal redesign is prepared locally without migration or production data changes.
+- Modal shell, preview frame, gallery thumbnails, category badges, feature rows, type/size selectors, custom style selector, custom upload block and add-to-cart footer now use clearer Neon Mask visual treatment.
+- Custom help remains ContentBlock-driven through `custom-design-help`, `custom-product-features-help` and `custom-upload-requirements-help`.
+- Close control remains accessible and the modal still uses the same open/close contract.
+- Variant selection, price calculation, custom upload endpoint/validation, `customDesignKey`, custom surcharge, add-to-cart payload and cart store logic remain unchanged.
+- Checkout, payment, webhook, order and admin runtime logic remained untouched.
+- Current read-only baseline remains `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
+- Next staged redesign target after review: cart/checkout or order detail.
+
+## Catalog chips and image lightbox bugfix checkpoint
+
+- Catalog category chips clipping/hover border bug is fixed locally without changing search, category filtering, product list logic or ContentBlock slugs.
+- The category scroll row now has safe padding, and chip borders/focus rings are stable without hover translation.
+- Shared `ImageLightbox` foundation is added for large image viewing with Escape, backdrop click and close button.
+- Product modal main/gallery images open in the shared lightbox.
+- Admin product gallery images open in the shared lightbox.
+- Admin custom review images open through the existing signed URL flow only; raw private storage paths remain hidden.
+- Current read-only baseline remains `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
+- Payment, webhook, order, storage policy and production data remain untouched.

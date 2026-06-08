@@ -98,16 +98,16 @@ export function CatalogPage({
       </Surface>
 
       <section className="mt-5">
-        <div className="hide-scrollbar flex gap-2 overflow-x-auto pb-1">
+        <div className="hide-scrollbar flex gap-2 overflow-x-auto px-1 pb-2 pr-5">
           {(["Все", ...categories.map((item) => item.name)] as FilterValue[]).map((item) => (
             <button
               type="button"
               key={item}
               onClick={() => setCategory(item)}
-              className={`h-11 shrink-0 rounded-2xl px-4 text-sm font-bold ${neonMaskHover} ${
+              className={`h-11 shrink-0 rounded-2xl border px-4 text-sm font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/70 focus-visible:ring-offset-2 focus-visible:ring-offset-night ${
                 category === item
-                  ? "border border-neon-cyan/40 bg-neon-cyan text-night shadow-glow"
-                  : "border border-white/10 bg-white/7 text-white/68 hover:text-white"
+                  ? "border-neon-cyan/40 bg-neon-cyan text-night shadow-glow"
+                  : "border-white/10 bg-white/7 text-white/68 hover:border-neon-cyan/35 hover:text-white"
               }`}
             >
               {item}

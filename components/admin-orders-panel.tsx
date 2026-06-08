@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState, type ReactNode } from "react";
 import { ArrowLeft, Search } from "lucide-react";
 import { useScrollIntoViewOnChange } from "@/components/use-scroll-into-view-on-change";
+import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { formatKopecks } from "@/lib/pricing";
 
 type FulfillmentStatus =
@@ -357,6 +358,7 @@ function OrderDetailView({
 }) {
   const [nextStatus, setNextStatus] = useState<FulfillmentStatus>(order.allowedNextStatuses[0]?.value ?? order.fulfillmentStatus);
   const [customImageUrl, setCustomImageUrl] = useState<string | null>(null);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const customImageItem = order.items.find((item) => item.hasCustomImage) ?? null;
 
@@ -376,6 +378,7 @@ function OrderDetailView({
     try {
       const image = await loadCustomImageSignedUrl(initData, order.publicNumber);
       setCustomImageUrl(image.signedUrl);
+      setLightboxUrl(image.signedUrl);
       onMessage(`Ссылка на изображение создана на ${image.expiresInSeconds} сек.`);
     } catch (requestError) {
       onError(requestError instanceof Error ? requestError.message : "Не удалось открыть изображение.");
@@ -404,6 +407,7 @@ function OrderDetailView({
   }
 
   return (
+    <>
     <div className="mt-5">
       <button type="button" onClick={onBack} className="inline-flex items-center gap-2 text-sm font-bold text-white/70">
         <ArrowLeft size={16} />
@@ -473,10 +477,15 @@ function OrderDetailView({
               Посмотреть изображение
             </button>
             {customImageUrl ? (
-              <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-night/70">
+              <button
+                type="button"
+                onClick={() => setLightboxUrl(customImageUrl)}
+                className="mt-4 block w-full overflow-hidden rounded-2xl border border-white/10 bg-night/70 transition hover:border-neon-cyan/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
+                aria-label="Открыть загруженное изображение крупно"
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={customImageUrl} alt="Загруженное изображение для проверки" className="max-h-[360px] w-full object-contain" />
-              </div>
+              </button>
             ) : null}
             {customImageItem.customImageReviewStatus === "PENDING_REVIEW" ? (
               <div className="mt-4 grid gap-3">
@@ -549,6 +558,8 @@ function OrderDetailView({
         </form>
       </div>
     </div>
+    <ImageLightbox src={lightboxUrl} alt="Загруженное изображение для проверки" onClose={() => setLightboxUrl(null)} />
+    </>
   );
 }
 

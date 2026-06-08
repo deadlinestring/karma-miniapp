@@ -34,4 +34,25 @@ describe("product modal custom design flow", () => {
     expect(source).toContain("customUploadRequirementsBlock?.title");
     expect(source).toContain("customUploadRequirementsBlock?.body");
   });
+
+  it("uses Neon Mask visual surfaces without changing modal controls", () => {
+    expect(source).toContain("neonMaskSurface");
+    expect(source).toContain("neonMaskGradientText");
+    expect(source).toContain("neonMaskHover");
+    expect(source).toContain('<Surface tone="mask"');
+    expect(source).toContain("ProductVisual product={{ ...product, coverImage: visibleImage }} priority");
+    expect(source).toContain('type="button"');
+    expect(source).toContain("onClick={() => setSelectedType(type)}");
+    expect(source).toContain("onClick={() => setSelectedVariantId(variant.priceListItemId)}");
+    expect(source).toContain("onClick={() => setSelectedCustomStyle(option.value)}");
+    expect(source).toContain("onClick={handleAdd}");
+  });
+
+  it("opens product images in the shared lightbox without changing gallery state", () => {
+    expect(source).toContain('import { ImageLightbox }');
+    expect(source).toContain("setLightboxImage({ src: visibleImage, alt: visibleImageAlt })");
+    expect(source).toContain("setActiveImage(image);");
+    expect(source).toContain("setLightboxImage({ src: image");
+    expect(source).toContain("<ImageLightbox src={lightboxImage?.src ?? null}");
+  });
 });

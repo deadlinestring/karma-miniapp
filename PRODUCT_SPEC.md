@@ -910,3 +910,39 @@ Live smoke-check:
 - search, category filtering and product modal behavior remained intact;
 - cart, checkout, payment, webhook and order runtime behavior is unchanged;
 - the next staged redesign target is product modal.
+
+## Product modal Neon Mask redesign
+
+The product modal is the next staged storefront surface for the KARMA Neon Mask direction. The update is limited to visual presentation and keeps all product/custom/cart behavior intact.
+
+Prepared modal rules:
+
+- modal shell uses a dark glass/neon surface with restrained violet/cyan glow;
+- close control remains visible, accessible and code-owned;
+- product preview keeps the current image/gallery behavior with a stronger neon frame;
+- title, category/subcategory badges and feature rows become easier to scan;
+- type, size and custom drawing style selectors use tap-friendly neon card states;
+- custom upload help remains managed by `custom-design-help`, `custom-product-features-help` and `custom-upload-requirements-help`;
+- upload success/error/loading messages remain readable;
+- add-to-cart footer shows a clearer price panel and primary CTA;
+- variant selection, price calculation, upload endpoint/validation, `customDesignKey`, custom surcharge and add-to-cart payload are unchanged;
+- cart, checkout, payment, webhook and order runtime behavior is unchanged.
+
+The next staged redesign target after modal review can be cart/checkout or order detail.
+
+## Catalog chips and image lightbox bugfix
+
+Catalog category chips must stay stable on mobile and Telegram WebView:
+
+- chip borders remain visible in normal, hover, active and focus-visible states;
+- horizontal category rows reserve enough right padding so the last category is not clipped;
+- search, category filtering and product list behavior are unchanged.
+
+Image viewing foundation:
+
+- customers can open product images large from the product modal;
+- admins can open product gallery images large from product management;
+- admins can open custom review images large only after fetching the existing protected signed URL;
+- private custom upload storage paths are not rendered or exposed;
+- Escape, backdrop click and close button dismiss the image viewer;
+- no payment, order, webhook, upload validation or storage policy behavior changes.
