@@ -450,3 +450,17 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Admin custom review images open through the existing signed URL flow only; raw private storage paths remain hidden.
 - Current read-only baseline remains `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
 - Payment, webhook, order, storage policy and production data remain untouched.
+
+## Live product modal and image lightbox smoke-check
+
+- Combined commit `b2222d8` reached Vercel Ready and was smoke-checked in production on Telegram/mobile and admin.
+- Category chips no longer clip at the right edge, and border/hover/focus states are visually acceptable.
+- Product modal opens correctly.
+- User product main/gallery images open in `ImageLightbox`, and the lightbox closes correctly.
+- Regular product selection/add-to-cart works.
+- Custom design style selection, upload, surcharge and add-to-cart works.
+- Admin product images open in `ImageLightbox`.
+- Admin custom review image opens through the existing signed URL flow only; raw private storage path is not exposed.
+- Current read-only baseline remains `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
+- Checkout, payment, webhook, order and production data remained untouched.
+- Next staged redesign target: cart + checkout.

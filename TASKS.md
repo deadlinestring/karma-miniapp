@@ -683,3 +683,16 @@
 - Admin product gallery images can be opened large.
 - Admin custom review images open through the existing signed URL only; raw private storage paths remain hidden.
 - Payment, order, webhook, storage policy and production data remain untouched.
+
+## Live product modal and image lightbox smoke-check
+
+- Combined commit `b2222d8` reached Vercel Ready and was smoke-checked in production on Telegram/mobile and admin.
+- Product modal redesign opens correctly.
+- Category chips no longer clip at the right edge; hover/focus/border states are visually acceptable.
+- User can open product main/gallery images in `ImageLightbox`, and the lightbox closes correctly.
+- Regular product selection and add-to-cart still work.
+- Custom design style selection, upload, surcharge and add-to-cart still work.
+- Admin product gallery images open in `ImageLightbox`.
+- Admin custom review image opens only through the protected signed URL flow; raw private storage path is not exposed.
+- Checkout, payment, order and webhook runtime remained untouched.
+- Next staged redesign: cart + checkout.

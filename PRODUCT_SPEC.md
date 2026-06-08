@@ -946,3 +946,15 @@ Image viewing foundation:
 - private custom upload storage paths are not rendered or exposed;
 - Escape, backdrop click and close button dismiss the image viewer;
 - no payment, order, webhook, upload validation or storage policy behavior changes.
+
+Live smoke-check:
+
+- combined commit `b2222d8` was deployed and visually checked in production;
+- product modal opens correctly on Telegram/mobile;
+- category chips no longer clip and their hover/focus/border states are visually acceptable;
+- product main/gallery images open large for customers and close correctly;
+- regular product selection/add-to-cart and custom design style/upload/surcharge/add-to-cart remain working;
+- admin product images open large;
+- admin custom review image opens through signed URL only, with no raw private path exposed;
+- checkout, payment, webhook and order runtime behavior is unchanged;
+- the next staged redesign target is cart + checkout.

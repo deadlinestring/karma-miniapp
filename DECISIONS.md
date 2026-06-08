@@ -663,3 +663,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - Public product images can use their normal public URLs in the lightbox.
 - Private custom uploads must only be opened from an admin-authenticated signed URL already returned by the protected endpoint; raw storage paths are never displayed or stored in lightbox state.
 - The lightbox must not change storage policy, payment/order behavior, upload validation, review status or admin mutations.
+
+## Live product modal and lightbox verification decision
+
+- Production smoke-check confirmed that commit `b2222d8` is acceptable on Telegram/mobile and admin.
+- Product modal visual redesign, category chips fix and `ImageLightbox` are verified as presentation/UX changes.
+- Regular and custom add-to-cart flows remain the verified behavior contract after the modal redesign.
+- Admin custom review images must continue to open only from protected signed URLs, never from raw private storage paths.
+- Cart + checkout are the next staged visual target; payment/order/webhook runtime should remain outside redesign work unless explicitly requested.
