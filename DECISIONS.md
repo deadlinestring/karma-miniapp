@@ -671,3 +671,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - Regular and custom add-to-cart flows remain the verified behavior contract after the modal redesign.
 - Admin custom review images must continue to open only from protected signed URLs, never from raw private storage paths.
 - Cart + checkout are the next staged visual target; payment/order/webhook runtime should remain outside redesign work unless explicitly requested.
+
+## Reference-inspired dark neon gaming direction decision
+
+- Adapt the reference as an original KARMA dark neon gaming direction; do not copy its layout, artwork or branded assets.
+- Limit this pass to global background/tokens, TopBar, BottomNav, shared primitives and light visual alignment of home/product cards.
+- Preserve uploaded StoreSettings logo rendering, cart action, existing route hrefs and nested Orders active-state behavior.
+- Shared component props, variants, ContentBlock behavior, product modal opening and all business/runtime contracts remain unchanged.
+- Cart + checkout remain the next staged redesign and are explicitly outside this pass.

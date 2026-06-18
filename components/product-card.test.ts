@@ -21,8 +21,7 @@ describe("product card Neon Mask styling", () => {
 
   it("uses glass/neon card styling and safe text rendering", () => {
     expect(source).toContain("neonMaskHover");
-    expect(source).toContain("border-neon-violet/24");
-    expect(source).toContain("bg-[#090713]/78");
+    expect(source).toContain("neonMaskElevatedSurface");
     expect(source).toContain("border-neon-cyan/12");
     expect(source).not.toContain("dangerouslySetInnerHTML");
   });

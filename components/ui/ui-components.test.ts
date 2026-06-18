@@ -18,6 +18,9 @@ describe("shared UI foundation", () => {
     expect(buttonSource).toContain("disabled:cursor-not-allowed");
     expect(buttonSource).toContain("focus-visible:ring-neon-cyan");
     expect(buttonSource).toContain('"mask"');
+    expect(buttonSource).toContain('"primary"');
+    expect(buttonSource).toContain('"secondary"');
+    expect(buttonSource).toContain('"ghost"');
     expect(buttonSource).toContain("className");
   });
 
@@ -52,6 +55,8 @@ describe("shared UI foundation", () => {
 
   it("provides reusable surface, status badge and section heading patterns", () => {
     expect(surfaceSource).toContain("toneClass");
+    expect(surfaceSource).toContain('"default"');
+    expect(surfaceSource).toContain('"mask"');
     expect(statusBadgeSource).toContain("StatusBadgeTone");
     expect(statusBadgeSource).toContain("success");
     expect(headingSource).toContain("text-neon-cyan");

@@ -27,7 +27,7 @@ export function ProductVisual({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-[22px] border border-neon-violet/24 bg-graphite ring-1 ring-white/5 transition duration-300 group-hover:border-neon-cyan/35 group-hover:ring-neon-cyan/20 ${
+      className={`relative overflow-hidden rounded-lg border border-neon-violet/24 bg-graphite ring-1 ring-white/5 transition duration-300 group-hover:border-neon-cyan/35 group-hover:ring-neon-cyan/20 ${
         compact ? "aspect-[4/5]" : "aspect-[4/5]"
       } ${accentClasses[product.accent]}`}
       aria-label={`Визуальная обложка товара ${title}`}

@@ -129,13 +129,13 @@ export function HomePage({
       </section>
 
       <section className="mt-7">
-        <h2 className="text-xl font-black text-white">Категории</h2>
+        <h2 className="text-lg font-black tracking-[0.02em] text-white">Категории</h2>
         <div className="mt-3 grid grid-cols-2 gap-3">
           {data.categories.map((category) => (
             <Link
               key={category.id}
               href={`/catalog?category=${encodeURIComponent(category.name)}`}
-              className="neon-border rounded-3xl bg-white/7 p-4 transition hover:bg-white/10"
+              className={`rounded-lg p-4 ${neonMaskSurface} ${neonMaskHover}`}
             >
               <p className="text-lg font-black text-white">{category.name}</p>
               <p className="mt-2 text-xs text-white/52">
@@ -148,7 +148,7 @@ export function HomePage({
 
       <section className="mt-7">
         <div className="flex items-end justify-between">
-          <h2 className="text-xl font-black text-white">Популярное</h2>
+          <h2 className="text-lg font-black tracking-[0.02em] text-white">Популярное</h2>
           <Link href="/catalog" className="text-sm font-bold text-neon-cyan">
             Все товары
           </Link>
@@ -169,8 +169,8 @@ export function HomePage({
           const Icon = item.icon;
 
           return (
-            <div key={item.title} className="flex items-center gap-4 rounded-3xl border border-white/10 bg-white/7 p-4">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-neon-cyan/12 text-neon-cyan">
+            <div key={item.title} className={`flex items-center gap-4 rounded-lg p-4 ${neonMaskSurface}`}>
+              <span className="flex h-12 w-12 items-center justify-center rounded-lg border border-neon-cyan/20 bg-neon-cyan/8 text-neon-cyan shadow-[0_0_18px_rgba(49,246,255,0.1)]">
                 <Icon size={22} />
               </span>
               <span>

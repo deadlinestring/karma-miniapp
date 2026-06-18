@@ -464,3 +464,13 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Current read-only baseline remains `Order = 5`, `Payment = 2`, `Product = 14`, `StoreSettings = 1`, `FaqSection = 11`, `ContentBlock = 12`.
 - Checkout, payment, webhook, order and production data remained untouched.
 - Next staged redesign target: cart + checkout.
+
+## Reference-inspired dark neon gaming UI direction checkpoint
+
+- A local, uncommitted visual-only direction pass is prepared from checkpoint `fdf3bd8`.
+- The reference was adapted into an original KARMA dark neon gaming treatment; no reference composition or assets were copied.
+- Global background/tokens, TopBar, BottomNav and shared primitives now use deeper digital-glass surfaces and restrained violet/cyan glow.
+- Home, product card and product visual styling is slightly aligned without changing ContentBlock behavior, product data, pricing or modal opening.
+- Uploaded StoreSettings logo, cart action, existing navigation hrefs, nested Orders active state and mobile safe area remain preserved.
+- Product/custom/cart/checkout/payment/webhook/order runtime, API routes, Prisma schema and production data remain untouched; no migration is needed.
+- Next staged redesign: cart + checkout; it has not been started.

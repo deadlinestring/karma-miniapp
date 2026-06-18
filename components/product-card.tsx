@@ -7,7 +7,7 @@ import type { StorefrontProduct } from "@/lib/storefront-types";
 import { formatKopecks } from "@/lib/pricing";
 import { ProductVisual } from "@/components/product-visual";
 import { ActionButton } from "@/components/action-button";
-import { neonMaskHover } from "@/components/ui/neon-mask-tokens";
+import { neonMaskElevatedSurface, neonMaskHover } from "@/components/ui/neon-mask-tokens";
 
 function ProductPrice({ product, className = "text-sm" }: { product: StorefrontProduct; className?: string }) {
   if (!product.isOrderAvailable) {
@@ -34,17 +34,17 @@ export function ProductCard({
     return (
       <motion.div
         whileTap={{ scale: 0.97 }}
-        className={`group min-w-0 overflow-hidden rounded-[24px] border border-neon-violet/24 bg-[#090713]/78 p-2 text-left shadow-[0_0_24px_rgba(155,92,255,0.12)] ${neonMaskHover}`}
+        className={`group min-w-0 overflow-hidden rounded-xl p-2 text-left ${neonMaskElevatedSurface} ${neonMaskHover}`}
       >
         <Link href={`/catalog?product=${product.slug}`} onClick={() => onOpen(product)} className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/70">
           <ProductVisual product={product} compact />
           <div className="px-1.5 pb-1.5 pt-3">
             <div className="flex items-center gap-2">
-              <span className="line-clamp-1 rounded-full border border-white/10 bg-white/8 px-2 py-1 text-[10px] font-bold text-white/58">
+              <span className="line-clamp-1 rounded-md border border-white/10 bg-white/6 px-2 py-1 text-[10px] font-bold text-white/58">
                 {product.subcategory}
               </span>
               {product.isCustom ? (
-                <span className="rounded-full border border-neon-pink/25 bg-neon-pink/12 px-2 py-1 text-[10px] font-bold text-neon-pink">
+                <span className="rounded-md border border-neon-pink/25 bg-neon-pink/10 px-2 py-1 text-[10px] font-bold text-neon-pink">
                   свой дизайн
                 </span>
               ) : null}
@@ -52,7 +52,7 @@ export function ProductCard({
             <h3 className="mt-1 line-clamp-2 min-h-10 text-sm font-black leading-5 text-white">
               {product.name}
             </h3>
-            <p className="mt-2 rounded-2xl border border-neon-cyan/12 bg-neon-cyan/8 px-3 py-2 text-xs text-white/62">
+            <p className="mt-2 rounded-lg border border-neon-cyan/12 bg-neon-cyan/6 px-3 py-2 text-xs text-white/62">
               <ProductPrice product={product} className="text-sm" />
             </p>
           </div>
@@ -64,15 +64,15 @@ export function ProductCard({
   return (
     <motion.article
       whileTap={{ scale: 0.985 }}
-      className={`group overflow-hidden rounded-[28px] border border-neon-violet/24 bg-[#090713]/78 p-3 shadow-[0_0_32px_rgba(155,92,255,0.13)] ${neonMaskHover}`}
+      className={`group overflow-hidden rounded-xl p-3 ${neonMaskElevatedSurface} ${neonMaskHover}`}
     >
       <ProductVisual product={product} />
       <div className="mt-4">
         <div className="mb-2 flex flex-wrap items-center gap-2 text-[11px]">
-          <span className="rounded-full border border-white/10 bg-white/8 px-2 py-1 text-white/56">{product.category}</span>
-          <span className="rounded-full border border-neon-cyan/20 bg-neon-cyan/8 px-2 py-1 text-neon-cyan/80">{product.subcategory}</span>
+          <span className="rounded-md border border-white/10 bg-white/6 px-2 py-1 text-white/56">{product.category}</span>
+          <span className="rounded-md border border-neon-cyan/20 bg-neon-cyan/8 px-2 py-1 text-neon-cyan/80">{product.subcategory}</span>
           {product.isCustom ? (
-            <span className="rounded-full border border-neon-pink/25 bg-neon-pink/12 px-2 py-1 font-bold text-neon-pink">
+            <span className="rounded-md border border-neon-pink/25 bg-neon-pink/10 px-2 py-1 font-bold text-neon-pink">
               свой дизайн
             </span>
           ) : null}
@@ -81,7 +81,7 @@ export function ProductCard({
         <p className="mt-2 line-clamp-2 min-h-10 text-sm leading-5 text-white/62">
           {product.description}
         </p>
-        <div className="mt-4 flex items-center justify-between gap-3 rounded-3xl border border-neon-cyan/12 bg-neon-cyan/8 p-2">
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-neon-cyan/12 bg-neon-cyan/6 p-2">
           <p className="pl-2 text-sm text-white/60">
             <ProductPrice product={product} className="text-lg" />
           </p>

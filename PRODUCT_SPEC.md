@@ -958,3 +958,14 @@ Live smoke-check:
 - admin custom review image opens through signed URL only, with no raw private path exposed;
 - checkout, payment, webhook and order runtime behavior is unchanged;
 - the next staged redesign target is cart + checkout.
+
+## Reference-inspired dark neon gaming UI direction pass
+
+The storefront shell now has an original reference-inspired dark neon gaming treatment rather than a copied composition. Global backgrounds and Neon Mask tokens use deeper violet/cyan gradients, digital-glass surfaces and more focused glow.
+
+- TopBar preserves the uploaded StoreSettings logo, store copy and cart action;
+- BottomNav preserves all route links, adds a clearer active state for exact and nested routes, and keeps mobile safe-area spacing;
+- Button, Surface, StatusBadge, EmptyState and action-button contracts/variants remain unchanged while focus-visible and disabled states stay readable;
+- home categories/features and product cards/visuals are lightly aligned to the direction;
+- ContentBlock rendering, product modal behavior, product/custom/cart/checkout/payment/webhook/order runtime and calculations are unchanged;
+- the next staged redesign is cart + checkout and is not part of this pass.

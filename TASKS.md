@@ -696,3 +696,12 @@
 - Admin custom review image opens only through the protected signed URL flow; raw private storage path is not exposed.
 - Checkout, payment, order and webhook runtime remained untouched.
 - Next staged redesign: cart + checkout.
+
+## Reference-inspired dark neon gaming UI direction pass
+
+- Prepare a visual-only dark neon gaming direction pass inspired by the reference without copying its composition or assets.
+- Deepen the global background/tokens, TopBar, BottomNav and shared UI primitives with restrained violet/cyan glow and digital-glass surfaces.
+- Slightly align home, product card and product visual presentation while preserving ContentBlock, catalog and product-modal behavior.
+- Preserve the uploaded StoreSettings logo, cart action, navigation routes, mobile safe area and accessibility states.
+- Keep product, custom, cart, checkout, payment, webhook and order runtime untouched.
+- Next staged redesign: cart + checkout; do not start it in this pass.

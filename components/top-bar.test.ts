@@ -18,4 +18,10 @@ describe("top bar logo source", () => {
     expect(source).toContain('aria-label="');
     expect(source).not.toContain("dangerouslySetInnerHTML");
   });
+
+  it("keeps the cart action visible and linked", () => {
+    expect(source).toContain('href="/cart"');
+    expect(source).toContain("<ShoppingBag");
+    expect(source).toContain('aria-label="Открыть корзину"');
+  });
 });

@@ -23,15 +23,16 @@ export function EmptyState({
   children?: ReactNode;
 }) {
   return (
-    <Surface as="div" tone="mask" className={`relative overflow-hidden p-8 text-center ${className}`}>
+    <Surface as="div" tone="mask" className={`relative overflow-hidden p-6 text-center ${className}`}>
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neon-cyan/45 to-transparent" />
       {showWatermark ? (
         <BrandMaskWatermark variant="empty" className="absolute -right-5 -top-5" />
       ) : null}
       <div className="relative">
         {visual ? <div className="flex justify-center">{visual}</div> : null}
-        {title ? <h2 className="mt-4 text-xl font-black text-white first:mt-0">{title}</h2> : null}
+        {title ? <h2 className="mt-4 text-lg font-black leading-tight text-white first:mt-0">{title}</h2> : null}
         {bodyLines.length > 0 ? (
-          <div className="mt-2 grid gap-1 text-sm leading-6 text-white/60">
+          <div className="mt-2 grid gap-1 text-sm leading-6 text-[#cfc5ff]/62">
             {bodyLines.map((line) => (
               <p key={line}>{line}</p>
             ))}
