@@ -230,7 +230,7 @@ export function ProductModal({
             <button
               type="button"
               onClick={() => setLightboxImage({ src: visibleImage, alt: visibleImageAlt })}
-              className="block w-full rounded-[26px] border border-neon-cyan/20 bg-white/5 p-2 text-left shadow-[0_0_38px_rgba(49,246,255,0.1)] transition hover:border-neon-cyan/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan"
+              className="block w-full rounded-[26px] border border-neon-violet/25 bg-white/5 p-2 text-left shadow-[0_0_30px_rgba(155,92,255,0.1)] transition duration-150 hover:brightness-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-violet/70"
               aria-label="Открыть изображение товара крупно"
             >
               <ProductVisual product={{ ...product, coverImage: visibleImage }} priority />
@@ -240,10 +240,10 @@ export function ProductModal({
                 <button
                   key={image}
                   type="button"
-                  className={`relative aspect-[4/3] overflow-hidden rounded-2xl border transition ${neonMaskHover} ${
+                  className={`relative aspect-[4/3] overflow-hidden rounded-2xl border bg-[#08030f] transition duration-150 hover:brightness-110 ${
                     (activeImage ?? product.coverImage) === image
-                      ? "border-neon-cyan/70 shadow-glow"
-                      : "border-white/10 opacity-72"
+                      ? "border-neon-violet/60 shadow-[0_0_18px_rgba(155,92,255,0.18)]"
+                      : "border-neon-violet/15 opacity-72"
                   }`}
                   onClick={() => {
                     setActiveImage(image);
@@ -256,9 +256,8 @@ export function ProductModal({
                     alt={`Дополнительное изображение ${product.name}`}
                     fill
                     sizes="120px"
-                    className="object-cover"
+                    className="object-contain object-center p-1"
                   />
-                  <span className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
                 </button>
               ))}
             </div>

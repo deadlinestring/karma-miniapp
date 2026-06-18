@@ -1,13 +1,15 @@
 "use client";
 
 import { Eye } from "lucide-react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import type { StorefrontProduct } from "@/lib/storefront-types";
 import { formatKopecks } from "@/lib/pricing";
 import { ProductVisual } from "@/components/product-visual";
 import { ActionButton } from "@/components/action-button";
-import { neonMaskElevatedSurface, neonMaskHover } from "@/components/ui/neon-mask-tokens";
+import { neonMaskElevatedSurface } from "@/components/ui/neon-mask-tokens";
+
+const productCardHover =
+  "transition duration-150 ease-out motion-reduce:transition-none hover:-translate-y-px hover:brightness-[1.025] active:translate-y-0 motion-reduce:hover:translate-y-0";
 
 function ProductPrice({ product, className = "text-sm" }: { product: StorefrontProduct; className?: string }) {
   if (!product.isOrderAvailable) {
@@ -32,9 +34,8 @@ export function ProductCard({
 }) {
   if (variant === "compact") {
     return (
-      <motion.div
-        whileTap={{ scale: 0.97 }}
-        className={`group min-w-0 overflow-hidden rounded-xl p-2 text-left ${neonMaskElevatedSurface} ${neonMaskHover}`}
+      <div
+        className={`group min-w-0 overflow-hidden rounded-xl p-2 text-left ${neonMaskElevatedSurface} ${productCardHover}`}
       >
         <Link href={`/catalog?product=${product.slug}`} onClick={() => onOpen(product)} className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/70">
           <ProductVisual product={product} compact />
@@ -57,14 +58,13 @@ export function ProductCard({
             </p>
           </div>
         </Link>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.article
-      whileTap={{ scale: 0.985 }}
-      className={`group overflow-hidden rounded-xl p-3 ${neonMaskElevatedSurface} ${neonMaskHover}`}
+    <article
+      className={`group overflow-hidden rounded-xl p-3 ${neonMaskElevatedSurface} ${productCardHover}`}
     >
       <ProductVisual product={product} />
       <div className="mt-4">
@@ -91,6 +91,6 @@ export function ProductCard({
           </ActionButton>
         </div>
       </div>
-    </motion.article>
+    </article>
   );
 }

@@ -7,11 +7,10 @@ describe("home page content blocks", () => {
 
   it("loads hero copy from admin-managed content blocks", () => {
     expect(source).toContain("useContentBlocks(homeContentSlugs)");
-    expect(source).toContain("BrandMaskWatermark");
     expect(source).toContain("neonMaskBackground");
     expect(source).toContain("neonMaskSurface");
     expect(source).toContain("neonMaskHover");
-    expect(source.match(/<BrandMaskWatermark/g)?.length).toBe(1);
+    expect(source).not.toContain("BrandMaskWatermark");
     expect(source).toContain('"home-hero-eyebrow"');
     expect(source).toContain('"home-hero-title"');
     expect(source).toContain('"home-hero-subtitle"');
@@ -38,14 +37,12 @@ describe("home page content blocks", () => {
     expect(source).toContain('type="button"');
   });
 
-  it("keeps the hero background sharp while layering the mask above the glass panel", () => {
-    expect(source).toContain("relative isolate min-h-[560px]");
-    expect(source).toContain("absolute inset-0 z-0 h-full w-full object-cover opacity-78");
-    expect(source).not.toContain("blur-sm");
-    expect(source).not.toContain("filter");
-    expect(source).toContain('BrandMaskWatermark variant="hero" className="absolute -right-28 top-12 z-30');
-    expect(source).toContain("absolute inset-0 z-20 rounded-[28px]");
-    expect(source).toContain("relative z-40");
+  it("separates the stable hero media zone from the text panel", () => {
+    expect(source).toContain('section className="grid gap-3"');
+    expect(source).toContain("aspect-[16/10]");
+    expect(source).toContain("h-full w-full object-contain object-center");
+    expect(source).not.toContain("absolute inset-0 z-0 h-full w-full object-cover");
+    expect(source).not.toContain('variant="hero"');
   });
 
   it("renders content as React text without executing HTML", () => {

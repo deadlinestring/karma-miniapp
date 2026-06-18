@@ -705,3 +705,11 @@
 - Preserve the uploaded StoreSettings logo, cart action, navigation routes, mobile safe area and accessibility states.
 - Keep product, custom, cart, checkout, payment, webhook and order runtime untouched.
 - Next staged redesign: cart + checkout; do not start it in this pass.
+
+## Dark neon visual polish bugfix
+
+- Remove the problematic skull/mask-and-sword decorative layer from the home Hero while keeping the shared mask asset available elsewhere.
+- Separate the Hero image into a stable aspect-ratio media zone and place copy/CTA in an independent dark glass panel for reliable mobile resizing.
+- Soften product card hover to a short, subtle translate/brightness response without scale or harsh cyan/white border transitions.
+- Remove shine/scan-line overlays from product photos and use contained image fit in cards and modal previews/thumbnails.
+- Preserve ContentBlock, CTA, product modal, lightbox, cart and all business/runtime contracts.

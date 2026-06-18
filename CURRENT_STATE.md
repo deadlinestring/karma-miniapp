@@ -474,3 +474,12 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Uploaded StoreSettings logo, cart action, existing navigation hrefs, nested Orders active state and mobile safe area remain preserved.
 - Product/custom/cart/checkout/payment/webhook/order runtime, API routes, Prisma schema and production data remain untouched; no migration is needed.
 - Next staged redesign: cart + checkout; it has not been started.
+
+## Dark neon visual polish bugfix checkpoint
+
+- A separate uncommitted visual bugfix is prepared on top of `fe60e28`.
+- The problematic Hero skull/mask-and-sword decorative layer is removed without deleting the shared mask asset or affecting the uploaded TopBar logo.
+- Hero media uses a stable aspect-ratio container; managed title, description and CTA controls live in a separate dark glass panel below it.
+- Product card hover is shortened and softened, with scale and harsh cyan/white hover borders removed.
+- Product shine/scan-line overlays are removed; card and modal product images use contained fit instead of cropping.
+- ContentBlock, Hero CTA, product modal, lightbox, cart and all business/runtime logic remain unchanged; no migration is required.

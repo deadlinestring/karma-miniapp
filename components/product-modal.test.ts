@@ -54,5 +54,6 @@ describe("product modal custom design flow", () => {
     expect(source).toContain("setActiveImage(image);");
     expect(source).toContain("setLightboxImage({ src: image");
     expect(source).toContain("<ImageLightbox src={lightboxImage?.src ?? null}");
+    expect(source).toContain('className="object-contain object-center p-1"');
   });
 });

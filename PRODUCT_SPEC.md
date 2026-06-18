@@ -969,3 +969,15 @@ The storefront shell now has an original reference-inspired dark neon gaming tre
 - home categories/features and product cards/visuals are lightly aligned to the direction;
 - ContentBlock rendering, product modal behavior, product/custom/cart/checkout/payment/webhook/order runtime and calculations are unchanged;
 - the next staged redesign is cart + checkout and is not part of this pass.
+
+## Dark neon visual polish bugfix
+
+The home Hero now renders its image in a stable aspect-ratio visual zone and its managed copy/actions in a separate dark glass panel. The problematic decorative skull/mask-and-sword layer is no longer rendered in Hero; the uploaded TopBar logo and shared brand-mask asset remain intact.
+
+Product presentation rules:
+
+- cards use a fast, restrained hover response without scaling or harsh cyan/white border changes;
+- product photos have no shine or scan-line overlays;
+- card, modal preview and modal thumbnail images use contained fit on a dark background so the complete lamp remains visible;
+- product names, prices, badges, CTA behavior, modal opening and lightbox behavior are unchanged;
+- product/custom/cart/checkout/payment/order/webhook/storage runtime remains unchanged.

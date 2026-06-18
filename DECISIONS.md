@@ -679,3 +679,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - Preserve uploaded StoreSettings logo rendering, cart action, existing route hrefs and nested Orders active-state behavior.
 - Shared component props, variants, ContentBlock behavior, product modal opening and all business/runtime contracts remain unchanged.
 - Cart + checkout remain the next staged redesign and are explicitly outside this pass.
+
+## Dark neon visual polish bugfix decision
+
+- Hero media and Hero content should be sibling blocks rather than overlapping absolute layers, preventing resize drift and text/image collisions.
+- Remove only the Hero instance of `BrandMaskWatermark`; retain `/brand/karma-mask.svg` and the shared component for existing non-Hero use.
+- Product photography should use `object-contain` on a dark gradient frame because source photos have inconsistent framing and must not crop the lamps.
+- Product hover may use a short subtle translate/brightness response, but no scale, cyan/white hover ring or scan-line overlay over the artwork.
+- CTA destinations, ContentBlock slugs, product modal/lightbox behavior and product/custom/cart/checkout/payment/order runtime remain unchanged.

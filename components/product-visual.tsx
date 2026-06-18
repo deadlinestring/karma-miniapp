@@ -27,22 +27,20 @@ export function ProductVisual({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-lg border border-neon-violet/24 bg-graphite ring-1 ring-white/5 transition duration-300 group-hover:border-neon-cyan/35 group-hover:ring-neon-cyan/20 ${
-        compact ? "aspect-[4/5]" : "aspect-[4/5]"
-      } ${accentClasses[product.accent]}`}
+      className={`overflow-hidden rounded-lg border border-neon-violet/24 bg-[linear-gradient(145deg,#10091c,#05030a)] ${accentClasses[product.accent]}`}
       aria-label={`Визуальная обложка товара ${title}`}
     >
-      <Image
-        src={image}
-        alt={`Обложка товара ${title}`}
-        fill
-        priority={priority}
-        sizes={compact ? "(max-width: 640px) 50vw, 220px" : "(max-width: 640px) 100vw, 560px"}
-        className="object-cover transition duration-500 ease-out group-hover:scale-[1.045]"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/84 via-black/20 to-black/10" />
-      <div className="absolute inset-x-4 top-4 h-px bg-gradient-to-r from-transparent via-white/45 to-transparent" />
-      <div className="absolute bottom-4 left-4 right-4">
+      <div className="relative aspect-[4/5]">
+        <Image
+          src={image}
+          alt={`Обложка товара ${title}`}
+          fill
+          priority={priority}
+          sizes={compact ? "(max-width: 640px) 50vw, 220px" : "(max-width: 640px) 100vw, 560px"}
+          className="object-contain object-center p-2 transition duration-150 ease-out group-hover:brightness-[1.04]"
+        />
+      </div>
+      <div className="border-t border-neon-violet/15 bg-[#08030f]/95 px-4 py-3">
         <p className="text-[10px] uppercase tracking-[0.22em] text-white/50">{product.motif}</p>
         <p className="mt-1 line-clamp-1 text-lg font-black text-white">{title}</p>
       </div>

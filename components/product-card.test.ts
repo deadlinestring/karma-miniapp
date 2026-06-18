@@ -20,8 +20,10 @@ describe("product card Neon Mask styling", () => {
   });
 
   it("uses glass/neon card styling and safe text rendering", () => {
-    expect(source).toContain("neonMaskHover");
     expect(source).toContain("neonMaskElevatedSurface");
+    expect(source).toContain("duration-150");
+    expect(source).toContain("hover:-translate-y-px");
+    expect(source).not.toContain("whileTap");
     expect(source).toContain("border-neon-cyan/12");
     expect(source).not.toContain("dangerouslySetInnerHTML");
   });

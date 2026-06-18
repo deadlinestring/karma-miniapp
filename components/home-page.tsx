@@ -10,11 +10,9 @@ import type { StorefrontHomeData, StorefrontProduct } from "@/lib/storefront-typ
 import { AppShell } from "@/components/app-shell";
 import { ProductCard } from "@/components/product-card";
 import { ProductModal } from "@/components/product-modal";
-import { BrandMaskWatermark } from "@/components/ui/brand-mask-watermark";
 import { uiButtonClassName } from "@/components/ui/button";
 import {
   neonMaskBackground,
-  neonMaskBorder,
   neonMaskEyebrow,
   neonMaskGradientText,
   neonMaskHover,
@@ -64,22 +62,18 @@ export function HomePage({
 
   return (
     <AppShell settings={data.settings}>
-      <section className={`relative isolate min-h-[560px] overflow-hidden rounded-[32px] ${neonMaskBorder} ${neonMaskBackground} p-4 shadow-[0_0_70px_rgba(155,92,255,0.24)] sm:p-6`}>
-        <img
-          src={heroImage}
-          alt={`Светящийся акриловый ночник ${data.settings.storeName}`}
-          className="absolute inset-0 z-0 h-full w-full object-cover opacity-78 saturate-125 [mask-image:linear-gradient(180deg,rgba(0,0,0,0.98),rgba(0,0,0,0.58))]"
-        />
-        <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/18 via-[#07030f]/54 to-[#05030b]/92" />
-        <div className="absolute inset-0 z-20 bg-[radial-gradient(circle_at_30%_18%,rgba(255,79,216,0.18),transparent_18rem),radial-gradient(circle_at_80%_40%,rgba(49,246,255,0.16),transparent_18rem)]" />
-        <BrandMaskWatermark variant="hero" className="absolute -right-28 top-12 z-30 rotate-6 opacity-[0.22] sm:-right-20 sm:top-16" />
-        <div className="pointer-events-none absolute inset-x-4 bottom-4 z-50 h-px bg-gradient-to-r from-transparent via-neon-cyan/50 to-transparent" />
+      <section className="grid gap-3">
+        <div className={`relative aspect-[16/10] overflow-hidden rounded-[28px] border border-neon-violet/25 ${neonMaskBackground} shadow-[0_18px_52px_rgba(0,0,0,0.38)] sm:aspect-[16/9]`}>
+          <img
+            src={heroImage}
+            alt={`Светящийся акриловый ночник ${data.settings.storeName}`}
+            className="h-full w-full object-contain object-center p-2"
+          />
+        </div>
 
-        <div className="relative flex min-h-[528px] flex-col justify-end">
-          <div className="relative max-w-[440px] overflow-hidden rounded-[28px] p-4 sm:p-5">
-            <div className={`absolute inset-0 z-20 rounded-[28px] ${neonMaskSurface}`} />
-            <div className="absolute inset-0 z-30 rounded-[28px] bg-[radial-gradient(circle_at_85%_20%,rgba(255,79,216,0.10),transparent_13rem)]" />
-            <div className="relative z-40">
+        <div className={`relative overflow-hidden rounded-[28px] p-5 sm:p-6 ${neonMaskSurface}`}>
+          <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-neon-violet/45 to-transparent" />
+          <div className="relative">
               {heroEyebrow ? (
                 <p className={`text-[11px] tracking-[0.24em] ${neonMaskEyebrow}`}>
                   {heroEyebrow}
@@ -123,7 +117,6 @@ export function HomePage({
                   </motion.button>
                 ) : null}
               </div>
-            </div>
           </div>
         </div>
       </section>
