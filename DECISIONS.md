@@ -687,3 +687,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - Product photography should use `object-contain` on a dark gradient frame because source photos have inconsistent framing and must not crop the lamps.
 - Product hover may use a short subtle translate/brightness response, but no scale, cyan/white hover ring or scan-line overlay over the artwork.
 - CTA destinations, ContentBlock slugs, product modal/lightbox behavior and product/custom/cart/checkout/payment/order runtime remain unchanged.
+
+## Unified product card and FAQ polish decision
+
+- Product cards should have one visual boundary owned by the outer card surface; ProductVisual is an embedded borderless media zone rather than a second card.
+- Category/custom tags may keep subtle fills but should not create additional white/cyan outlined islands; price and CTA use a simple violet divider.
+- The shared EmptyState watermark remains opt-out; cart passes `showWatermark={false}` rather than changing the component default or deleting the asset.
+- FAQ keeps native `details` behavior and server-managed FaqSection contracts while presentation moves to shared dark/violet Surface treatments.
+- Cart + checkout remains the next staged redesign and is outside this polish pass.

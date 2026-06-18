@@ -16,12 +16,14 @@ describe("FAQ page UI", () => {
     expect(source).not.toContain("dangerouslySetInnerHTML");
   });
 
-  it("keeps system sections out of ordinary cards and highlights open cards", () => {
+  it("keeps system sections out of calm dark violet accordion cards", () => {
     expect(source).toContain("ordinarySections.map");
-    expect(source).toContain("open:border-neon-cyan/45");
-    expect(source).toContain("open:bg-neon-cyan/10");
+    expect(source).toContain("open:border-neon-violet/38");
+    expect(source).toContain("open:bg-neon-violet/8");
     expect(source).toContain("group-open:rotate-180");
     expect(source).toContain("focus-visible:ring-2");
     expect(source).toContain("motion-reduce:transition-none");
+    expect(source).toContain('<Surface as="section" tone="mask"');
+    expect(source).toContain('FAQ_HERO_EYEBROW_SLUG');
   });
 });

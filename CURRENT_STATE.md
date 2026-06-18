@@ -483,3 +483,13 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - Product card hover is shortened and softened, with scale and harsh cyan/white hover borders removed.
 - Product shine/scan-line overlays are removed; card and modal product images use contained fit instead of cropping.
 - ContentBlock, Hero CTA, product modal, lightbox, cart and all business/runtime logic remain unchanged; no migration is required.
+
+## Unified product cards, clean cart empty state and FAQ polish checkpoint
+
+- A separate local visual-polish diff is prepared on top of `0facb41`.
+- Product cards use one outer dark/violet frame; ProductVisual is now a borderless contained media zone without duplicate caption, glow ring, scanline or shine.
+- Tags no longer use white/cyan outlines, and price/CTA are integrated into the card body with a quiet violet divider.
+- Empty cart disables the shared skull/sword watermark through `showWatermark={false}` while managed copy and catalog CTA stay unchanged.
+- FAQ hero, custom pricing help, native accordion cards and contact CTA are visually aligned to restrained KARMA dark neon surfaces.
+- FAQ managed content/slugs, cart store/CTA, product modal/lightbox and all business/runtime logic remain unchanged; no migration is required.
+- Next staged redesign remains cart + checkout and has not started.

@@ -981,3 +981,17 @@ Product presentation rules:
 - card, modal preview and modal thumbnail images use contained fit on a dark background so the complete lamp remains visible;
 - product names, prices, badges, CTA behavior, modal opening and lightbox behavior are unchanged;
 - product/custom/cart/checkout/payment/order/webhook/storage runtime remains unchanged.
+
+## Unified product cards, cart empty state and FAQ polish
+
+Product cards now read as one cohesive component:
+
+- one dark/violet outer surface owns the card boundary;
+- the contained product image is embedded directly into the card on a dark gradient media zone;
+- duplicate image captions and excessive inner frames are removed;
+- tags use quiet fills, while price and CTA share the card body behind a subtle violet divider;
+- name, price, image, category and modal-opening behavior remain unchanged.
+
+The empty cart reuses managed `cart-empty-state` copy and CTA with `showWatermark={false}`, removing only the distracting skull/sword watermark. FAQ hero, pricing help, accordion cards and contact CTA now use restrained dark neon surfaces while preserving `faq-hero-eyebrow`, `faq-hero`, `faq-contact-cta`, ordinary FaqSection rendering and native open/close behavior.
+
+Product, cart and FAQ runtime logic is unchanged. The next staged redesign remains cart + checkout and is not started here.

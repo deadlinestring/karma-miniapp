@@ -713,3 +713,12 @@
 - Soften product card hover to a short, subtle translate/brightness response without scale or harsh cyan/white border transitions.
 - Remove shine/scan-line overlays from product photos and use contained image fit in cards and modal previews/thumbnails.
 - Preserve ContentBlock, CTA, product modal, lightbox, cart and all business/runtime contracts.
+
+## Unified product cards, clean cart empty state and FAQ polish
+
+- Unify each product into one outer dark/violet card surface; remove the image frame, duplicate image caption and framed badge/price islands.
+- Keep contained product photography on a dark integrated media zone with calm 150ms hover and no scanline, shine, scale or cyan/white ring.
+- Disable the shared decorative mask only for the empty cart state while preserving its managed copy and catalog CTA.
+- Align FAQ hero, custom-info panel, accordion cards and contact CTA with restrained KARMA dark neon surfaces.
+- Preserve FAQ sections/slugs, cart store/CTA, product modal/lightbox and all product/custom/checkout/payment/order runtime.
+- Next staged redesign remains cart + checkout; do not start it in this bugfix.

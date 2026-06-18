@@ -11,6 +11,8 @@ describe("cart page content blocks", () => {
     expect(source).toContain("title={emptyBlock.title}");
     expect(source).toContain("bodyLines={emptyBlock.body ? renderContentBlockLines(emptyBlock.body) : []}");
     expect(source).toContain("ctaHref={emptyBlock.ctaHref}");
+    expect(source).toContain("showWatermark={false}");
+    expect(source).not.toContain("BrandMaskWatermark");
   });
 
   it("renders empty cart copy as plain text", () => {

@@ -19,12 +19,14 @@ describe("product card Neon Mask styling", () => {
     expect(source).toContain("product.isCustom");
   });
 
-  it("uses glass/neon card styling and safe text rendering", () => {
+  it("uses one calm outer card surface without nested cyan or white frames", () => {
     expect(source).toContain("neonMaskElevatedSurface");
     expect(source).toContain("duration-150");
     expect(source).toContain("hover:-translate-y-px");
     expect(source).not.toContain("whileTap");
-    expect(source).toContain("border-neon-cyan/12");
+    expect(source).toContain("border-t border-neon-violet/15");
+    expect(source).not.toContain("border-neon-cyan/12");
+    expect(source).not.toContain("border-white/10");
     expect(source).not.toContain("dangerouslySetInnerHTML");
   });
 });

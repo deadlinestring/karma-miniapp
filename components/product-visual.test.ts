@@ -15,6 +15,7 @@ describe("product visual image fit", () => {
   it("keeps decorative overlays away from the product image", () => {
     expect(source).not.toContain("via-white/45");
     expect(source).not.toContain("absolute inset-0 bg-gradient-to-t");
-    expect(source).toContain("border-t border-neon-violet/15");
+    expect(source).not.toContain("border-neon-violet");
+    expect(source).not.toContain("shadow-[");
   });
 });

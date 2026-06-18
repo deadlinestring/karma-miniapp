@@ -34,11 +34,11 @@ export function CartPage({
       {items.length === 0 && emptyBlock ? (
         <EmptyState
           className="mt-6"
+          showWatermark={false}
           title={emptyBlock.title}
           bodyLines={emptyBlock.body ? renderContentBlockLines(emptyBlock.body) : []}
           ctaHref={emptyBlock.ctaHref}
           ctaLabel={emptyBlock.ctaLabel}
-          visual={<div className="h-24 w-24 rounded-full bg-neon-violet/15 blur-sm" />}
         />
       ) : (
         <>
