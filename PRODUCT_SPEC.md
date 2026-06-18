@@ -995,3 +995,16 @@ Product cards now read as one cohesive component:
 The empty cart reuses managed `cart-empty-state` copy and CTA with `showWatermark={false}`, removing only the distracting skull/sword watermark. FAQ hero, pricing help, accordion cards and contact CTA now use restrained dark neon surfaces while preserving `faq-hero-eyebrow`, `faq-hero`, `faq-contact-cta`, ordinary FaqSection rendering and native open/close behavior.
 
 Product, cart and FAQ runtime logic is unchanged. The next staged redesign remains cart + checkout and is not started here.
+
+## Customer orders dark neon visual alignment
+
+Customer order history now follows the KARMA dark neon visual system:
+
+- each order is one dark/violet glass surface with compact mono public number, date and integrated fulfillment/payment badges;
+- item count/summary stay in the card body, while total and the existing detail link share a quiet violet footer;
+- list/detail content reserves safe bottom space above BottomNav;
+- empty orders use managed `orders-empty-state` copy and catalog CTA without a decorative watermark;
+- order detail header, payment, status, item snapshots, totals, delivery/contact and support blocks use shared dark/violet surfaces;
+- server-provided labels, item snapshots, totals, addresses, customer Telegram scoping, support deep-link and payment behavior are unchanged.
+
+No order/payment runtime or schema change is part of this pass. The next staged redesign remains cart + checkout.

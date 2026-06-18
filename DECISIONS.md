@@ -695,3 +695,11 @@ Prisma migrations и другие CLI-операции используют Supa
 - The shared EmptyState watermark remains opt-out; cart passes `showWatermark={false}` rather than changing the component default or deleting the asset.
 - FAQ keeps native `details` behavior and server-managed FaqSection contracts while presentation moves to shared dark/violet Surface treatments.
 - Cart + checkout remains the next staged redesign and is outside this polish pass.
+
+## Customer orders visual alignment decision
+
+- Customer order list/detail work is presentation-only; authenticated customer endpoints, Telegram scoping and order/payment state remain code-owned and unchanged.
+- Public order numbers use compact mono text with `break-all` so long values cannot force badges or CTAs outside mobile cards.
+- Fulfillment and payment labels remain the existing server-provided strings, presented through shared StatusBadge surfaces without remapping values.
+- Order cards and detail sections use shared dark/violet Surface treatments; payment and support controls keep their existing handlers and destinations.
+- Empty orders may opt out of decorative watermark while preserving managed `orders-empty-state` content and CTA.

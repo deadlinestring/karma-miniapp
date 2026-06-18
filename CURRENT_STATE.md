@@ -493,3 +493,13 @@ Admin orders checkpoint: the protected Orders admin panel is prepared locally. I
 - FAQ hero, custom pricing help, native accordion cards and contact CTA are visually aligned to restrained KARMA dark neon surfaces.
 - FAQ managed content/slugs, cart store/CTA, product modal/lightbox and all business/runtime logic remain unchanged; no migration is required.
 - Next staged redesign remains cart + checkout and has not started.
+
+## Customer orders dark neon visual alignment checkpoint
+
+- A local visual-only orders pass is prepared on top of `071acd2`.
+- `/orders` uses cohesive dark/violet order cards, integrated fulfillment/payment badges, mono wrapping public numbers and a shared neon detail CTA.
+- The order list and detail stack reserve bottom spacing above BottomNav.
+- `/orders/[publicNumber]` header, payment, status, items, totals, delivery/contact and support blocks use shared Surface/Button/StatusBadge styling.
+- Empty orders use shared EmptyState with `showWatermark={false}` while managed copy and catalog CTA remain unchanged.
+- Customer endpoint/scoping, status/payment labels, payment prepare, support deep-link, item snapshots, totals and address rendering remain unchanged.
+- No migration or production data change is required; next staged redesign remains cart + checkout.

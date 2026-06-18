@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { type MouseEvent, useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
+import { uiButtonClassName } from "@/components/ui/button";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { Surface } from "@/components/ui/surface";
 import { renderContentBlockLines, useContentBlocks } from "@/components/use-content-blocks";
 import { formatKopecks } from "@/lib/pricing";
 import type { StorefrontSettings } from "@/lib/storefront-types";
@@ -198,39 +201,40 @@ export function CustomerOrderDetailPage({
 
   return (
     <AppShell settings={settings}>
-      <section>
+      <Surface tone="mask" className="relative overflow-hidden p-5">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neon-violet/55 to-transparent" />
         <Link href="/orders" className="text-sm font-bold text-neon-cyan">
           ← Мои заказы
         </Link>
         <p className="mt-4 text-xs font-bold uppercase tracking-[0.24em] text-neon-cyan">заказ</p>
-        <h1 className="mt-2 text-3xl font-black text-white">{publicNumber}</h1>
-      </section>
+        <h1 className="mt-2 break-all font-mono text-2xl font-black leading-tight text-white sm:text-3xl">{publicNumber}</h1>
+      </Surface>
 
       {telegramChecked && !initData ? (
-        <section className="mt-6 rounded-[24px] border border-amber-300/30 bg-amber-300/10 p-5">
+        <Surface tone="warning" className="mt-6 p-5">
           <h2 className="text-lg font-black text-amber-100">Откройте магазин в Telegram</h2>
           <p className="mt-2 text-sm leading-6 text-amber-50/80">
             Детали заказа доступны внутри Telegram Mini App.
           </p>
-        </section>
+        </Surface>
       ) : null}
 
       {isLoading ? (
-        <section className="mt-6 rounded-[24px] border border-white/10 bg-white/7 p-5 text-sm text-white/62">
+        <Surface tone="muted" className="mt-6 p-5 text-sm text-white/62">
           Загружаем заказ...
-        </section>
+        </Surface>
       ) : null}
 
       {error ? (
-        <section className="mt-6 rounded-[24px] border border-red-400/30 bg-red-500/10 p-5 text-sm font-semibold text-red-100">
+        <Surface tone="danger" className="mt-6 p-5 text-sm font-semibold text-red-100">
           {error}
-        </section>
+        </Surface>
       ) : null}
 
       {order ? (
-        <div className="mt-6 grid gap-5">
+        <div className="mt-6 grid gap-4 pb-8">
           {paymentAction ? (
-            <section className="rounded-[24px] border border-neon-cyan/20 bg-neon-cyan/8 p-4">
+            <Surface tone="muted" className="p-4">
               <h2 className="text-lg font-black text-white">Оплата заказа</h2>
               {isOrderPaid ? (
                 <div className="mt-3 rounded-2xl border border-emerald-300/30 bg-emerald-400/10 p-3">
@@ -261,7 +265,7 @@ export function CustomerOrderDetailPage({
                   type="button"
                   disabled={isPreparingPayment}
                   onClick={handlePaymentClick}
-                  className="mt-3 inline-flex min-h-11 items-center rounded-2xl border border-neon-cyan/35 bg-neon-cyan/15 px-4 text-sm font-bold text-neon-cyan transition hover:bg-neon-cyan/22 disabled:cursor-not-allowed disabled:opacity-50"
+                  className={uiButtonClassName({ variant: "primary", className: "mt-3 min-h-11" })}
                 >
                   {isPreparingPayment ? "Готовим оплату..." : "Перейти к оплате"}
                 </button>
@@ -269,27 +273,27 @@ export function CustomerOrderDetailPage({
                 <button
                   type="button"
                   disabled
-                  className="mt-3 inline-flex min-h-11 items-center rounded-2xl border border-white/10 bg-white/8 px-4 text-sm font-bold text-white/45"
+                  className={uiButtonClassName({ variant: "secondary", className: "mt-3 min-h-11" })}
                 >
                   Оплата скоро
                 </button>
               )}
-            </section>
+            </Surface>
           ) : null}
 
-          <section className="rounded-[24px] border border-white/10 bg-white/7 p-4">
+          <Surface tone="muted" className="p-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <StatusBlock label="Статус" value={order.fulfillmentStatusLabel} />
               <StatusBlock label="Оплата" value={order.paymentStatusLabel} />
             </div>
             <p className="mt-4 text-xs text-white/46">{formatDate(order.createdAt)}</p>
-          </section>
+          </Surface>
 
-          <section className="rounded-[24px] border border-white/10 bg-white/7 p-4">
+          <Surface tone="muted" className="p-4">
             <h2 className="text-lg font-black text-white">Состав заказа</h2>
             <div className="mt-4 grid gap-4">
               {order.items.map((item, index) => (
-                <div key={`${item.productName}-${index}`} className="border-b border-white/10 pb-4 last:border-b-0 last:pb-0">
+                <div key={`${item.productName}-${index}`} className="border-b border-neon-violet/15 pb-4 last:border-b-0 last:pb-0">
                   <div className="flex justify-between gap-4">
                     <div>
                       <h3 className="font-bold text-white">{item.productName}</h3>
@@ -313,23 +317,23 @@ export function CustomerOrderDetailPage({
                 </div>
               ))}
             </div>
-          </section>
+          </Surface>
 
-          <section className="rounded-[24px] border border-white/10 bg-white/7 p-4">
+          <Surface tone="muted" className="p-4">
             <h2 className="text-lg font-black text-white">Итог</h2>
             <div className="mt-4 grid gap-2 text-sm">
               <SummaryRow label="Товары" value={order.itemsSubtotalKopecks} />
               <SummaryRow label="Отрисовка" value={order.customDrawingKopecks} />
               <SummaryRow label="Скидка" value={-order.discountKopecks} />
               <SummaryRow label="Доставка" value={order.deliveryKopecks} />
-              <div className="flex items-center justify-between border-t border-white/10 pt-3">
+              <div className="flex items-center justify-between border-t border-neon-violet/15 pt-3">
                 <span className="text-white/58">Итого</span>
                 <span className="text-2xl font-black text-white">{formatKopecks(order.totalKopecks)} ₽</span>
               </div>
             </div>
-          </section>
+          </Surface>
 
-          <section className="rounded-[24px] border border-white/10 bg-white/7 p-4">
+          <Surface tone="muted" className="p-4">
             <h2 className="text-lg font-black text-white">Доставка и контакт</h2>
             <div className="mt-3 grid gap-2 text-sm text-white/64">
               {order.deliveryAddress ? (
@@ -345,10 +349,10 @@ export function CustomerOrderDetailPage({
               {order.customer.fallbackContact ? <p>{order.customer.fallbackContact}</p> : null}
               {order.comment ? <p>Комментарий: {order.comment}</p> : null}
             </div>
-          </section>
+          </Surface>
 
           {supportBlock ? (
-            <section className="rounded-[24px] border border-neon-cyan/20 bg-neon-cyan/8 p-4">
+            <Surface tone="mask" className="p-4">
               <h2 className="text-lg font-black text-white">{supportBlock.title ?? "Нужно изменить заказ?"}</h2>
               <div className="mt-2 grid gap-2 text-sm leading-6 text-white/64">
                 {(renderContentBlockLines(supportBlock.body).length > 0
@@ -363,11 +367,11 @@ export function CustomerOrderDetailPage({
                 target="_blank"
                 rel="noreferrer"
                 onClick={handleSupportClick}
-                className="mt-3 inline-flex min-h-11 items-center rounded-2xl border border-neon-cyan/35 bg-neon-cyan/15 px-4 text-sm font-bold text-neon-cyan transition hover:bg-neon-cyan/22"
+                className={uiButtonClassName({ variant: "mask", className: "mt-3 min-h-11" })}
               >
                 {supportBlock.ctaLabel ?? "Связаться"}
               </a>
-            </section>
+            </Surface>
           ) : null}
         </div>
       ) : null}
@@ -394,9 +398,9 @@ function openPaymentUrl(url: string) {
 
 function StatusBlock({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/8 p-3">
+    <div className="rounded-lg bg-neon-violet/8 p-3">
       <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/42">{label}</p>
-      <p className="mt-1 text-base font-black text-white">{value}</p>
+      <StatusBadge tone="info" className="mt-2">{value}</StatusBadge>
     </div>
   );
 }

@@ -28,6 +28,17 @@ describe("customer orders page", () => {
   it("uses shared status badge for payment status display", () => {
     expect(source).toContain('import { StatusBadge }');
     expect(source).toContain("<StatusBadge>{order.paymentStatusLabel}</StatusBadge>");
+    expect(source).toContain('<StatusBadge tone="info">{order.fulfillmentStatusLabel}</StatusBadge>');
+    expect(source).toContain("break-all font-mono");
+    expect(source).toContain('size="sm"');
+    expect(source).toContain("pb-8");
+  });
+
+  it("keeps totals, item summaries and a watermark-free managed empty state", () => {
+    expect(source).toContain("formatKopecks(order.totalKopecks)");
+    expect(source).toContain("order.itemSummary.join");
+    expect(source).toContain("showWatermark={false}");
+    expect(source).toContain("ctaHref={emptyBlock?.ctaHref}");
   });
 
   it("renders intro and empty state content as plain text", () => {

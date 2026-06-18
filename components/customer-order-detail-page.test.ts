@@ -31,6 +31,15 @@ describe("customer order detail page", () => {
     expect(source).toContain('publicNumber.replace(/-/g, "_")');
   });
 
+  it("uses dark neon surfaces without changing order data rendering", () => {
+    expect(source).toContain("formatKopecks(order.totalKopecks)");
+    expect(source).toContain("order.items.map");
+    expect(source).toContain("break-all font-mono");
+    expect(source).toContain('<Surface tone="mask"');
+    expect(source).toContain('<StatusBadge tone="info"');
+    expect(source).toContain("pb-8");
+  });
+
   it("documents the expected Telegram support deep link conversion", () => {
     const safeOrderNumber = "KRM-20260601-805754".replace(/-/g, "_");
 

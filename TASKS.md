@@ -722,3 +722,12 @@
 - Align FAQ hero, custom-info panel, accordion cards and contact CTA with restrained KARMA dark neon surfaces.
 - Preserve FAQ sections/slugs, cart store/CTA, product modal/lightbox and all product/custom/checkout/payment/order runtime.
 - Next staged redesign remains cart + checkout; do not start it in this bugfix.
+
+## Customer orders dark neon visual alignment
+
+- Align `/orders` with cohesive dark/violet glass cards, integrated fulfillment/payment badges and a compact neon detail CTA.
+- Keep long public order numbers readable with compact mono text and safe wrapping; reserve bottom padding above BottomNav.
+- Align `/orders/[publicNumber]` header, payment, status, item, total, delivery and support surfaces without changing data or handlers.
+- Use a watermark-free shared EmptyState for no orders while preserving its managed catalog CTA.
+- Preserve customer Telegram scoping, status/payment labels, payment prepare behavior and support deep-link contracts.
+- Next staged redesign remains cart + checkout.
